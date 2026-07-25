@@ -159,6 +159,20 @@ zoomSlider.addEventListener('input', (e) => {
   certificatePreview.style.transform = `scale(${scale})`;
 });
 
+document.getElementById('btn-zoom-out')?.addEventListener('click', () => {
+  let val = parseFloat(zoomSlider.value);
+  val = Math.max(0.5, val - 0.05);
+  zoomSlider.value = val;
+  zoomSlider.dispatchEvent(new Event('input'));
+});
+
+document.getElementById('btn-zoom-in')?.addEventListener('click', () => {
+  let val = parseFloat(zoomSlider.value);
+  val = Math.min(1.5, val + 0.05);
+  zoomSlider.value = val;
+  zoomSlider.dispatchEvent(new Event('input'));
+});
+
 // Dark/Light Theme toggling (Bootstrap Icons)
 const themeToggle = document.getElementById('theme-toggle');
 const themeIcon = document.getElementById('theme-icon');
