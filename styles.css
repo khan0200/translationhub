@@ -250,7 +250,7 @@ body {
    -------------------------------------------------------------------------- */
 .dashboard {
   display: grid;
-  grid-template-columns: clamp(300px, 28vw, 440px) 1fr;
+  grid-template-columns: clamp(320px, 35vw, 500px) 1fr;
   flex-grow: 1;
   height: calc(100vh - var(--header-h, 57px));
   overflow: hidden;
