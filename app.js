@@ -7,7 +7,7 @@
 const TURSO_URL = "https://birthcertificate-khan0200.aws-ap-northeast-1.turso.io/v2/pipeline";
 const TURSO_TOKEN = "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3ODQ5NTcyNzAsImlkIjoiMDE5Zjk3YmUtNDIwMS03YTY3LTkxODUtODIzMGMyMmYyYjU1Iiwia2lkIjoiVFZIaHctQ1VfMTczOVlqa2dZRGpKbGJfQlVpQWVLckxTelhfbDVMUTlzRSIsInJpZCI6ImQwNGFhNWUyLTRiYTAtNGMzNC1iZjQ5LTViZTgxM2U5NjIyNiJ9.srRd3vUHK48oKsluQJk6E4xY2jHT1eqyj5oUdhmLsOeNXYt7T5MEqojBdRenZshw-3wg8TXrAaleU9LHkTFCCA";
 
-let currentMode = 'birth'; // 'birth', 'marriage', or 'divorce'
+let currentMode = null; // null initially so onload switchMode runs
 let savedRecords = []; // Global history memory
 
 
@@ -292,19 +292,24 @@ const divorceSyncMapping = {
 let isSyncingFromPaper = false;
 
 function initPaperEditing() {
-  const allMappings = { ...syncMapping, ...marriageSyncMapping, ...divorceSyncMapping };
+  const mappingGroups = [syncMapping, marriageSyncMapping, divorceSyncMapping];
   
-  Object.keys(allMappings).forEach(key => {
-    const config = allMappings[key];
-    const previewEl = document.getElementById(config.previewId);
-    const inputId = config.inputId || key;
-    const inputEl = document.getElementById(inputId);
-    
-    if (!previewEl || !inputEl) return;
+  mappingGroups.forEach(mapping => {
+    Object.keys(mapping).forEach(key => {
+      const config = mapping[key];
+      const previewEl = document.getElementById(config.previewId);
+      const inputId = config.inputId || key;
+      const inputEl = document.getElementById(inputId);
+      
+      if (!previewEl || !inputEl) return;
     
     // Make the element editable
     previewEl.setAttribute('contenteditable', 'true');
     previewEl.style.outline = 'none'; // prevent ugly focus ring on paper
+    previewEl.setAttribute('spellcheck', 'false');
+    previewEl.setAttribute('data-gramm', 'false');
+    previewEl.setAttribute('data-gramm_editor', 'false');
+    previewEl.setAttribute('data-enable-grammarly', 'false');
     
     // Listen to changes on the paper
     previewEl.addEventListener('input', (e) => {
@@ -336,6 +341,18 @@ function initPaperEditing() {
       updatePreviewField(key, inputEl.value);
     });
   });
+  }); // End of mappingGroups.forEach
+
+  // Make the birth date (in words) dynamically editable as well, since it derives from dob
+  const dobWordsEl = document.getElementById('preview-dobWords');
+  if (dobWordsEl && !dobWordsEl.hasAttribute('contenteditable')) {
+    dobWordsEl.setAttribute('contenteditable', 'true');
+    dobWordsEl.style.outline = 'none';
+    dobWordsEl.setAttribute('spellcheck', 'false');
+    dobWordsEl.setAttribute('data-gramm', 'false');
+    dobWordsEl.setAttribute('data-gramm_editor', 'false');
+    dobWordsEl.setAttribute('data-enable-grammarly', 'false');
+  }
 }
 
 // Initialize listeners for real-time reactivity
@@ -488,10 +505,9 @@ function initReactivity() {
 
 // Dynamic field update routing
 function updatePreviewField(key, rawValue) {
-  let mode = 'birth';
-  if (marriageSyncMapping[key]) mode = 'marriage';
-  if (divorceSyncMapping[key]) mode = 'divorce';
-  updatePreviewFieldForced(mode, key, rawValue);
+  // Always use the active mode, which prevents duplicate key conflicts
+  // (like issueDate existing in both birth and divorce)
+  updatePreviewFieldForced(currentMode, key, rawValue);
 }
 
 // Helper to sync preview sheet HTML
@@ -1309,10 +1325,25 @@ function getWordDocumentHtml(element) {
   // Clone preview structure for export
   const clone = element.cloneNode(true);
   
+  // Remove inactive sheets if they exist in this clone to prevent exporting all tabs
+  ['birth', 'marriage', 'divorce'].forEach(mode => {
+    if (typeof currentMode !== 'undefined' && mode !== currentMode) {
+      const sheet = clone.querySelector(`#preview-${mode}-sheet`);
+      if (sheet) sheet.remove();
+    }
+  });
+
   // Remove any placeholders
   clone.querySelectorAll('.placeholder-text').forEach(el => {
     el.textContent = '_____________________';
     el.style.color = '#000000';
+  });
+
+  // Remove contenteditable to prevent Word from applying weird styles
+  clone.querySelectorAll('[contenteditable]').forEach(el => {
+    el.removeAttribute('contenteditable');
+    el.removeAttribute('spellcheck');
+    el.style.outline = '';
   });
 
   const bodyHtml = clone.innerHTML;
@@ -1737,6 +1768,18 @@ async function exportPDF() {
   const element = document.getElementById('certificate-preview');
   element.classList.add('pdf-exporting');
 
+  // Temporarily isolate the active sheet by removing inactive sheets from the DOM
+  const hiddenElements = [];
+  ['birth', 'marriage', 'divorce'].forEach(mode => {
+    if (mode !== currentMode) {
+      const el = document.getElementById(`preview-${mode}-sheet`);
+      if (el && el.parentNode) {
+        hiddenElements.push({ el, next: el.nextSibling, parent: el.parentNode });
+        el.parentNode.removeChild(el);
+      }
+    }
+  });
+
   let name = "";
   let filename = "";
   if (currentMode === 'birth') {
@@ -1771,6 +1814,11 @@ async function exportPDF() {
     showToast("Failed to generate PDF.", "error");
   } finally {
     element.classList.remove('pdf-exporting');
+    
+    // Restore hidden elements
+    hiddenElements.forEach(item => {
+      item.parent.insertBefore(item.el, item.next);
+    });
   }
 }
 
@@ -1792,18 +1840,22 @@ function clearForm() {
   
   // Reset preview fields to placeholders for birth mode
   const birthFields = ['fullName', 'dob', 'region', 'city', 'entryNumber', 'registryDate', 'fatherName', 'fatherNationality', 'motherName', 'motherNationality', 'regCity', 'issueDate', 'headName', 'idNumber'];
-  birthFields.forEach(id => {
-    updatePreviewFieldForced('birth', id, "");
-    const errEl = document.getElementById(`${id}Error`);
+  birthFields.forEach(key => {
+    const mapping = syncMapping[key] || {};
+    const inputId = mapping.inputId || key;
+    const input = document.getElementById(inputId);
+    updatePreviewFieldForced('birth', key, input ? input.value : "");
+    const errEl = document.getElementById(`${inputId}Error`);
     if (errEl) errEl.style.display = 'none';
   });
 
   // Reset preview fields to placeholders for marriage mode
   const marriageFields = ['husbandName', 'husbandDob', 'husbandBirthPlace', 'husbandCitizenship', 'wifeName', 'wifeDob', 'wifeBirthPlace', 'wifeCitizenship', 'marriageDate', 'marriageDateWords', 'recordNumber', 'recordDate', 'husbandNewSurname', 'wifeNewSurname', 'regPlace', 'issueDate', 'chairmanName', 'certNumber'];
   marriageFields.forEach(key => {
-    updatePreviewFieldForced('marriage', key, "");
-    const mapping = marriageSyncMapping[key];
+    const mapping = marriageSyncMapping[key] || {};
     const inputId = mapping.inputId || key;
+    const input = document.getElementById(inputId);
+    updatePreviewFieldForced('marriage', key, input ? input.value : "");
     const errEl = document.getElementById(`${inputId}Error`);
     if (errEl) errEl.style.display = 'none';
   });
@@ -1811,9 +1863,10 @@ function clearForm() {
   // Reset preview fields to placeholders for divorce mode
   const divorceFields = ['husbandName', 'wifeName', 'recordNumber', 'recordDate', 'husbandNewSurname', 'wifeNewSurname', 'regPlace', 'givenTo', 'issueDate', 'headName', 'sealText', 'certNumber'];
   divorceFields.forEach(key => {
-    updatePreviewFieldForced('divorce', key, "");
-    const mapping = divorceSyncMapping[key];
+    const mapping = divorceSyncMapping[key] || {};
     const inputId = mapping.inputId || key;
+    const input = document.getElementById(inputId);
+    updatePreviewFieldForced('divorce', key, input ? input.value : "");
     const errEl = document.getElementById(`${inputId}Error`);
     if (errEl) errEl.style.display = 'none';
   });
@@ -1895,4 +1948,18 @@ window.addEventListener('DOMContentLoaded', () => {
   initializeDatabase();
   initAutocomplete();
   initReactivity();
+
+  // Force initial synchronization of any pre-filled default values (e.g. 'Uzbek')
+  // to the paper preview right on page load.
+  setTimeout(() => {
+    if (currentMode === 'birth') {
+      Object.keys(syncMapping).forEach(key => {
+        const inputId = syncMapping[key].inputId || key;
+        const input = document.getElementById(inputId);
+        if (input && input.value) {
+          updatePreviewFieldForced('birth', key, input.value);
+        }
+      });
+    }
+  }, 50);
 });
