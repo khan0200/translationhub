@@ -82,18 +82,14 @@ body {
   box-shadow: var(--shadow-sm);
 }
 
-.brand-logo {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, var(--accent), #10b981);
+.brand-logo-img {
+  width: 46px;
+  height: 46px;
   border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 18px;
-  color: white;
-  box-shadow: 0 0 16px var(--accent-glow);
+  object-fit: contain;
+  background: #fff;
+  padding: 3px;
+  box-shadow: 0 0 14px rgba(0,0,0,0.35);
   flex-shrink: 0;
 }
 
