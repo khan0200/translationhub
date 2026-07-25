@@ -7,7 +7,7 @@
 const TURSO_URL = "https://birthcertificate-khan0200.aws-ap-northeast-1.turso.io/v2/pipeline";
 const TURSO_TOKEN = "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3ODQ5NTcyNzAsImlkIjoiMDE5Zjk3YmUtNDIwMS03YTY3LTkxODUtODIzMGMyMmYyYjU1Iiwia2lkIjoiVFZIaHctQ1VfMTczOVlqa2dZRGpKbGJfQlVpQWVLckxTelhfbDVMUTlzRSIsInJpZCI6ImQwNGFhNWUyLTRiYTAtNGMzNC1iZjQ5LTViZTgxM2U5NjIyNiJ9.srRd3vUHK48oKsluQJk6E4xY2jHT1eqyj5oUdhmLsOeNXYt7T5MEqojBdRenZshw-3wg8TXrAaleU9LHkTFCCA";
 
-let currentMode = null; // null initially so onload switchMode runs
+let currentMode = 'birth'; // 'birth', 'marriage', or 'divorce'
 let savedRecords = []; // Global history memory
 
 
