@@ -1366,7 +1366,7 @@ function getWordDocumentHtml(element) {
       <style>
         @page {
           size: A4 portrait;
-          margin: 2cm 1.5cm 1.5cm 2cm;
+          margin: 1cm 1.5cm 1cm 1.5cm;
         }
         body { 
           font-family: 'Times New Roman', Times, serif; 
@@ -1386,7 +1386,7 @@ function getWordDocumentHtml(element) {
         }
         .doc-title-container {
           text-align: center;
-          margin-bottom: 30px;
+          margin-bottom: 15px;
         }
         .doc-country {
           font-size: 14pt;
@@ -1403,7 +1403,7 @@ function getWordDocumentHtml(element) {
           margin-bottom: 20px;
         }
         td {
-          padding: 5px 0;
+          padding: 3px 0;
           vertical-align: top;
         }
         .label {
@@ -1427,7 +1427,7 @@ function getWordDocumentHtml(element) {
           margin-bottom: 4px;
         }
         .registry-sentence {
-          margin: 24px 0;
+          margin: 14px 0;
           text-align: left;
           text-indent: 0.5in;
           line-height: 1.6;
@@ -1445,7 +1445,7 @@ function getWordDocumentHtml(element) {
           padding-bottom: 2px;
         }
         .signature-section {
-          margin-top: 40px;
+          margin-top: 25px;
           clear: both;
         }
         .signature-officer {
@@ -1467,7 +1467,7 @@ function getWordDocumentHtml(element) {
           border-bottom: 1px solid #000000;
         }
         .footer-section {
-            margin-top: 30px;
+            margin-top: 20px;
             clear: both;
           }
           .official-seal {
