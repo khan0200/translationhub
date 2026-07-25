@@ -1051,6 +1051,7 @@
     <div class="doc-type-switcher no-print">
       <button class="switcher-btn active" id="btn-mode-birth" onclick="switchMode('birth')">Birth Certificate</button>
       <button class="switcher-btn" id="btn-mode-marriage" onclick="switchMode('marriage')">Marriage Certificate</button>
+      <button class="switcher-btn" id="btn-mode-divorce" onclick="switchMode('divorce')">Divorce Certificate</button>
     </div>
 
     <div class="header-actions">
@@ -1293,6 +1294,94 @@
                 <label for="certNumber">Certificate Serial / Number (e.g. N № 05842224):</label>
                 <input id="certNumber" type="text" placeholder="N № 05842224">
                 <div id="certNumberError" class="error-msg">Certificate number is required.</div>
+            </div>
+          </div>
+        </div>
+
+          <!-- DIVORCE CERTIFICATE FIELDS -->
+          <div id="divorce-fields-container" style="display: none;">
+            <!-- Section 1: Divorcing Spouses -->
+            <div class="form-group-title">Spouses Details</div>
+            <div class="form-card">
+              <div class="input-field-wrapper">
+                <label for="divorceHusbandName">Husband's Name (Citizen):</label>
+                <input id="divorceHusbandName" type="text" placeholder="KIPCHAKOV DONIYOR TASHKENBOEVICH" class="uppercase">
+                <div id="divorceHusbandNameError" class="error-msg">Husband's name is required.</div>
+              </div>
+              <div class="input-field-wrapper">
+                <label for="divorceWifeName">Wife's Name (Citizen):</label>
+                <input id="divorceWifeName" type="text" placeholder="KIPCHAKOVA MALIKAKHON" class="uppercase">
+                <div id="divorceWifeNameError" class="error-msg">Wife's name is required.</div>
+              </div>
+            </div>
+
+            <!-- Section 2: Marriage Dissolution filing details -->
+            <div class="form-group-title">Marriage Dissolution Details</div>
+            <div class="form-card">
+              <div class="input-field-wrapper">
+                <label for="divorceRecordNumber">Record Number (№):</label>
+                <input id="divorceRecordNumber" type="text" placeholder="147">
+                <div id="divorceRecordNumberError" class="error-msg">Record number is required.</div>
+              </div>
+              <div class="input-field-wrapper">
+                <label for="divorceRecordDate">Filing Date (dd/mm/yyyy):</label>
+                <input id="divorceRecordDate" type="text" placeholder="19/10/2018">
+                <div id="divorceRecordDateError" class="error-msg">Valid date format dd/mm/yyyy is required.</div>
+              </div>
+            </div>
+
+            <!-- Section 3: Surnames after Dissolution -->
+            <div class="form-group-title">Surnames after Marriage Dissolution</div>
+            <div class="form-card">
+              <div class="input-field-wrapper">
+                <label for="divorceHusbandSurname">Surname Given to Husband:</label>
+                <input id="divorceHusbandSurname" type="text" placeholder="KIPCHAKOV" class="uppercase">
+                <div id="divorceHusbandSurnameError" class="error-msg">Husband's surname is required.</div>
+              </div>
+              <div class="input-field-wrapper">
+                <label for="divorceWifeSurname">Surname Given to Wife:</label>
+                <input id="divorceWifeSurname" type="text" placeholder="JURAEVA" class="uppercase">
+                <div id="divorceWifeSurnameError" class="error-msg">Wife's surname is required.</div>
+              </div>
+            </div>
+
+            <!-- Section 4: Civil Registry Office & Issue Details -->
+            <div class="form-group-title">Office & Recipient Details</div>
+            <div class="form-card">
+              <div class="input-field-wrapper">
+                <label for="divorceRegPlace">Registration Place (Office/District):</label>
+                <input id="divorceRegPlace" type="text" placeholder="Norin district Civil registry office">
+                <div id="divorceRegPlaceError" class="error-msg">Registration place is required.</div>
+              </div>
+              <div class="input-field-wrapper">
+                <label for="divorceGivenTo">The Certificate is Given to:</label>
+                <input id="divorceGivenTo" type="text" placeholder="JURAEVA MALIKAKHON" class="uppercase">
+                <div id="divorceGivenToError" class="error-msg">Recipient's name is required.</div>
+              </div>
+              <div class="input-field-wrapper">
+                <label for="divorceIssueDate">Date of Issue (dd/mm/yyyy):</label>
+                <input id="divorceIssueDate" type="text" placeholder="04/12/2018">
+                <div id="divorceIssueDateError" class="error-msg">Valid date format dd/mm/yyyy is required.</div>
+              </div>
+              <div class="input-field-wrapper">
+                <label for="divorceHeadName">Head of Civil Registry Office's Name:</label>
+                <input id="divorceHeadName" type="text" placeholder="M.ALIBOEVA">
+                <div id="divorceHeadNameError" class="error-msg">Head name is required.</div>
+              </div>
+              <div class="input-field-wrapper">
+                <label for="divorceCertNumber">Certificate Serial / Number (e.g. I-NA № 0036626):</label>
+                <input id="divorceCertNumber" type="text" placeholder="I-NA № 0036626">
+                <div id="divorceCertNumberError" class="error-msg">Certificate number is required.</div>
+              </div>
+            </div>
+
+            <!-- Section 5: Official Seal Text -->
+            <div class="form-group-title">Official Seal Text (Bottom-Left)</div>
+            <div class="form-card">
+              <div class="input-field-wrapper">
+                <label for="divorceSealText">Official Seal Text (Multi-line):</label>
+                <textarea id="divorceSealText" rows="5" style="width:100%; border: 1px solid var(--panel-border); background: var(--input-bg); color: var(--text-main); border-radius: 6px; padding: 8px; font-family: inherit; font-size: 13px;" placeholder="Seal: Ministry of Justice of the&#10;Republic of Uzbekistan&#10;State Services of Namangan region&#10;Department of Registration of Civil&#10;condition of Norin district"></textarea>
+                <div id="divorceSealTextError" class="error-msg">Official seal text is required.</div>
               </div>
             </div>
           </div>
@@ -1592,6 +1681,113 @@
               <div class="footer-spacer"></div>
             </div>
           </div>
+
+          <!-- DIVORCE CERTIFICATE PREVIEW SHEET -->
+          <div id="preview-divorce-sheet" style="display: none;">
+            <div class="translation-header">Translated from Uzbek into English</div>
+            
+            <div style="text-align: center; font-size: 10pt; font-weight: bold; margin-top: 15px; text-transform: uppercase;">
+              -STATE EMBLEM OF THE REPUBLIC OF UZBEKISTAN-
+            </div>
+            
+            <div class="doc-title-container" style="margin-top: 20px; margin-bottom: 25px;">
+              <div class="doc-title">DIVORCE CERTIFICATE</div>
+            </div>
+
+            <table class="certificate-table" style="margin-bottom: 5px;">
+              <tr>
+                <td class="label" style="width: 25%;">Citizen:</td>
+                <td class="value font-bold uppercase" id="preview-d-husbandName" style="text-align: center; border-bottom: 1px solid #000; font-weight: bold;">
+                  <span class="placeholder-text">[HUSBAND CITIZEN NAME]</span>
+                </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td style="font-size: 9pt; text-align: center; color: var(--text-muted); padding-top: 2px;">(Full name)</td>
+              </tr>
+            </table>
+
+            <table class="certificate-table" style="margin-top: 5px; margin-bottom: 5px;">
+              <tr>
+                <td class="label" style="width: 25%;">and citizen:</td>
+                <td class="value font-bold uppercase" id="preview-d-wifeName" style="text-align: center; border-bottom: 1px solid #000; font-weight: bold;">
+                  <span class="placeholder-text">[WIFE CITIZEN NAME]</span>
+                </td>
+              </tr>
+              <tr>
+                <td></td>
+                <td style="font-size: 9pt; text-align: center; color: var(--text-muted); padding-top: 2px;">(Full name)</td>
+              </tr>
+            </table>
+
+            <div class="registry-sentence" style="text-indent: 0; margin: 15px 0;">
+              are dissolved their marriage.
+            </div>
+
+            <div class="registry-sentence" style="text-indent: 0; margin: 15px 0; font-weight: bold;">
+              Record № <span id="preview-d-recordNumber" style="border-bottom: 1px solid #000;"><span class="placeholder-text">[RECORD NO]</span></span> was filed on <span id="preview-d-recordDate" style="border-bottom: 1px solid #000;"><span class="placeholder-text">[RECORD DATE]</span></span>,
+            </div>
+
+            <div class="registry-sentence" style="text-indent: 0; margin: 20px 0; font-weight: bold;">
+              Following surnames were given after the marriage dissolution:
+            </div>
+
+            <table class="parents-table" style="margin-top: 5px;">
+              <tr>
+                <td class="label" style="width: 25%;">Husband:</td>
+                <td class="value font-bold uppercase" id="preview-d-husbandSurname" style="font-weight: bold;">
+                  <span class="placeholder-text">[HUSBAND SURNAME]</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="label" style="width: 25%;">Wife:</td>
+                <td class="value font-bold uppercase" id="preview-d-wifeSurname" style="font-weight: bold;">
+                  <span class="placeholder-text">[WIFE SURNAME]</span>
+                </td>
+              </tr>
+            </table>
+
+            <div style="height: 15px;"></div>
+
+            <table class="registry-office-table">
+              <tr>
+                <td class="label" style="width: 35%;">Registration Place:</td>
+                <td class="value" id="preview-d-regPlace" style="font-style: italic;">
+                  <span class="placeholder-text">[REGISTRATION PLACE]</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="label" style="width: 35%;">The certificate is given to:</td>
+                <td class="value font-bold uppercase" id="preview-d-givenTo">
+                  <span class="placeholder-text">[RECIPIENT NAME]</span>
+                </td>
+              </tr>
+              <tr>
+                <td class="label" style="width: 35%;">Date of issue:</td>
+                <td class="value" id="preview-d-issueDate" style="font-style: italic;">
+                  <span class="placeholder-text">[DATE OF ISSUE]</span>
+                </td>
+              </tr>
+            </table>
+
+            <div class="signature-section" style="margin-top: 25px;">
+              <div class="signature-officer" style="width: 45%;">Head of the Civil Registry office</div>
+              <div class="signature-signed" style="width: 20%; text-align: center; font-style: italic;">(signed)</div>
+              <div class="signature-name" style="width: 35%; text-align: right; font-weight: bold; border-bottom: 1px solid #000;" id="preview-d-headName">
+                <span class="placeholder-text">[HEAD NAME]</span>
+              </div>
+            </div>
+
+            <div class="footer-section" style="margin-top: 25px; align-items: flex-end;">
+              <div class="official-seal" id="preview-d-sealText" style="width: 45%; font-size: 8pt; font-style: italic; line-height: 1.4; font-weight: normal; white-space: pre-line;">
+                <span class="placeholder-text">[OFFICIAL SEAL TEXT]</span>
+              </div>
+              <div class="id-number-section" id="preview-d-certNumber" style="border: none; font-weight: bold; padding: 0; text-align: center; width: 35%; font-size: 11pt;">
+                <span class="placeholder-text">[CERTIFICATE NO]</span>
+              </div>
+              <div class="footer-spacer" style="width: 20%;"></div>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -1623,7 +1819,7 @@
     const TURSO_URL = "https://birthcertificate-khan0200.aws-ap-northeast-1.turso.io/v2/pipeline";
     const TURSO_TOKEN = "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3ODQ5NTcyNzAsImlkIjoiMDE5Zjk3YmUtNDIwMS03YTY3LTkxODUtODIzMGMyMmYyYjU1Iiwia2lkIjoiVFZIaHctQ1VfMTczOVlqa2dZRGpKbGJfQlVpQWVLckxTelhfbDVMUTlzRSIsInJpZCI6ImQwNGFhNWUyLTRiYTAtNGMzNC1iZjQ5LTViZTgxM2U5NjIyNiJ9.srRd3vUHK48oKsluQJk6E4xY2jHT1eqyj5oUdhmLsOeNXYt7T5MEqojBdRenZshw-3wg8TXrAaleU9LHkTFCCA";
 
-    let currentMode = 'birth'; // 'birth' or 'marriage'
+    let currentMode = 'birth'; // 'birth', 'marriage', or 'divorce'
     let savedRecords = []; // Global history memory
 
     // Mock Data for Quick Fill (Birth Mode)
@@ -1666,6 +1862,22 @@
       certNumber: "N № 05842224"
     };
 
+    // Mock Data for Quick Fill (Divorce Mode)
+    const DIVORCE_MOCK_DATA = {
+      husbandName: "KIPCHAKOV DONIYOR TASHKENBOEVICH",
+      wifeName: "KIPCHAKOVA MALIKAKHON",
+      recordNumber: "147",
+      recordDate: "19/10/2018",
+      husbandNewSurname: "KIPCHAKOV",
+      wifeNewSurname: "JURAEVA",
+      regPlace: "Norin district Civil registry office",
+      givenTo: "JURAEVA MALIKAKHON",
+      issueDate: "04/12/2018",
+      headName: "M.ALIBOEVA",
+      sealText: "Seal: Ministry of Justice of the\nRepublic of Uzbekistan\nState Services of Namangan region\nDepartment of Registration of Civil\ncondition of Norin district",
+      certNumber: "I-NA № 0036626"
+    };
+
     // ==========================================================================
     // 1. RECEPTIVE AND DYNAMIC DESIGN & VIEW CONTROLS
     // ==========================================================================
@@ -1683,7 +1895,7 @@
       }
     }
 
-    // Document Mode Switcher (Birth vs Marriage)
+    // Document Mode Switcher (Birth vs Marriage vs Divorce)
     function switchMode(mode) {
       if (currentMode === mode) return;
       currentMode = mode;
@@ -1691,22 +1903,29 @@
       // Update switcher active tab states
       document.getElementById('btn-mode-birth').classList.toggle('active', mode === 'birth');
       document.getElementById('btn-mode-marriage').classList.toggle('active', mode === 'marriage');
+      document.getElementById('btn-mode-divorce').classList.toggle('active', mode === 'divorce');
 
       // Update form description text
       const descText = document.getElementById('form-desc-text');
       if (descText) {
-        descText.textContent = mode === 'birth' 
-          ? 'Translate Uzbek birth certificates to English' 
-          : 'Translate Uzbek marriage certificates to English';
+        if (mode === 'birth') {
+          descText.textContent = 'Translate Uzbek birth certificates to English';
+        } else if (mode === 'marriage') {
+          descText.textContent = 'Translate Uzbek marriage certificates to English';
+        } else {
+          descText.textContent = 'Translate Uzbek divorce certificates to English';
+        }
       }
 
       // Toggle form field containers
       document.getElementById('birth-fields-container').style.display = mode === 'birth' ? 'block' : 'none';
       document.getElementById('marriage-fields-container').style.display = mode === 'marriage' ? 'block' : 'none';
+      document.getElementById('divorce-fields-container').style.display = mode === 'divorce' ? 'block' : 'none';
 
       // Toggle preview sheets
       document.getElementById('preview-birth-sheet').style.display = mode === 'birth' ? 'block' : 'none';
       document.getElementById('preview-marriage-sheet').style.display = mode === 'marriage' ? 'block' : 'none';
+      document.getElementById('preview-divorce-sheet').style.display = mode === 'divorce' ? 'block' : 'none';
 
       // Reset active record ID
       document.getElementById('currentRecordId').value = "";
@@ -1896,6 +2115,22 @@
       certNumber: { previewId: 'preview-m-certNumber', format: val => val || '' }
     };
 
+    // Input elements and corresponding preview element IDs (Divorce certificate)
+    const divorceSyncMapping = {
+      husbandName: { previewId: 'preview-d-husbandName', inputId: 'divorceHusbandName', format: val => val ? val.toUpperCase() : '' },
+      wifeName: { previewId: 'preview-d-wifeName', inputId: 'divorceWifeName', format: val => val ? val.toUpperCase() : '' },
+      recordNumber: { previewId: 'preview-d-recordNumber', inputId: 'divorceRecordNumber', format: val => val || '' },
+      recordDate: { previewId: 'preview-d-recordDate', inputId: 'divorceRecordDate', format: val => formatDate(val) },
+      husbandNewSurname: { previewId: 'preview-d-husbandSurname', inputId: 'divorceHusbandSurname', format: val => val ? val.toUpperCase() : '' },
+      wifeNewSurname: { previewId: 'preview-d-wifeSurname', inputId: 'divorceWifeSurname', format: val => val ? val.toUpperCase() : '' },
+      regPlace: { previewId: 'preview-d-regPlace', inputId: 'divorceRegPlace', format: val => val || '' },
+      givenTo: { previewId: 'preview-d-givenTo', inputId: 'divorceGivenTo', format: val => val ? val.toUpperCase() : '' },
+      issueDate: { previewId: 'preview-d-issueDate', inputId: 'divorceIssueDate', format: val => formatDate(val) },
+      headName: { previewId: 'preview-d-headName', inputId: 'divorceHeadName', format: val => val || '' },
+      sealText: { previewId: 'preview-d-sealText', inputId: 'divorceSealText', format: val => val || '' },
+      certNumber: { previewId: 'preview-d-certNumber', inputId: 'divorceCertNumber', format: val => val || '' }
+    };
+
     // Initialize listeners for real-time reactivity
     function initReactivity() {
       // Birth reactivity
@@ -1994,17 +2229,68 @@
           updatePreviewField(key, value);
         });
       });
+
+      // Divorce reactivity
+      Object.keys(divorceSyncMapping).forEach(key => {
+        const inputId = divorceSyncMapping[key].inputId;
+        const input = document.getElementById(inputId);
+        if (!input) return;
+
+        input.addEventListener('input', (e) => {
+          let value = e.target.value;
+
+          // Auto-format Date fields: dd/mm/yyyy
+          if (inputId === 'divorceRecordDate' || inputId === 'divorceIssueDate') {
+            if (!e.inputType || !e.inputType.startsWith('delete')) {
+              let digits = value.replace(/\D/g, '');
+              if (digits.length > 8) digits = digits.slice(0, 8);
+              
+              let formatted = '';
+              if (digits.length > 0) {
+                formatted += digits.slice(0, 2);
+                if (digits.length === 2 && value.length === 2) formatted += '/';
+              }
+              if (digits.length > 2) {
+                formatted += '/' + digits.slice(2, 4);
+                if (digits.length === 4 && value.length === 5) formatted += '/';
+              }
+              if (digits.length > 4) {
+                formatted += '/' + digits.slice(4, 8);
+              }
+              e.target.value = formatted;
+              value = formatted;
+            }
+          }
+
+          // Case styling rules
+          if (inputId === 'divorceHusbandName' || inputId === 'divorceWifeName' || inputId === 'divorceHusbandSurname' || inputId === 'divorceWifeSurname' || inputId === 'divorceGivenTo') {
+            const cursorPosition = e.target.selectionStart;
+            e.target.value = value.toUpperCase();
+            e.target.setSelectionRange(cursorPosition, cursorPosition);
+            value = e.target.value;
+          }
+
+          validateField(key, value);
+          updatePreviewField(key, value);
+        });
+      });
     }
 
     // Dynamic field update routing
     function updatePreviewField(key, rawValue) {
-      const mode = (syncMapping[key]) ? 'birth' : 'marriage';
+      let mode = 'birth';
+      if (marriageSyncMapping[key]) mode = 'marriage';
+      if (divorceSyncMapping[key]) mode = 'divorce';
       updatePreviewFieldForced(mode, key, rawValue);
     }
 
     // Helper to sync preview sheet HTML
     function updatePreviewFieldForced(mode, inputId, rawValue) {
-      const config = (mode === 'birth') ? syncMapping[inputId] : marriageSyncMapping[inputId];
+      let config;
+      if (mode === 'birth') config = syncMapping[inputId];
+      else if (mode === 'marriage') config = marriageSyncMapping[inputId];
+      else config = divorceSyncMapping[inputId];
+
       if (!config) return;
       const previewEl = document.getElementById(config.previewId);
       if (!previewEl) return;
@@ -2036,7 +2322,7 @@
           } else {
             previewEl.innerHTML = `<span class="placeholder-text">${placeholderText}</span>`;
           }
-        } else {
+        } else if (mode === 'marriage') {
           switch (inputId) {
             case 'husbandName': placeholderText = "[HUSBAND CITIZEN NAME]"; break;
             case 'husbandDob': placeholderText = "[DATE OF BIRTH]"; break;
@@ -2063,9 +2349,35 @@
           } else {
             previewEl.innerHTML = `<span class="placeholder-text">${placeholderText}</span>`;
           }
+        } else {
+          // Divorce mode placeholders
+          switch (inputId) {
+            case 'husbandName': placeholderText = "[HUSBAND CITIZEN NAME]"; break;
+            case 'wifeName': placeholderText = "[WIFE CITIZEN NAME]"; break;
+            case 'recordNumber': placeholderText = "[RECORD NO]"; break;
+            case 'recordDate': placeholderText = "[RECORD DATE]"; break;
+            case 'husbandNewSurname': placeholderText = "[HUSBAND SURNAME]"; break;
+            case 'wifeNewSurname': placeholderText = "[WIFE SURNAME]"; break;
+            case 'regPlace': placeholderText = "[REGISTRATION PLACE]"; break;
+            case 'givenTo': placeholderText = "[RECIPIENT NAME]"; break;
+            case 'issueDate': placeholderText = "[DATE OF ISSUE]"; break;
+            case 'headName': placeholderText = "[HEAD NAME]"; break;
+            case 'sealText': placeholderText = "[OFFICIAL SEAL TEXT]"; break;
+            case 'certNumber': placeholderText = "[CERTIFICATE NO]"; break;
+            default: placeholderText = "______";
+          }
+          if (inputId === 'sealText') {
+            previewEl.innerHTML = `<span class="placeholder-text">[OFFICIAL SEAL TEXT]</span>`;
+          } else {
+            previewEl.innerHTML = `<span class="placeholder-text">${placeholderText}</span>`;
+          }
         }
       } else {
-        previewEl.textContent = formattedVal;
+        if (inputId === 'sealText') {
+          previewEl.textContent = formattedVal;
+        } else {
+          previewEl.textContent = formattedVal;
+        }
       }
 
       // Special handling: Birth year in words
@@ -2089,10 +2401,26 @@
       const marriageRequired = ['husbandName', 'husbandDob', 'husbandBirthPlace', 'husbandCitizenship', 'wifeName', 'wifeDob', 'wifeBirthPlace', 'wifeCitizenship', 'marriageDate', 'marriageDateWords', 'recordNumber', 'recordDate', 'regPlace', 'issueDate', 'chairmanName', 'certNumber'];
       const marriageDates = ['husbandDob', 'wifeDob', 'marriageDate', 'recordDate', 'issueDate'];
 
-      const activeRequired = (currentMode === 'birth') ? birthRequired : marriageRequired;
-      const activeDates = (currentMode === 'birth') ? birthDates : marriageDates;
+      const divorceRequired = ['husbandName', 'wifeName', 'recordNumber', 'recordDate', 'husbandNewSurname', 'wifeNewSurname', 'regPlace', 'givenTo', 'issueDate', 'headName', 'sealText', 'certNumber'];
+      const divorceDates = ['recordDate', 'issueDate'];
 
-      const mapping = (currentMode === 'birth') ? syncMapping : marriageSyncMapping;
+      let activeRequired, activeDates;
+      if (currentMode === 'birth') {
+        activeRequired = birthRequired;
+        activeDates = birthDates;
+      } else if (currentMode === 'marriage') {
+        activeRequired = marriageRequired;
+        activeDates = marriageDates;
+      } else {
+        activeRequired = divorceRequired;
+        activeDates = divorceDates;
+      }
+
+      let mapping;
+      if (currentMode === 'birth') mapping = syncMapping;
+      else if (currentMode === 'marriage') mapping = marriageSyncMapping;
+      else mapping = divorceSyncMapping;
+
       const inputId = (mapping[id] && mapping[id].inputId) ? mapping[id].inputId : id;
       const errEl = document.getElementById(`${inputId}Error`);
       if (!errEl) return true;
@@ -2104,7 +2432,7 @@
         errEl.style.display = matches ? 'none' : 'block';
         isValid = matches;
       } else if (activeDates.includes(id)) {
-        const isRequired = id === 'dob' || id === 'husbandDob' || id === 'wifeDob' || id === 'marriageDate';
+        const isRequired = id === 'dob' || id === 'husbandDob' || id === 'wifeDob' || id === 'marriageDate' || id === 'recordDate';
         const matches = dateRegex.test(trimmedVal);
         if (isRequired) {
           errEl.style.display = matches ? 'none' : 'block';
@@ -2121,7 +2449,7 @@
     // Validate entire form before saving
     function validateForm() {
       let isFormValid = true;
-      const mapping = (currentMode === 'birth') ? syncMapping : marriageSyncMapping;
+      const mapping = (currentMode === 'birth') ? syncMapping : (currentMode === 'marriage' ? marriageSyncMapping : divorceSyncMapping);
       Object.keys(mapping).forEach(key => {
         const inputId = mapping[key].inputId || key;
         const input = document.getElementById(inputId);
@@ -2281,8 +2609,27 @@
             createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
           );
         `;
+        const sqlDivorce = `
+          CREATE TABLE IF NOT EXISTS divorce_certificates (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            husbandName TEXT NOT NULL,
+            wifeName TEXT NOT NULL,
+            recordNumber TEXT NOT NULL,
+            recordDate TEXT NOT NULL,
+            husbandNewSurname TEXT NOT NULL,
+            wifeNewSurname TEXT NOT NULL,
+            regPlace TEXT NOT NULL,
+            givenTo TEXT NOT NULL,
+            issueDate TEXT NOT NULL,
+            headName TEXT NOT NULL,
+            sealText TEXT NOT NULL,
+            certNumber TEXT NOT NULL,
+            createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+          );
+        `;
         await runTursoQuery(sqlBirth);
         await runTursoQuery(sqlMarriage);
+        await runTursoQuery(sqlDivorce);
         setDbStatus('connected');
         console.log("Turso database schemas verified.");
         await loadHistoryFromTurso();
@@ -2389,7 +2736,7 @@
           showToast("Database offline. Exporting document without saving.", "warning");
           return 'db_error';
         }
-      } else {
+      } else if (currentMode === 'marriage') {
         // Marriage Mode Saving
         const formData = {
           husbandName: document.getElementById("husbandName").value.trim().toUpperCase(),
@@ -2483,6 +2830,86 @@
           showToast("Database offline. Exporting document without saving.", "warning");
           return 'db_error';
         }
+      } else {
+        // Divorce Mode Saving
+        const formData = {
+          husbandName: document.getElementById("divorceHusbandName").value.trim().toUpperCase(),
+          wifeName: document.getElementById("divorceWifeName").value.trim().toUpperCase(),
+          recordNumber: document.getElementById("divorceRecordNumber").value.trim(),
+          recordDate: document.getElementById("divorceRecordDate").value.trim(),
+          husbandNewSurname: document.getElementById("divorceHusbandSurname").value.trim().toUpperCase(),
+          wifeNewSurname: document.getElementById("divorceWifeSurname").value.trim().toUpperCase(),
+          regPlace: document.getElementById("divorceRegPlace").value.trim(),
+          givenTo: document.getElementById("divorceGivenTo").value.trim().toUpperCase(),
+          issueDate: document.getElementById("divorceIssueDate").value.trim(),
+          headName: document.getElementById("divorceHeadName").value.trim(),
+          sealText: document.getElementById("divorceSealText").value.trim(),
+          certNumber: document.getElementById("divorceCertNumber").value.trim()
+        };
+
+        if (!recordIdToSave) {
+          try {
+            let checkSql = "";
+            let checkParams = [];
+            if (formData.certNumber) {
+              checkSql = "SELECT id FROM divorce_certificates WHERE certNumber = ? LIMIT 1;";
+              checkParams = [formData.certNumber];
+            } else if (formData.husbandName && formData.wifeName && formData.recordNumber) {
+              checkSql = "SELECT id FROM divorce_certificates WHERE husbandName = ? AND wifeName = ? AND recordNumber = ? LIMIT 1;";
+              checkParams = [formData.husbandName, formData.wifeName, formData.recordNumber];
+            }
+            if (checkSql) {
+              const checkRes = await runTursoQuery(checkSql, checkParams);
+              if (checkRes.rows && checkRes.rows.length > 0) {
+                recordIdToSave = checkRes.rows[0].id;
+                document.getElementById("currentRecordId").value = recordIdToSave;
+              }
+            }
+          } catch (checkErr) {
+            console.error("Error checking for existing divorce record:", checkErr);
+          }
+        }
+
+        try {
+          if (recordIdToSave) {
+            const sql = `
+              UPDATE divorce_certificates SET 
+                husbandName = ?, wifeName = ?, recordNumber = ?, recordDate = ?,
+                husbandNewSurname = ?, wifeNewSurname = ?, regPlace = ?, givenTo = ?, 
+                issueDate = ?, headName = ?, sealText = ?, certNumber = ?
+              WHERE id = ?;
+            `;
+            await runTursoQuery(sql, [
+              formData.husbandName, formData.wifeName, formData.recordNumber, formData.recordDate,
+              formData.husbandNewSurname, formData.wifeNewSurname, formData.regPlace, formData.givenTo,
+              formData.issueDate, formData.headName, formData.sealText, formData.certNumber, parseInt(recordIdToSave, 10)
+            ]);
+            showToast(`Successfully updated divorce record for ${formData.husbandName} & ${formData.wifeName}`);
+          } else {
+            const sql = `
+              INSERT INTO divorce_certificates (
+                husbandName, wifeName, recordNumber, recordDate,
+                husbandNewSurname, wifeNewSurname, regPlace, givenTo,
+                issueDate, headName, sealText, certNumber
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+            `;
+            const result = await runTursoQuery(sql, [
+              formData.husbandName, formData.wifeName, formData.recordNumber, formData.recordDate,
+              formData.husbandNewSurname, formData.wifeNewSurname, formData.regPlace, formData.givenTo,
+              formData.issueDate, formData.headName, formData.sealText, formData.certNumber
+            ]);
+            if (result.lastInsertRowid) {
+              document.getElementById("currentRecordId").value = result.lastInsertRowid;
+            }
+            showToast(`Successfully saved divorce record for ${formData.husbandName} & ${formData.wifeName} to database`);
+          }
+          loadHistoryFromTurso();
+          return 'success';
+        } catch (err) {
+          console.error("Failed to save divorce record:", err);
+          showToast("Database offline. Exporting document without saving.", "warning");
+          return 'db_error';
+        }
       }
     }
 
@@ -2492,7 +2919,10 @@
       if (!container) return;
       
       try {
-        const table = (currentMode === 'birth') ? 'birth_certificates' : 'marriage_certificates';
+        let table = 'birth_certificates';
+        if (currentMode === 'marriage') table = 'marriage_certificates';
+        if (currentMode === 'divorce') table = 'divorce_certificates';
+
         const result = await runTursoQuery(`SELECT * FROM ${table} ORDER BY id DESC;`);
         savedRecords = result.rows;
         renderHistoryList(savedRecords);
@@ -2528,10 +2958,17 @@
             <span><strong>Entry:</strong> ${rec.entryNumber || 'N/A'}</span>
             <span><strong>ID:</strong> ${rec.idNumber || 'N/A'}</span>
           `;
-        } else {
+        } else if (currentMode === 'marriage') {
           titleText = `${rec.husbandName} & ${rec.wifeName}`;
           metaHTML = `
             <span><strong>Married:</strong> ${rec.marriageDate}</span>
+            <span><strong>Record:</strong> ${rec.recordNumber || 'N/A'}</span>
+            <span><strong>Cert:</strong> ${rec.certNumber || 'N/A'}</span>
+          `;
+        } else {
+          titleText = `${rec.husbandName} & ${rec.wifeName}`;
+          metaHTML = `
+            <span><strong>Divorced:</strong> ${rec.recordDate}</span>
             <span><strong>Record:</strong> ${rec.recordNumber || 'N/A'}</span>
             <span><strong>Cert:</strong> ${rec.certNumber || 'N/A'}</span>
           `;
@@ -2568,13 +3005,21 @@
           rec.entryNumber.toLowerCase().includes(query) ||
           rec.dob.includes(query)
         );
-      } else {
+      } else if (currentMode === 'marriage') {
         filtered = savedRecords.filter(rec => 
           rec.husbandName.toLowerCase().includes(query) || 
           rec.wifeName.toLowerCase().includes(query) ||
           rec.certNumber.toLowerCase().includes(query) ||
           rec.recordNumber.toLowerCase().includes(query) ||
           rec.marriageDate.includes(query)
+        );
+      } else {
+        filtered = savedRecords.filter(rec => 
+          rec.husbandName.toLowerCase().includes(query) || 
+          rec.wifeName.toLowerCase().includes(query) ||
+          rec.certNumber.toLowerCase().includes(query) ||
+          rec.recordNumber.toLowerCase().includes(query) ||
+          rec.recordDate.includes(query)
         );
       }
       renderHistoryList(filtered);
@@ -2587,7 +3032,10 @@
 
       document.getElementById("currentRecordId").value = record.id;
       
-      const mapping = (currentMode === 'birth') ? syncMapping : marriageSyncMapping;
+      let mapping;
+      if (currentMode === 'birth') mapping = syncMapping;
+      else if (currentMode === 'marriage') mapping = marriageSyncMapping;
+      else mapping = divorceSyncMapping;
 
       // Populate fields
       Object.keys(mapping).forEach(key => {
@@ -2603,7 +3051,7 @@
       });
       
       switchTab('form');
-      const displayName = (currentMode === 'birth') ? record.fullName : `${record.husbandName} & ${record.wifeName}`;
+      const displayName = `${record.husbandName || record.fullName} & ${record.wifeName || ''}`;
       showToast(`Loaded details for ${displayName}`);
     }
 
@@ -2620,7 +3068,10 @@
     // SQL query to remove record
     async function deleteRecordFromDb(id, name) {
       try {
-        const table = (currentMode === 'birth') ? 'birth_certificates' : 'marriage_certificates';
+        let table = 'birth_certificates';
+        if (currentMode === 'marriage') table = 'marriage_certificates';
+        if (currentMode === 'divorce') table = 'divorce_certificates';
+
         await runTursoQuery(`DELETE FROM ${table} WHERE id = ?;`, [id]);
         showToast(`Deleted record for ${name}`);
         
@@ -2662,7 +3113,7 @@
               xmlns='http://www.w3.org/TR/REC-html40'>
         <head>
           <title>Certificate Translation</title>
-          <!--[if gte mso 9]>
+          ${'<!--'}[if gte mso 9]>
           <xml>
             <w:WordDocument>
               <w:View>Print</w:View>
@@ -2670,7 +3121,7 @@
               <w:DoNotOptimizeForBrowser/>
             </w:WordDocument>
           </xml>
-          <![endif]-->
+          <![endif]${'-->'}
           <style>
             @page {
               size: A4 portrait;
@@ -2821,11 +3272,16 @@
       if (currentMode === 'birth') {
         name = document.getElementById('fullName').value.trim() || 'Birth';
         filename = `${name.replace(/\s+/g, '_')}_BirthCertificate_Translation.doc`;
-      } else {
+      } else if (currentMode === 'marriage') {
         const hName = document.getElementById('husbandName').value.trim() || 'Husband';
         const wName = document.getElementById('wifeName').value.trim() || 'Wife';
         name = `${hName}_${wName}`;
         filename = `${name.replace(/\s+/g, '_')}_MarriageCertificate_Translation.doc`;
+      } else {
+        const hName = document.getElementById('divorceHusbandName').value.trim() || 'Husband';
+        const wName = document.getElementById('divorceWifeName').value.trim() || 'Wife';
+        name = `${hName}_${wName}`;
+        filename = `${name.replace(/\s+/g, '_')}_DivorceCertificate_Translation.doc`;
       }
       
       const a = document.createElement('a');
@@ -2911,7 +3367,7 @@
         URL.revokeObjectURL(url);
         tempDiv.remove();
         showToast(`Exported ${record.fullName} to Word`);
-      } else {
+      } else if (currentMode === 'marriage') {
         // Marriage quick export
         const tempDiv = document.createElement('div');
         tempDiv.style.display = 'none';
@@ -2980,6 +3436,86 @@
         URL.revokeObjectURL(url);
         tempDiv.remove();
         showToast(`Exported ${record.husbandName} & ${record.wifeName} to Word`);
+      } else {
+        // Divorce quick export
+        const tempDiv = document.createElement('div');
+        tempDiv.style.display = 'none';
+        document.body.appendChild(tempDiv);
+
+        tempDiv.innerHTML = `
+          <div id="temp-cert-preview">
+            <div class="translation-header">Translated from Uzbek into English</div>
+            <div style="text-align: center; font-size: 10pt; font-weight: bold; margin-top: 15px; text-transform: uppercase;">-STATE EMBLEM OF THE REPUBLIC OF UZBEKISTAN-</div>
+            <div class="doc-title-container" style="margin-top: 20px; margin-bottom: 25px;">
+              <div class="doc-title" style="text-align: center; font-size: 14pt; font-weight: bold;">DIVORCE CERTIFICATE</div>
+            </div>
+
+            <table class="certificate-table" style="width: 100%; border-collapse: collapse; margin-bottom: 5px;">
+              <tr>
+                <td class="label" style="width: 25%; font-weight: bold;">Citizen:</td>
+                <td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; text-align: center; border-bottom: 1px solid #000;">\${record.husbandName}</td>
+              </tr>
+              <tr>
+                <td></td>
+                <td style="font-size: 9pt; text-align: center; padding-top: 2px;">(Full name)</td>
+              </tr>
+            </table>
+
+            <table class="certificate-table" style="width: 100%; border-collapse: collapse; margin-top: 5px; margin-bottom: 5px;">
+              <tr>
+                <td class="label" style="width: 25%; font-weight: bold;">and citizen:</td>
+                <td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; text-align: center; border-bottom: 1px solid #000;">\${record.wifeName}</td>
+              </tr>
+              <tr>
+                <td></td>
+                <td style="font-size: 9pt; text-align: center; padding-top: 2px;">(Full name)</td>
+              </tr>
+            </table>
+
+            <div class="registry-sentence" style="margin: 15px 0; text-align: left;">are dissolved their marriage.</div>
+            <div class="registry-sentence" style="margin: 15px 0; font-weight: bold; text-align: left;">
+              Record № <span style="border-bottom: 1px solid #000;">\${record.recordNumber}</span> was filed on <span style="border-bottom: 1px solid #000;">\${formatDate(record.recordDate)}</span>,
+            </div>
+            <div class="registry-sentence" style="margin: 20px 0; font-weight: bold; text-align: left;">Following surnames were given after the marriage dissolution:</div>
+
+            <table class="parents-table" style="width: 100%; border-collapse: collapse; margin-top: 5px;">
+              <tr><td class="label" style="width: 25%; font-weight: bold;">Husband:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">\${record.husbandNewSurname}</td></tr>
+              <tr><td class="label" style="font-weight: bold;">Wife:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">\${record.wifeNewSurname}</td></tr>
+            </table>
+
+            <table class="registry-office-table" style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+              <tr><td class="label" style="width: 35%; font-weight: bold;">Registration Place:</td><td class="value" style="font-style: italic; border-bottom: 1px solid #000;">\${record.regPlace}</td></tr>
+              <tr><td class="label" style="font-weight: bold;">The certificate is given to:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">\${record.givenTo}</td></tr>
+              <tr><td class="label" style="font-weight: bold;">Date of issue:</td><td class="value" style="font-style: italic; border-bottom: 1px solid #000;">\${formatDate(record.issueDate)}</td></tr>
+            </table>
+
+            <div class="signature-section" style="margin-top: 40px; clear: both;">
+              <div class="signature-officer" style="float: left; width: 45%; font-weight: bold;">Head of the Civil Registry office</div>
+              <div class="signature-signed" style="float: left; width: 20%; text-align: center; font-style: italic;">(signed)</div>
+              <div class="signature-name" style="float: right; width: 35%; text-align: right; font-weight: bold; border-bottom: 1px solid #000000;">\${record.headName}</div>
+            </div>
+
+            <div class="footer-section" style="margin-top: 30px; clear: both;">
+              <div class="official-seal" style="float: left; width: 45%; font-size: 8pt; font-style: italic; font-weight: normal; white-space: pre-line;">\${record.sealText}</div>
+              <div class="id-number-section" style="float: left; width: 35%; text-align: center; font-weight: bold; border: none; font-size: 11pt;">\${record.certNumber}</div>
+              <div class="footer-spacer" style="float: right; width: 20%;"></div>
+            </div>
+          </div>
+        `;
+
+        const htmlString = getWordDocumentHtml(tempDiv.querySelector('#temp-cert-preview'));
+        const blob = new Blob(['\ufeff' + htmlString], { type: 'application/msword' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        const name = `${record.husbandName.replace(/\s+/g, '_')}_${record.wifeName.replace(/\s+/g, '_')}`;
+        a.download = `${name}_DivorceCertificate_Translation.doc`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        tempDiv.remove();
+        showToast(`Exported ${record.husbandName} & ${record.wifeName} to Word`);
       }
     }
 
@@ -2996,11 +3532,16 @@
       if (currentMode === 'birth') {
         name = document.getElementById('fullName').value.trim() || 'Birth';
         filename = `${name.replace(/\s+/g, '_')}_BirthCertificate_Translation.pdf`;
-      } else {
+      } else if (currentMode === 'marriage') {
         const hName = document.getElementById('husbandName').value.trim() || 'Husband';
         const wName = document.getElementById('wifeName').value.trim() || 'Wife';
         name = `${hName}_${wName}`;
         filename = `${name.replace(/\s+/g, '_')}_MarriageCertificate_Translation.pdf`;
+      } else {
+        const hName = document.getElementById('divorceHusbandName').value.trim() || 'Husband';
+        const wName = document.getElementById('divorceWifeName').value.trim() || 'Wife';
+        name = `${hName}_${wName}`;
+        filename = `${name.replace(/\s+/g, '_')}_DivorceCertificate_Translation.pdf`;
       }
       
       const opt = {
@@ -3056,6 +3597,16 @@
         const errEl = document.getElementById(`${inputId}Error`);
         if (errEl) errEl.style.display = 'none';
       });
+
+      // Reset preview fields to placeholders for divorce mode
+      const divorceFields = ['husbandName', 'wifeName', 'recordNumber', 'recordDate', 'husbandNewSurname', 'wifeNewSurname', 'regPlace', 'givenTo', 'issueDate', 'headName', 'sealText', 'certNumber'];
+      divorceFields.forEach(key => {
+        updatePreviewFieldForced('divorce', key, "");
+        const mapping = divorceSyncMapping[key];
+        const inputId = mapping.inputId || key;
+        const errEl = document.getElementById(`${inputId}Error`);
+        if (errEl) errEl.style.display = 'none';
+      });
       
       showToast("Form cleared.");
     }
@@ -3071,7 +3622,7 @@
             validateField(id, MOCK_DATA[id]);
           }
         });
-      } else {
+      } else if (currentMode === 'marriage') {
         Object.keys(MARRIAGE_MOCK_DATA).forEach(key => {
           const mapping = marriageSyncMapping[key];
           const inputId = mapping.inputId || key;
@@ -3082,6 +3633,17 @@
             validateField(key, MARRIAGE_MOCK_DATA[key]);
           }
         });
+      } else {
+        Object.keys(DIVORCE_MOCK_DATA).forEach(key => {
+          const mapping = divorceSyncMapping[key];
+          const inputId = mapping.inputId || key;
+          const input = document.getElementById(inputId);
+          if (input) {
+            input.value = DIVORCE_MOCK_DATA[key];
+            updatePreviewField(key, DIVORCE_MOCK_DATA[key]);
+            validateField(key, DIVORCE_MOCK_DATA[key]);
+          }
+        });
       }
       document.getElementById("currentRecordId").value = "";
       showToast("Form loaded with realistic sample data.");
@@ -3089,7 +3651,7 @@
 
     // Setup Autocomplete suggestions from database history
     function initAutocomplete() {
-      const fields = ['region', 'city', 'regCity', 'headName', 'husbandBirthPlace', 'wifeBirthPlace', 'regPlace', 'chairmanName'];
+      const fields = ['region', 'city', 'regCity', 'headName', 'husbandBirthPlace', 'wifeBirthPlace', 'regPlace', 'chairmanName', 'divorceRegPlace', 'divorceHeadName'];
 
       fields.forEach(fieldId => {
         const input = document.getElementById(fieldId);
