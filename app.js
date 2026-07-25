@@ -10,61 +10,6 @@ const TURSO_TOKEN = "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOj
 let currentMode = 'birth'; // 'birth', 'marriage', or 'divorce'
 let savedRecords = []; // Global history memory
 
-// Mock Data for Quick Fill (Birth Mode)
-const MOCK_DATA = {
-  fullName: "ABDUVALIEV SARDORBEK ANVAR O'G'LI",
-  dob: "15/10/1997",
-  region: "Fergana",
-  city: "Rishton district",
-  entryNumber: "452",
-  registryDate: "17/10/1997",
-  fatherName: "ABDUVALIEV ANVARJON",
-  fatherNationality: "Uzbek",
-  motherName: "ABDUVALIEVA SOJIDAXON",
-  motherNationality: "Uzbek",
-  regCity: "Rishton",
-  issueDate: "17/10/1997",
-  headName: "YUSUPOVA M. A.",
-  idNumber: "I-FR No 0852963"
-};
-
-// Mock Data for Quick Fill (Marriage Mode)
-const MARRIAGE_MOCK_DATA = {
-  husbandName: "MAKHMUDOV NODIRBEK NOYIMJON UGLI",
-  husbandDob: "10/09/1995",
-  husbandBirthPlace: "Markhamat district, Andijan",
-  husbandCitizenship: "Uzbekistan",
-  wifeName: "ERGASHEVA NILUFAR RAKHMONALI KIZI",
-  wifeDob: "17/12/2001",
-  wifeBirthPlace: "Markhamat district, Andijan",
-  wifeCitizenship: "Uzbekistan",
-  marriageDate: "16/01/2025",
-  marriageDateWords: "Two thousand twenty five",
-  recordNumber: "2-1711-25-00050",
-  recordDate: "16/01/2025",
-  husbandNewSurname: "MAKHMUDOV",
-  wifeNewSurname: "MAKHMUDOVA",
-  regPlace: "Markhamat district",
-  issueDate: "16/01/2025",
-  chairmanName: "M.O.SOTVOLDIEVA",
-  certNumber: "N № 05842224"
-};
-
-// Mock Data for Quick Fill (Divorce Mode)
-const DIVORCE_MOCK_DATA = {
-  husbandName: "KIPCHAKOV DONIYOR TASHKENBOEVICH",
-  wifeName: "KIPCHAKOVA MALIKAKHON",
-  recordNumber: "147",
-  recordDate: "19/10/2018",
-  husbandNewSurname: "KIPCHAKOV",
-  wifeNewSurname: "JURAEVA",
-  regPlace: "Norin district Civil registry office",
-  givenTo: "JURAEVA MALIKAKHON",
-  issueDate: "04/12/2018",
-  headName: "M.ALIBOEVA",
-  sealText: "Seal: Ministry of Justice of the\nRepublic of Uzbekistan\nState Services of Namangan region\nDepartment of Registration of Civil\ncondition of Norin district",
-  certNumber: "I-NA № 0036626"
-};
 
 // ==========================================================================
 // 1. RECEPTIVE AND DYNAMIC DESIGN & VIEW CONTROLS
@@ -344,6 +289,55 @@ const divorceSyncMapping = {
   certNumber: { previewId: 'preview-d-certNumber', inputId: 'divorceCertNumber', format: val => val || '' }
 };
 
+let isSyncingFromPaper = false;
+
+function initPaperEditing() {
+  const allMappings = { ...syncMapping, ...marriageSyncMapping, ...divorceSyncMapping };
+  
+  Object.keys(allMappings).forEach(key => {
+    const config = allMappings[key];
+    const previewEl = document.getElementById(config.previewId);
+    const inputId = config.inputId || key;
+    const inputEl = document.getElementById(inputId);
+    
+    if (!previewEl || !inputEl) return;
+    
+    // Make the element editable
+    previewEl.setAttribute('contenteditable', 'true');
+    previewEl.style.outline = 'none'; // prevent ugly focus ring on paper
+    
+    // Listen to changes on the paper
+    previewEl.addEventListener('input', (e) => {
+      isSyncingFromPaper = true;
+      let val = e.target.textContent;
+      
+      // Crude check: if it looks like a placeholder, don't sync it as real value
+      if (val.includes('[')) val = ''; 
+      
+      inputEl.value = val;
+      
+      // Dispatch input event on the real input to trigger validation and auto-formatting
+      inputEl.dispatchEvent(new Event('input'));
+      
+      isSyncingFromPaper = false;
+    });
+
+    // When focused, if it has a placeholder, clear it so they can type cleanly
+    previewEl.addEventListener('focus', (e) => {
+      if (previewEl.querySelector('.placeholder-text')) {
+        previewEl.innerHTML = '';
+      }
+    });
+
+    // When blurred, sync the formatted value back to the paper to ensure it stays clean
+    previewEl.addEventListener('blur', (e) => {
+      // Re-trigger updatePreviewField with the finalized value to restore placeholders if empty
+      // and apply any styling like capitalization or date slashes.
+      updatePreviewField(key, inputEl.value);
+    });
+  });
+}
+
 // Initialize listeners for real-time reactivity
 function initReactivity() {
   // Birth reactivity
@@ -394,7 +388,7 @@ function initReactivity() {
       }
 
       validateField(key, value);
-      updatePreviewField(key, value);
+      if (!isSyncingFromPaper) updatePreviewField(key, value);
     });
   });
 
@@ -439,7 +433,7 @@ function initReactivity() {
       }
 
       validateField(key, value);
-      updatePreviewField(key, value);
+      if (!isSyncingFromPaper) updatePreviewField(key, value);
     });
   });
 
@@ -484,9 +478,12 @@ function initReactivity() {
       }
 
       validateField(key, value);
-      updatePreviewField(key, value);
+      if (!isSyncingFromPaper) updatePreviewField(key, value);
     });
   });
+
+  // Setup click-to-edit on the paper itself
+  initPaperEditing();
 }
 
 // Dynamic field update routing
@@ -1824,43 +1821,6 @@ function clearForm() {
   showToast("Form cleared.");
 }
 
-// Auto-fills form values with sample Uzbek data to facilitate testing
-function fillMockData() {
-  if (currentMode === 'birth') {
-    Object.keys(MOCK_DATA).forEach(id => {
-      const input = document.getElementById(id);
-      if (input) {
-        input.value = MOCK_DATA[id];
-        updatePreviewField(id, MOCK_DATA[id]);
-        validateField(id, MOCK_DATA[id]);
-      }
-    });
-  } else if (currentMode === 'marriage') {
-    Object.keys(MARRIAGE_MOCK_DATA).forEach(key => {
-      const mapping = marriageSyncMapping[key];
-      const inputId = mapping.inputId || key;
-      const input = document.getElementById(inputId);
-      if (input) {
-        input.value = MARRIAGE_MOCK_DATA[key];
-        updatePreviewField(key, MARRIAGE_MOCK_DATA[key]);
-        validateField(key, MARRIAGE_MOCK_DATA[key]);
-      }
-    });
-  } else {
-    Object.keys(DIVORCE_MOCK_DATA).forEach(key => {
-      const mapping = divorceSyncMapping[key];
-      const inputId = mapping.inputId || key;
-      const input = document.getElementById(inputId);
-      if (input) {
-        input.value = DIVORCE_MOCK_DATA[key];
-        updatePreviewField(key, DIVORCE_MOCK_DATA[key]);
-        validateField(key, DIVORCE_MOCK_DATA[key]);
-      }
-    });
-  }
-  document.getElementById("currentRecordId").value = "";
-  showToast("Form loaded with realistic sample data.");
-}
 
 // Setup Autocomplete suggestions from database history
 function initAutocomplete() {
