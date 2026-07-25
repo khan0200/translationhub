@@ -389,14 +389,30 @@ textarea.form-control {
   border-color: #10b981;
 }
 
+/* Clear form top button */
+.btn-clear-form-top {
+  padding: 5px 11px;
+  font-size: 11px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-clear-form-top:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: #ef4444;
+}
+
 /* Sidebar action buttons */
 .sidebar-actions {
   padding: 16px 20px;
   background: rgba(0,0,0,0.18);
   border-top: 1px solid var(--panel-border);
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
   flex-shrink: 0;
 }
 
@@ -992,7 +1008,7 @@ textarea.form-control {
 
   .brand-title { font-size: 13px; }
 
-  .sidebar-actions { grid-template-columns: 1fr 1fr; gap: 6px; }
+  .sidebar-actions { gap: 6px; }
 
   .btn-action-primary,
   .btn-action-word,

@@ -102,8 +102,8 @@
           <span id="form-desc-text" style="font-size: 13px; font-weight: 500; color: var(--text-muted);">
             Translate Uzbek birth certificates to English
           </span>
-          <button class="btn-quick-fill" onclick="fillMockData()">
-            <i class="bi bi-lightning-charge-fill me-1"></i>Fill Mock Data
+          <button class="btn-clear-form-top" type="button" onclick="clearForm()">
+            <i class="bi bi-trash3-fill me-1"></i>Clear Form
           </button>
         </div>
 
@@ -416,18 +416,29 @@
            ACTION BUTTONS (Sticky Bottom)
            ---------------------------------------------------------------- -->
       <div class="sidebar-actions">
-        <button class="btn-action-primary" onclick="exportPDF()">
-          <i class="bi bi-file-earmark-pdf-fill"></i> Export PDF
-        </button>
-        <button class="btn-action-word" onclick="exportWord()">
-          <i class="bi bi-file-earmark-word-fill"></i> Export Word
-        </button>
-        <button class="btn-action-secondary" onclick="printDocument()">
-          <i class="bi bi-printer-fill"></i> Print Document
-        </button>
-        <button class="btn-action-danger" onclick="clearForm()">
-          <i class="bi bi-trash3-fill"></i> Clear Form
-        </button>
+        <div class="dropdown w-100">
+          <button class="btn-action-primary dropdown-toggle w-100" type="button" id="exportDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-box-arrow-up-right me-1"></i> Export / Print
+          </button>
+          <ul class="dropdown-menu dropdown-menu-dark w-100" aria-labelledby="exportDropdown" style="background: var(--panel-bg); border: 1px solid var(--panel-border); backdrop-filter: blur(12px);">
+            <li>
+              <button class="dropdown-item py-2 d-flex align-items-center gap-2" type="button" onclick="exportPDF()">
+                <i class="bi bi-file-earmark-pdf-fill text-danger"></i> Export PDF
+              </button>
+            </li>
+            <li>
+              <button class="dropdown-item py-2 d-flex align-items-center gap-2" type="button" onclick="exportWord()">
+                <i class="bi bi-file-earmark-word-fill text-primary"></i> Export WORD
+              </button>
+            </li>
+            <li><hr class="dropdown-divider" style="background-color: var(--panel-border);"></li>
+            <li>
+              <button class="dropdown-item py-2 d-flex align-items-center gap-2" type="button" onclick="printDocument()">
+                <i class="bi bi-printer-fill text-secondary"></i> Print document
+              </button>
+            </li>
+          </ul>
+        </div>
       </div>
 
     </div><!-- /sidebar -->
