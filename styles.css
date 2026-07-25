@@ -1039,3 +1039,27 @@ textarea.form-control {
   .preview-canvas { padding: 10px 8px; }
 }
 
+/* --------------------------------------------------------------------------
+   13. DROPDOWN MENU THEME OVERRIDES
+   -------------------------------------------------------------------------- */
+.dropdown-menu {
+  background: var(--panel-bg) !important;
+  border: 1px solid var(--panel-border) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.dropdown-item {
+  color: var(--text-main) !important;
+  transition: var(--transition);
+}
+
+.dropdown-item:hover, .dropdown-item:focus {
+  background: rgba(128, 128, 128, 0.1) !important;
+  color: var(--accent) !important;
+}
+
+.dropdown-divider {
+  border-top: 1px solid var(--panel-border) !important;
+  opacity: 1 !important;
+}
