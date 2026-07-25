@@ -414,7 +414,6 @@ textarea.form-control {
   background: var(--accent);
   color: white;
   box-shadow: 0 4px 12px var(--accent-glow);
-  grid-column: span 2;
 }
 
 .btn-action-primary:hover {
