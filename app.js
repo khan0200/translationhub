@@ -449,6 +449,15 @@ function initReactivity() {
         value = e.target.value;
       }
 
+      // Auto-generate Marriage Date in Words
+      if (inputId === 'marriageDate') {
+        const wordsInput = document.getElementById('marriageDateWords');
+        if (wordsInput) {
+          wordsInput.value = getWrittenYear(value);
+          if (!isSyncingFromPaper) updatePreviewField('marriageDateWords', wordsInput.value);
+        }
+      }
+
       validateField(key, value);
       if (!isSyncingFromPaper) updatePreviewField(key, value);
     });
