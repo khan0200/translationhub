@@ -1,0 +1,941 @@
+/* ==========================================================================
+   styles.css — Translation Hub Custom Styles
+   Bootstrap 5 is used for layout/components; this file handles
+   the design system, certificate preview, and print overrides.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. DESIGN TOKENS (CSS Custom Properties)
+   -------------------------------------------------------------------------- */
+:root {
+  --bg-gradient: radial-gradient(circle at 10% 20%, #151726 0%, #0b0c13 90%);
+  --panel-bg: rgba(20, 22, 38, 0.75);
+  --panel-border: rgba(255, 255, 255, 0.08);
+  --text-main: #f3f4f6;
+  --text-muted: #9ca3af;
+  --accent: #2563eb;
+  --accent-hover: #3b82f6;
+  --accent-glow: rgba(37, 99, 235, 0.35);
+  --success: #10b981;
+  --success-glow: rgba(16, 185, 129, 0.35);
+  --error: #ef4444;
+  --input-bg: rgba(11, 12, 19, 0.75);
+  --input-border: rgba(255, 255, 255, 0.12);
+  --card-bg: rgba(255, 255, 255, 0.025);
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.2);
+  --shadow-lg: 0 20px 60px rgba(0,0,0,0.45);
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="light"] {
+  --bg-gradient: radial-gradient(circle at 10% 20%, #f3f4f6 0%, #e5e7eb 90%);
+  --panel-bg: rgba(255, 255, 255, 0.85);
+  --panel-border: rgba(0, 0, 0, 0.08);
+  --text-main: #1f2937;
+  --text-muted: #6b7280;
+  --accent: #1d4ed8;
+  --accent-hover: #2563eb;
+  --accent-glow: rgba(29, 78, 216, 0.2);
+  --success: #059669;
+  --success-glow: rgba(5, 150, 105, 0.2);
+  --error: #dc2626;
+  --input-bg: rgba(255, 255, 255, 0.95);
+  --input-border: rgba(0, 0, 0, 0.15);
+  --card-bg: rgba(0, 0, 0, 0.02);
+  --shadow-lg: 0 20px 40px rgba(0,0,0,0.12);
+}
+
+/* --------------------------------------------------------------------------
+   2. BASE RESET & BODY
+   -------------------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: var(--bg-gradient);
+  color: var(--text-main);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  transition: background 0.3s ease;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+
+/* --------------------------------------------------------------------------
+   3. HEADER
+   -------------------------------------------------------------------------- */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  background: var(--panel-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--panel-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.brand-logo {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--accent), #10b981);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 18px;
+  color: white;
+  box-shadow: 0 0 16px var(--accent-glow);
+  flex-shrink: 0;
+}
+
+.brand-title {
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: -0.4px;
+  color: var(--text-main);
+  line-height: 1.2;
+}
+
+.brand-subtitle {
+  font-size: 10.5px;
+  color: var(--text-muted);
+  line-height: 1.2;
+}
+
+/* Document type switcher pill */
+.doc-type-switcher {
+  display: flex;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--panel-border);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+}
+
+[data-theme="light"] .doc-type-switcher {
+  background: rgba(0,0,0,0.05);
+}
+
+.switcher-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.switcher-btn:hover { color: var(--text-main); }
+
+.switcher-btn.active {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 2px 8px var(--accent-glow);
+}
+
+/* DB status badge */
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 11px;
+  border-radius: 20px;
+  background: rgba(0,0,0,0.2);
+  border: 1px solid var(--panel-border);
+  color: var(--text-main);
+  cursor: default;
+  white-space: nowrap;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  flex-shrink: 0;
+}
+
+.status-dot.connecting { background: #f59e0b; box-shadow: 0 0 6px #f59e0b; animation: pulse 1.5s infinite; }
+.status-dot.connected  { background: var(--success); box-shadow: 0 0 6px var(--success-glow); }
+.status-dot.error      { background: var(--error); box-shadow: 0 0 6px var(--error); }
+
+@keyframes pulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+/* Zoom control */
+.zoom-control { display: flex; align-items: center; gap: 8px; }
+
+.zoom-slider {
+  width: 90px;
+  height: 4px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--panel-border);
+  border-radius: 2px;
+  outline: none;
+}
+
+.zoom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--accent);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.zoom-slider::-webkit-slider-thumb:hover { transform: scale(1.25); }
+
+.zoom-value {
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 34px;
+  color: var(--text-main);
+}
+
+/* Theme toggle */
+.theme-toggle-btn {
+  background: none;
+  border: 1px solid var(--panel-border);
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-main);
+  transition: var(--transition);
+  flex-shrink: 0;
+}
+
+.theme-toggle-btn:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: var(--accent);
+}
+
+/* --------------------------------------------------------------------------
+   4. MAIN DASHBOARD LAYOUT
+   -------------------------------------------------------------------------- */
+.dashboard {
+  display: grid;
+  grid-template-columns: 440px 1fr;
+  flex-grow: 1;
+  height: calc(100vh - 57px);
+  overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   5. SIDEBAR
+   -------------------------------------------------------------------------- */
+.sidebar {
+  background: var(--panel-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-right: 1px solid var(--panel-border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.tab-header {
+  display: flex;
+  border-bottom: 1px solid var(--panel-border);
+  background: rgba(0,0,0,0.12);
+  flex-shrink: 0;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 13px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+}
+
+.tab-btn.active { color: var(--text-main); }
+
+.tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 18%;
+  width: 64%;
+  height: 3px;
+  background: var(--accent);
+  border-radius: 3px 3px 0 0;
+  box-shadow: 0 -2px 10px var(--accent-glow);
+}
+
+.tab-content {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Form section headings */
+.form-group-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--accent);
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-group-title::after {
+  content: '';
+  flex-grow: 1;
+  height: 1px;
+  background: var(--panel-border);
+}
+
+.form-card {
+  background: var(--card-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.input-field-wrapper {
+  margin-bottom: 14px;
+  position: relative;
+}
+
+.input-field-wrapper:last-child { margin-bottom: 0; }
+
+/* Override Bootstrap form-label with our design */
+.form-label {
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  color: var(--text-muted) !important;
+  margin-bottom: 5px !important;
+}
+
+/* Override Bootstrap form-control */
+.form-control, .form-control:focus {
+  background: var(--input-bg) !important;
+  border: 1px solid var(--input-border) !important;
+  border-radius: 8px !important;
+  padding: 9px 13px !important;
+  font-size: 13px !important;
+  color: var(--text-main) !important;
+  font-family: 'Plus Jakarta Sans', sans-serif !important;
+  transition: var(--transition) !important;
+  box-shadow: none !important;
+}
+
+.form-control:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px var(--accent-glow) !important;
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.error-msg {
+  color: var(--error);
+  font-size: 10.5px;
+  margin-top: 3px;
+  display: none;
+}
+
+/* Quick fill button */
+.btn-quick-fill {
+  padding: 5px 11px;
+  font-size: 11px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  background: rgba(16,185,129,0.1);
+  color: #10b981;
+  border: 1px solid rgba(16,185,129,0.25);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-quick-fill:hover {
+  background: rgba(16,185,129,0.25);
+  border-color: #10b981;
+}
+
+/* Sidebar action buttons */
+.sidebar-actions {
+  padding: 16px 20px;
+  background: rgba(0,0,0,0.18);
+  border-top: 1px solid var(--panel-border);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* Override Bootstrap buttons */
+.btn-action-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  border: none;
+  transition: var(--transition);
+  background: var(--accent);
+  color: white;
+  box-shadow: 0 4px 12px var(--accent-glow);
+  grid-column: span 2;
+}
+
+.btn-action-primary:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px var(--accent-glow);
+}
+
+.btn-action-secondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+  background: rgba(255,255,255,0.05);
+  color: var(--text-main);
+  border: 1px solid var(--panel-border);
+  grid-column: span 2;
+}
+
+.btn-action-secondary:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.btn-action-word {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+  background: rgba(255,255,255,0.05);
+  color: var(--text-main);
+  border: 1px solid var(--panel-border);
+}
+
+.btn-action-word:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+.btn-action-danger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+  background: transparent;
+  color: var(--error);
+  border: 1px solid rgba(239,68,68,0.3);
+  grid-column: span 2;
+}
+
+.btn-action-danger:hover {
+  background: var(--error);
+  color: white;
+}
+
+/* --------------------------------------------------------------------------
+   6. HISTORY / SAVED RECORDS
+   -------------------------------------------------------------------------- */
+.history-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  height: 100%;
+}
+
+.search-wrapper { position: relative; }
+
+.search-icon {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+  width: 15px;
+  height: 15px;
+}
+
+.search-input {
+  width: 100%;
+  background: var(--input-bg) !important;
+  border: 1px solid var(--input-border) !important;
+  border-radius: 8px !important;
+  padding: 9px 13px 9px 34px !important;
+  font-size: 13px !important;
+  color: var(--text-main) !important;
+}
+
+.records-list {
+  flex-grow: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.record-card {
+  background: var(--card-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 10px;
+  padding: 13px;
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.record-card:hover {
+  border-color: var(--accent);
+  background: rgba(255,255,255,0.035);
+  transform: translateX(2px);
+}
+
+.record-name {
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 4px;
+  color: var(--text-main);
+  word-break: break-word;
+}
+
+.record-meta {
+  font-size: 10.5px;
+  color: var(--text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.record-actions {
+  margin-top: 9px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.record-btn {
+  padding: 3px 8px;
+  font-size: 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+  border-radius: 4px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--panel-border);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.record-btn:hover {
+  color: var(--text-main);
+  background: rgba(255,255,255,0.1);
+}
+
+.record-btn-delete {
+  color: var(--error);
+  border-color: rgba(239,68,68,0.2);
+  background: rgba(239,68,68,0.05);
+}
+
+.record-btn-delete:hover {
+  background: var(--error);
+  color: white;
+  border-color: var(--error);
+}
+
+.empty-history {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+/* --------------------------------------------------------------------------
+   7. PREVIEW PANE (RIGHT SIDE — A4 CANVAS)
+   -------------------------------------------------------------------------- */
+.preview-pane {
+  background: rgba(0,0,0,0.22);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.preview-canvas {
+  flex-grow: 1;
+  overflow: auto;
+  padding: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* --------------------------------------------------------------------------
+   8. CERTIFICATE SHEET (A4 DOCUMENT PREVIEW)
+   -------------------------------------------------------------------------- */
+.certificate-sheet {
+  background: white;
+  color: #111;
+  width: 210mm;
+  min-height: 297mm;
+  padding: 8mm 15mm 20mm 20mm;
+  box-shadow: var(--shadow-lg);
+  transform-origin: top center;
+  transition: transform 0.1s ease;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.6;
+  font-size: 12pt;
+  box-sizing: border-box;
+}
+
+.certificate-sheet,
+.certificate-sheet * {
+  font-family: 'Times New Roman', Times, serif !important;
+}
+
+.translation-header {
+  text-align: right;
+  font-size: 10pt;
+  font-style: italic;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  font-weight: bold;
+  border-bottom: 1px solid #111;
+  padding-bottom: 4px;
+}
+
+.doc-title-container {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.doc-country {
+  font-size: 14pt;
+  font-weight: bold;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.doc-title {
+  font-size: 14pt;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.certificate-table, .parents-table, .registry-office-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+}
+
+.certificate-table td, .parents-table td, .registry-office-table td {
+  padding: 5px 0;
+  vertical-align: top;
+}
+
+.label {
+  width: 35%;
+  font-weight: bold;
+  padding-right: 10px;
+}
+
+.value {
+  width: 65%;
+  border-bottom: 1px dotted #888;
+}
+
+.font-bold { font-weight: bold; }
+.value.uppercase { text-transform: uppercase; }
+
+.sub-grid { display: flex; flex-direction: column; gap: 4px; }
+.sub-grid-item { display: grid; grid-template-columns: 120px 1fr; }
+
+.registry-sentence {
+  margin: 24px 0;
+  text-align: left;
+  text-indent: 30px;
+  line-height: 1.6;
+  font-size: 11pt;
+}
+
+.registry-sentence span {
+  border-bottom: 1px dotted #888;
+  padding: 0 4px;
+}
+
+.section-title {
+  font-weight: bold;
+  font-size: 12pt;
+  margin-top: 14px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 2px;
+  letter-spacing: 0.5px;
+}
+
+.signature-section {
+  margin-top: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.signature-officer { font-weight: bold; width: 50%; }
+.signature-signed  { width: 20%; text-align: center; font-style: italic; }
+.signature-name    { width: 30%; text-align: right; font-weight: bold; border-bottom: 1px dotted #888; }
+
+.footer-section {
+  margin-top: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  clear: both;
+}
+
+.official-seal { width: 35%; font-weight: bold; text-align: left; }
+
+.id-number-section {
+  font-weight: bold;
+  font-size: 12pt;
+  border: 1px solid #111;
+  padding: 6px 12px;
+  display: inline-block;
+  text-align: center;
+}
+
+.footer-spacer { width: 35%; }
+
+.placeholder-text {
+  color: #aaa;
+  font-style: italic;
+  font-size: 11px;
+}
+
+/* --------------------------------------------------------------------------
+   9. PDF EXPORT OVERRIDES
+   -------------------------------------------------------------------------- */
+.certificate-sheet.pdf-exporting {
+  box-shadow: none;
+  transform: scale(1) !important;
+  margin: 0 !important;
+  min-height: auto !important;
+  height: auto !important;
+}
+
+.certificate-sheet.pdf-exporting .value,
+.certificate-sheet.pdf-exporting .registry-sentence span,
+.certificate-sheet.pdf-exporting .signature-name {
+  border-bottom-style: solid;
+  border-bottom-color: #000;
+}
+
+.certificate-sheet.pdf-exporting .placeholder-text { visibility: hidden; }
+
+/* --------------------------------------------------------------------------
+   10. BOOTSTRAP MODAL THEME OVERRIDE
+   -------------------------------------------------------------------------- */
+.modal-content {
+  background: var(--panel-bg) !important;
+  border: 1px solid var(--panel-border) !important;
+  border-radius: 16px !important;
+  color: var(--text-main) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--panel-border) !important;
+  padding: 18px 22px 14px !important;
+}
+
+.modal-title {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  color: var(--text-main) !important;
+}
+
+.modal-body {
+  font-size: 13.5px !important;
+  color: var(--text-muted) !important;
+  line-height: 1.5 !important;
+  padding: 16px 22px !important;
+}
+
+.modal-footer {
+  border-top: 1px solid var(--panel-border) !important;
+  padding: 14px 22px !important;
+}
+
+.btn-close {
+  filter: invert(1) grayscale(1) brightness(2) !important;
+}
+
+[data-theme="light"] .btn-close { filter: none !important; }
+
+/* Delete confirm button */
+#modal-confirm-btn {
+  background: var(--error) !important;
+  border-color: var(--error) !important;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+}
+
+#modal-cancel-btn {
+  background: rgba(255,255,255,0.06) !important;
+  border: 1px solid var(--panel-border) !important;
+  color: var(--text-main) !important;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   11. BOOTSTRAP TOAST THEME OVERRIDE
+   -------------------------------------------------------------------------- */
+.toast-container { z-index: 1060; }
+
+.app-toast {
+  background: #1a1f35 !important;
+  color: white !important;
+  border-radius: 10px !important;
+  border: none !important;
+  border-left: 4px solid var(--accent) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4) !important;
+  min-width: 280px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+[data-theme="light"] .app-toast { background: #fff !important; color: #1f2937 !important; }
+
+.app-toast.success { border-left-color: var(--success) !important; }
+.app-toast.error   { border-left-color: var(--error) !important; }
+.app-toast.warning { border-left-color: #f59e0b !important; }
+
+.toast-body { font-size: 13.5px; font-weight: 500; padding: 12px 16px; }
+
+/* --------------------------------------------------------------------------
+   12. AUTOCOMPLETE DROPDOWN
+   -------------------------------------------------------------------------- */
+.autocomplete-suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  border-radius: 8px;
+  max-height: 150px;
+  overflow-y: auto;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  margin-top: 3px;
+  display: none;
+  background: #1e1e2e;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+[data-theme="light"] .autocomplete-suggestions {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+
+.autocomplete-suggestion {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: var(--text-main);
+  transition: background 0.15s ease;
+}
+
+.autocomplete-suggestion:hover {
+  background: rgba(37,99,235,0.15);
+  color: var(--accent);
+}
+
+/* --------------------------------------------------------------------------
+   13. PRINT OVERRIDES
+   -------------------------------------------------------------------------- */
+@media print {
+  body { background: white !important; color: black !important; }
+
+  .no-print, header, .sidebar, .sidebar-actions,
+  .toast-container, .modal { display: none !important; }
+
+  .dashboard { display: block !important; height: auto !important; overflow: visible !important; }
+  .preview-pane { background: none !important; height: auto !important; overflow: visible !important; }
+  .preview-canvas { padding: 0 !important; overflow: visible !important; }
+
+  .certificate-sheet {
+    box-shadow: none !important;
+    transform: none !important;
+    margin: 0 !important;
+    width: 100% !important;
+    min-height: auto !important;
+    padding: 0 !important;
+  }
+
+  .certificate-sheet .value,
+  .certificate-sheet .registry-sentence span,
+  .certificate-sheet .signature-name { border-bottom-style: solid; border-bottom-color: #000; }
+  .certificate-sheet .placeholder-text { display: none !important; }
+
+  @page { size: A4 portrait; margin: 8mm 15mm 15mm 20mm; }
+}

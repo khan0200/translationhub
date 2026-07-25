@@ -3,1442 +3,454 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Birth Certificate Translation Hub</title>
+  <title>Translation Hub — Uzbekistan Certificate Translation</title>
+  <meta name="description" content="Professional translation tool for Uzbekistan birth, marriage and divorce certificates to English. Supports PDF, Word and print export.">
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,500&display=swap" rel="stylesheet">
-  <!-- html2pdf.js CDN -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+  <!-- App Styles -->
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- html2pdf.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-  <style>
-    /* ==========================================================================
-       1. DESIGN SYSTEM & MODERN STYLING (GLASSMORPHISM / THEME CONFIG)
-       ========================================================================== */
-    :root {
-      --bg-gradient: radial-gradient(circle at 10% 20%, #151726 0%, #0b0c13 90%);
-      --panel-bg: rgba(20, 22, 38, 0.65);
-      --panel-border: rgba(255, 255, 255, 0.08);
-      --text-main: #f3f4f6;
-      --text-muted: #9ca3af;
-      --accent: #2563eb;
-      --accent-hover: #3b82f6;
-      --accent-glow: rgba(37, 99, 235, 0.4);
-      --success: #10b981;
-      --success-glow: rgba(16, 185, 129, 0.4);
-      --error: #ef4444;
-      --input-bg: rgba(11, 12, 19, 0.7);
-      --input-border: rgba(255, 255, 255, 0.12);
-      --card-bg: rgba(255, 255, 255, 0.02);
-      
-      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
-      --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.4);
-      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    [data-theme="light"] {
-      --bg-gradient: radial-gradient(circle at 10% 20%, #f3f4f6 0%, #e5e7eb 90%);
-      --panel-bg: rgba(255, 255, 255, 0.8);
-      --panel-border: rgba(0, 0, 0, 0.08);
-      --text-main: #1f2937;
-      --text-muted: #6b7280;
-      --accent: #1d4ed8;
-      --accent-hover: #2563eb;
-      --accent-glow: rgba(29, 78, 216, 0.2);
-      --success: #059669;
-      --success-glow: rgba(5, 150, 105, 0.2);
-      --error: #dc2626;
-      --input-bg: rgba(255, 255, 255, 0.9);
-      --input-border: rgba(0, 0, 0, 0.15);
-      --card-bg: rgba(0, 0, 0, 0.02);
-      --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.15);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-
-    body {
-      background: var(--bg-gradient);
-      color: var(--text-main);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      overflow-x: hidden;
-      transition: background 0.3s ease;
-    }
-
-    /* Scrollbars */
-    ::-webkit-scrollbar {
-      width: 8px;
-      height: 8px;
-    }
-    ::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.1);
-    }
-    ::-webkit-scrollbar-thumb {
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: 4px;
-    }
-    [data-theme="light"] ::-webkit-scrollbar-thumb {
-      background: rgba(0, 0, 0, 0.2);
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: rgba(255, 255, 255, 0.3);
-    }
-
-    /* ==========================================================================
-       2. HEADER SECTION
-       ========================================================================== */
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 32px;
-      background: var(--panel-bg);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--panel-border);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: var(--shadow-sm);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand-logo {
-      width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, var(--accent), #10b981);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 800;
-      font-size: 20px;
-      color: white;
-      box-shadow: 0 0 15px var(--accent-glow);
-    }
-
-    .brand-title {
-      font-weight: 700;
-      font-size: 18px;
-      letter-spacing: -0.5px;
-    }
-
-    .brand-subtitle {
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-
-    .status-badge {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 13px;
-      font-weight: 500;
-      padding: 6px 12px;
-      border-radius: 20px;
-      background: rgba(0, 0, 0, 0.2);
-      border: 1px solid var(--panel-border);
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--text-muted);
-      position: relative;
-    }
-
-    .status-dot.connecting {
-      background: #f59e0b;
-      box-shadow: 0 0 8px #f59e0b;
-      animation: pulse 1.5s infinite;
-    }
-
-    .status-dot.connected {
-      background: var(--success);
-      box-shadow: 0 0 8px var(--success-glow);
-    }
-
-    .status-dot.error {
-      background: var(--error);
-      box-shadow: 0 0 8px var(--error);
-    }
-
-    @keyframes pulse {
-      0% { opacity: 0.3; }
-      50% { opacity: 1; }
-      100% { opacity: 0.3; }
-    }
-
-    .theme-toggle-btn {
-      background: none;
-      border: 1px solid var(--panel-border);
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      color: var(--text-main);
-      transition: var(--transition);
-    }
-
-    .theme-toggle-btn:hover {
-      background: rgba(255, 255, 255, 0.05);
-      border-color: var(--accent);
-    }
-
-    /* ==========================================================================
-       3. MAIN LAYOUT
-       ========================================================================== */
-    .dashboard {
-      display: grid;
-      grid-template-columns: 460px 1fr;
-      flex-grow: 1;
-      height: calc(100vh - 73px);
-      overflow: hidden;
-    }
-
-    /* ==========================================================================
-       4. SIDEBAR PANEL (FORM & HISTORIC RECORDS)
-       ========================================================================== */
-    .sidebar {
-      background: var(--panel-bg);
-      backdrop-filter: blur(16px);
-      border-right: 1px solid var(--panel-border);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .tab-header {
-      display: flex;
-      border-bottom: 1px solid var(--panel-border);
-      background: rgba(0, 0, 0, 0.1);
-    }
-
-    .tab-btn {
-      flex: 1;
-      padding: 14px;
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      font-weight: 600;
-      font-size: 14px;
-      cursor: pointer;
-      transition: var(--transition);
-      position: relative;
-    }
-
-    .tab-btn.active {
-      color: var(--text-main);
-    }
-
-    .tab-btn.active::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      left: 20%;
-      width: 60%;
-      height: 3px;
-      background: var(--accent);
-      border-top-left-radius: 3px;
-      border-top-right-radius: 3px;
-      box-shadow: 0 -2px 10px var(--accent-glow);
-    }
-
-    .tab-content {
-      flex-grow: 1;
-      overflow-y: auto;
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
-    /* Form Fields Styling */
-    .form-group-title {
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      color: var(--accent);
-      margin-bottom: 12px;
-      text-transform: uppercase;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .form-group-title::after {
-      content: '';
-      flex-grow: 1;
-      height: 1px;
-      background: var(--panel-border);
-    }
-
-    .form-card {
-      background: var(--card-bg);
-      border: 1px solid var(--panel-border);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 16px;
-    }
-
-    .input-field-wrapper {
-      margin-bottom: 16px;
-      position: relative;
-    }
-
-    .input-field-wrapper:last-child {
-      margin-bottom: 0;
-    }
-
-    label {
-      display: block;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text-muted);
-      margin-bottom: 6px;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      background: var(--input-bg);
-      border: 1px solid var(--input-border);
-      border-radius: 8px;
-      padding: 10px 14px;
-      font-size: 13.5px;
-      color: var(--text-main);
-      transition: var(--transition);
-    }
-
-    input[type="text"]:focus {
-      outline: none;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-glow);
-    }
-
-    .uppercase {
-      text-transform: uppercase;
-    }
-
-    .error-msg {
-      color: var(--error);
-      font-size: 11px;
-      margin-top: 4px;
-      display: none;
-    }
-
-    .region-suggestions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 8px;
-    }
-
-    .suggestion-chip {
-      font-size: 10px;
-      font-weight: 600;
-      padding: 4px 10px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--panel-border);
-      border-radius: 20px;
-      cursor: pointer;
-      color: var(--text-muted);
-      transition: var(--transition);
-    }
-
-    .suggestion-chip:hover {
-      background: var(--accent);
-      color: white;
-      border-color: var(--accent);
-      transform: translateY(-1px);
-    }
-
-    /* Actions Area (Fixed Bottom of Sidebar) */
-    .sidebar-actions {
-      padding: 18px 24px;
-      background: rgba(0, 0, 0, 0.2);
-      border-top: 1px solid var(--panel-border);
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 11px 16px;
-      font-size: 13.5px;
-      font-weight: 600;
-      border-radius: 8px;
-      cursor: pointer;
-      border: none;
-      transition: var(--transition);
-      text-decoration: none;
-      text-align: center;
-    }
-
-    .btn-primary {
-      background: var(--accent);
-      color: white;
-      box-shadow: 0 4px 12px var(--accent-glow);
-      grid-column: span 2;
-    }
-
-    .btn-primary:hover:not(:disabled) {
-      background: var(--accent-hover);
-      box-shadow: 0 4px 20px var(--accent-glow);
-      transform: translateY(-1px);
-    }
-
-    .btn-primary:disabled {
-      background: var(--text-muted);
-      cursor: not-allowed;
-      box-shadow: none;
-      opacity: 0.6;
-    }
-
-    .btn-secondary {
-      background: rgba(255, 255, 255, 0.06);
-      color: var(--text-main);
-      border: 1px solid var(--panel-border);
-    }
-
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.12);
-      border-color: var(--text-muted);
-    }
-
-    .btn-quick-fill {
-      align-self: flex-end;
-      padding: 6px 12px;
-      font-size: 11px;
-      background: rgba(16, 185, 129, 0.1);
-      color: #10b981;
-      border: 1px solid rgba(16, 185, 129, 0.2);
-      border-radius: 6px;
-      cursor: pointer;
-      margin-bottom: 12px;
-      transition: var(--transition);
-    }
-
-    .btn-quick-fill:hover {
-      background: rgba(16, 185, 129, 0.25);
-      border-color: #10b981;
-    }
-
-    /* History / Saved records panel */
-    .history-container {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      height: 100%;
-    }
-
-    .search-wrapper {
-      position: relative;
-    }
-
-    .search-input {
-      width: 100%;
-      background: var(--input-bg);
-      border: 1px solid var(--input-border);
-      border-radius: 8px;
-      padding: 10px 14px 10px 36px !important;
-      font-size: 13px;
-      color: var(--text-main);
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
-      pointer-events: none;
-      width: 16px;
-      height: 16px;
-    }
-
-    .records-list {
-      flex-grow: 1;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      padding-right: 4px;
-    }
-
-    .record-card {
-      background: var(--card-bg);
-      border: 1px solid var(--panel-border);
-      border-radius: 10px;
-      padding: 14px;
-      transition: var(--transition);
-      position: relative;
-      cursor: pointer;
-    }
-
-    .record-card:hover {
-      border-color: var(--accent);
-      background: rgba(255, 255, 255, 0.04);
-      transform: translateX(2px);
-    }
-
-    .record-name {
-      font-weight: 700;
-      font-size: 13.5px;
-      margin-bottom: 4px;
-      color: var(--text-main);
-      word-break: break-all;
-    }
-
-    .record-meta {
-      font-size: 11px;
-      color: var(--text-muted);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .record-actions {
-      margin-top: 10px;
-      display: flex;
-      justify-content: flex-end;
-      gap: 8px;
-    }
-
-    .record-btn {
-      padding: 4px 8px;
-      font-size: 10.5px;
-      font-weight: 600;
-      border-radius: 4px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid var(--panel-border);
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .record-btn:hover {
-      color: var(--text-main);
-      background: rgba(255, 255, 255, 0.12);
-    }
-
-    .record-btn-delete {
-      color: var(--error);
-      border-color: rgba(239, 68, 68, 0.2);
-      background: rgba(239, 68, 68, 0.05);
-    }
-
-    .record-btn-delete:hover {
-      background: var(--error);
-      color: white;
-      border-color: var(--error);
-    }
-
-    .empty-history {
-      text-align: center;
-      padding: 40px 20px;
-      color: var(--text-muted);
-      font-size: 13px;
-    }
-
-    /* ==========================================================================
-       5. PREVIEW CANVAS AREA (THE DOCUMENT PAGE PREVIEW)
-       ========================================================================== */
-    .preview-pane {
-      background: rgba(0, 0, 0, 0.2);
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .preview-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 24px;
-      background: var(--panel-bg);
-      border-bottom: 1px solid var(--panel-border);
-    }
-
-    .preview-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-muted);
-    }
-
-    .zoom-control {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .zoom-slider {
-      width: 100px;
-      height: 4px;
-      -webkit-appearance: none;
-      background: var(--panel-border);
-      border-radius: 2px;
-      outline: none;
-    }
-
-    .zoom-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      background: var(--accent);
-      cursor: pointer;
-      transition: var(--transition);
-    }
-
-    .zoom-slider::-webkit-slider-thumb:hover {
-      transform: scale(1.2);
-    }
-
-    .zoom-value {
-      font-size: 11px;
-      font-weight: 700;
-      width: 32px;
-      text-align: right;
-    }
-
-    .preview-canvas {
-      flex-grow: 1;
-      overflow: auto;
-      padding: 40px;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      position: relative;
-    }
-
-    /* Elegant CSS translation sheet formatting */
-    .certificate-sheet {
-      background: white;
-      color: #111111;
-      width: 210mm;
-      min-height: 297mm;
-      padding: 8mm 15mm 20mm 20mm;
-      box-shadow: var(--shadow-lg);
-      transform-origin: top center;
-      transition: transform 0.1s ease;
-      display: flex;
-      flex-direction: column;
-      line-height: 1.6;
-      font-size: 12pt;
-      box-sizing: border-box;
-    }
-
-    .certificate-sheet,
-    .certificate-sheet * {
-      font-family: 'Times New Roman', Times, serif !important;
-    }
-
-    .translation-header {
-      text-align: right;
-      font-size: 10pt;
-      font-style: italic;
-      margin-bottom: 20px;
-      text-transform: uppercase;
-      font-weight: bold;
-      border-bottom: 1px solid #111;
-      padding-bottom: 4px;
-    }
-
-    .doc-title-container {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    .doc-country {
-      font-size: 14pt;
-      font-weight: bold;
-      letter-spacing: 0.5px;
-      margin-bottom: 4px;
-    }
-
-    .doc-title {
-      font-size: 14pt;
-      font-weight: bold;
-      letter-spacing: 1px;
-    }
-
-    .certificate-table, .parents-table, .registry-office-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-    }
-
-    .certificate-table td, .parents-table td, .registry-office-table td {
-      padding: 5px 0;
-      vertical-align: top;
-    }
-
-    .label {
-      width: 35%;
-      font-weight: bold;
-      padding-right: 10px;
-    }
-
-    .value {
-      width: 65%;
-      border-bottom: 1px dotted #888;
-      position: relative;
-    }
-
-    .font-bold {
-      font-weight: bold;
-    }
-
-    .value.uppercase {
-      text-transform: uppercase;
-    }
-
-    /* Sub-grid for Place of Birth */
-    .sub-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .sub-grid-item {
-      display: grid;
-      grid-template-columns: 120px 1fr;
-    }
-
-    .registry-sentence {
-      margin: 24px 0;
-      text-align: left;
-      text-indent: 30px;
-      line-height: 1.6;
-      font-size: 11pt;
-    }
-
-    .registry-sentence span {
-      border-bottom: 1px dotted #888;
-      padding: 0 4px;
-    }
-
-    .section-title {
-      font-weight: bold;
-      font-size: 12pt;
-      margin-top: 14px;
-      margin-bottom: 10px;
-      border-bottom: 1px solid #333;
-      padding-bottom: 2px;
-      letter-spacing: 0.5px;
-    }
-
-    .signature-section {
-      margin-top: 40px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-    }
-
-    .signature-officer {
-      font-weight: bold;
-      width: 50%;
-    }
-    .signature-signed {
-      width: 20%;
-      text-align: center;
-      font-style: italic;
-    }
-    .signature-name {
-      width: 30%;
-      text-align: right;
-      font-weight: bold;
-      border-bottom: 1px dotted #888;
-    }
-
-    .footer-section {
-      margin-top: 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      clear: both;
-    }
-
-    .official-seal {
-      width: 35%;
-      font-weight: bold;
-      text-align: left;
-    }
-
-    .id-number-section {
-      font-weight: bold;
-      font-size: 12pt;
-      border: 1px solid #111;
-      padding: 6px 12px;
-      display: inline-block;
-      text-align: center;
-    }
-
-    .footer-spacer {
-      width: 35%;
-    }
-
-    .placeholder-text {
-      color: #aaa;
-      font-style: italic;
-      font-size: 11px;
-    }
-
-    /* PDF formatting specific overrides */
-    .certificate-sheet.pdf-exporting {
-      box-shadow: none;
-      transform: scale(1) !important;
-      margin: 0 !important;
-      min-height: auto !important;
-      height: auto !important;
-    }
-
-    .certificate-sheet.pdf-exporting .value,
-    .certificate-sheet.pdf-exporting .registry-sentence span,
-    .certificate-sheet.pdf-exporting .signature-name {
-      border-bottom-style: solid;
-      border-bottom-color: #000;
-    }
-
-    .certificate-sheet.pdf-exporting .placeholder-text {
-      visibility: hidden;
-    }
-
-    /* Toast Notification */
-    .toast {
-      position: fixed;
-      bottom: 24px;
-      right: 24px;
-      background: #1f2937;
-      color: white;
-      padding: 12px 24px;
-      border-radius: 8px;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      transform: translateY(150%);
-      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      z-index: 1000;
-      border-left: 4px solid var(--accent);
-    }
-    .toast.success {
-      border-left-color: var(--success);
-    }
-    .toast.error {
-      border-left-color: var(--error);
-    }
-    .toast.show {
-      transform: translateY(0);
-    }
-
-    /* Modal dialog */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.7);
-      backdrop-filter: blur(4px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s ease;
-      z-index: 999;
-    }
-    .modal-overlay.open {
-      opacity: 1;
-      pointer-events: all;
-    }
-    .modal-card {
-      background: var(--panel-bg);
-      border: 1px solid var(--panel-border);
-      border-radius: 16px;
-      padding: 24px;
-      max-width: 400px;
-      width: 90%;
-      box-shadow: var(--shadow-lg);
-      transform: scale(0.9);
-      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      color: var(--text-main);
-    }
-    .modal-overlay.open .modal-card {
-      transform: scale(1);
-    }
-    .modal-title {
-      font-size: 16px;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-    .modal-body {
-      font-size: 13.5px;
-      color: var(--text-muted);
-      margin-bottom: 20px;
-      line-height: 1.5;
-    }
-    .modal-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-    }
-
-    /* ==========================================================================
-       6. NATIVE BROWSER PRINT LAYOUT override
-       ========================================================================== */
-    @media print {
-      body {
-        background: white;
-        color: black;
-      }
-      header, .sidebar, .sidebar-actions, .preview-bar, .toast, .modal-overlay {
-        display: none !important;
-      }
-      .dashboard {
-        display: block;
-        height: auto;
-        overflow: visible;
-      }
-      .preview-pane {
-        background: none;
-        height: auto;
-        overflow: visible;
-      }
-      .preview-canvas {
-        padding: 0;
-        overflow: visible;
-      }
-      .certificate-sheet {
-        box-shadow: none !important;
-        transform: none !important;
-        margin: 0 !important;
-        width: 100% !important;
-        min-height: auto !important;
-        padding: 0 !important;
-      }
-      .certificate-sheet .value,
-      .certificate-sheet .registry-sentence span,
-      .certificate-sheet .signature-name {
-        border-bottom-style: solid;
-        border-bottom-color: #000;
-      }
-      .certificate-sheet .placeholder-text {
-        display: none !important;
-      }
-      @page {
-        size: A4 portrait;
-        margin: 8mm 15mm 15mm 20mm;
-      }
-    }
-
-    /* Autocomplete dropdown styles */
-    .input-field-wrapper {
-      position: relative;
-    }
-
-    .autocomplete-suggestions {
-      position: absolute;
-      top: 100%;
-      left: 0;
-      right: 0;
-      z-index: 999;
-      border-radius: 8px;
-      max-height: 150px;
-      overflow-y: auto;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
-      margin-top: 2px;
-      display: none;
-    }
-
-    [data-theme="light"] .autocomplete-suggestions {
-      background: #ffffff;
-      border: 1px solid rgba(0, 0, 0, 0.1);
-    }
-
-    [data-theme="dark"] .autocomplete-suggestions {
-      background: #1e1e2e;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .autocomplete-suggestion {
-      padding: 8px 12px;
-      cursor: pointer;
-      font-size: 13px;
-      transition: background 0.15s ease;
-      color: var(--text-main);
-      text-align: left;
-    }
-
-    .autocomplete-suggestion:hover {
-      background: var(--primary-light);
-      color: var(--primary-color);
-    }
-
-    /* Document Switcher Styles */
-    .doc-type-switcher {
-      display: flex;
-      background: var(--bg-body);
-      border: 1px solid var(--panel-border);
-      border-radius: 8px;
-      padding: 3px;
-      gap: 2px;
-      margin-left: 20px;
-    }
-    .switcher-btn {
-      background: transparent;
-      border: none;
-      color: var(--text-muted);
-      padding: 6px 16px;
-      font-size: 13px;
-      font-weight: 600;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    .switcher-btn:hover {
-      color: var(--text-main);
-    }
-    .switcher-btn.active {
-      background: var(--accent);
-      color: #ffffff;
-      box-shadow: 0 2px 6px var(--accent-glow);
-    }
-  </style>
 </head>
 <body data-theme="dark">
 
-  <!-- ==========================================================================
+  <!-- =====================================================================
        HEADER
-       ========================================================================== -->
-  <header class="no-print">
-    <div class="brand">
-      <div class="brand-logo">BT</div>
-      <div>
-        <div class="brand-title">Translation Hub</div>
-        <div class="brand-subtitle">Uzbekistan Translation Template Standard v2.0</div>
-      </div>
-    </div>
-    
-    <!-- Document Type Switcher -->
-    <div class="doc-type-switcher no-print">
-      <button class="switcher-btn active" id="btn-mode-birth" onclick="switchMode('birth')">Birth Certificate</button>
-      <button class="switcher-btn" id="btn-mode-marriage" onclick="switchMode('marriage')">Marriage Certificate</button>
-      <button class="switcher-btn" id="btn-mode-divorce" onclick="switchMode('divorce')">Divorce Certificate</button>
-    </div>
+       ===================================================================== -->
+  <header class="app-header no-print">
+    <div class="container-fluid px-3 py-2">
+      <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap">
 
-    <div class="header-actions">
-      <div class="zoom-control">
-        <span>Zoom:</span>
-        <input type="range" class="zoom-slider" id="zoom-slider" min="0.5" max="1.5" step="0.05" value="1">
-        <span class="zoom-value" id="zoom-val">100%</span>
+        <!-- Brand -->
+        <div class="d-flex align-items-center gap-3 flex-shrink-0">
+          <div class="brand-logo">BT</div>
+          <div>
+            <div class="brand-title">Translation Hub</div>
+            <div class="brand-subtitle">Uzbekistan Translation Standard v2.0</div>
+          </div>
+        </div>
+
+        <!-- Document Type Switcher -->
+        <div class="doc-type-switcher no-print flex-shrink-0">
+          <button class="switcher-btn active" id="btn-mode-birth" onclick="switchMode('birth')">
+            <i class="bi bi-file-earmark-person me-1"></i>Birth Certificate
+          </button>
+          <button class="switcher-btn" id="btn-mode-marriage" onclick="switchMode('marriage')">
+            <i class="bi bi-heart me-1"></i>Marriage Certificate
+          </button>
+          <button class="switcher-btn" id="btn-mode-divorce" onclick="switchMode('divorce')">
+            <i class="bi bi-file-earmark-break me-1"></i>Divorce Certificate
+          </button>
+        </div>
+
+        <!-- Right Actions -->
+        <div class="d-flex align-items-center gap-3 flex-shrink-0">
+          <!-- DB Status -->
+          <div class="status-badge no-print" id="db-status-badge">
+            <div class="status-dot connecting" id="db-status-dot"></div>
+            <span id="db-status-text">Connecting...</span>
+          </div>
+
+          <!-- Zoom -->
+          <div class="zoom-control no-print">
+            <i class="bi bi-zoom-in" style="color: var(--text-muted); font-size: 14px;"></i>
+            <input type="range" class="zoom-slider" id="zoom-slider" min="0.5" max="1.5" step="0.05" value="1">
+            <span class="zoom-value" id="zoom-val">100%</span>
+          </div>
+
+          <!-- Theme Toggle -->
+          <button class="theme-toggle-btn no-print" id="theme-toggle" title="Toggle Dark/Light Mode">
+            <i class="bi bi-sun-fill" id="theme-icon" style="font-size: 15px;"></i>
+          </button>
+        </div>
+
       </div>
-      <button class="theme-toggle-btn" id="theme-toggle" title="Toggle Dark/Light Mode">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="theme-icon">
-          <circle cx="12" cy="12" r="5"></circle>
-          <line x1="12" y1="1" x2="12" y2="3"></line>
-          <line x1="12" y1="21" x2="12" y2="23"></line>
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-          <line x1="1" y1="12" x2="3" y2="12"></line>
-          <line x1="21" y1="12" x2="23" y2="12"></line>
-          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-        </svg>
-      </button>
     </div>
   </header>
 
-  <!-- ==========================================================================
-       DASHBOARD CONTAINER
-       ========================================================================== */ -->
+  <!-- =====================================================================
+       DASHBOARD LAYOUT
+       ===================================================================== -->
   <div class="dashboard">
-    
-    <!-- ==========================================================================
-         SIDEBAR (LEFT PANEL)
-         ========================================================================== -->
+
+    <!-- ==================================================================
+         SIDEBAR — LEFT PANEL
+         ================================================================== -->
     <div class="sidebar no-print">
+
+      <!-- Tab Switcher -->
       <div class="tab-header">
-        <button class="tab-btn active" id="tab-form" onclick="switchTab('form')">Certificate Form</button>
-        <button class="tab-btn" id="tab-history" onclick="switchTab('history')">Saved Records</button>
+        <button class="tab-btn active" id="tab-form" onclick="switchTab('form')">
+          <i class="bi bi-pencil-square me-1"></i>Certificate Form
+        </button>
+        <button class="tab-btn" id="tab-history" onclick="switchTab('history')">
+          <i class="bi bi-clock-history me-1"></i>Saved Records
+        </button>
       </div>
 
-      <!-- Tab Content: FORM -->
+      <!-- ----------------------------------------------------------------
+           TAB: FORM
+           ---------------------------------------------------------------- -->
       <div class="tab-content" id="content-form">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span id="form-desc-text" style="font-size: 13px; font-weight: 500; color: var(--text-muted);">Translate Uzbek birth certificates to English</span>
-          <button class="btn-quick-fill" onclick="fillMockData()">⚡ Fill Mock Data</button>
+
+        <div class="d-flex justify-content-between align-items-center">
+          <span id="form-desc-text" style="font-size: 13px; font-weight: 500; color: var(--text-muted);">
+            Translate Uzbek birth certificates to English
+          </span>
+          <button class="btn-quick-fill" onclick="fillMockData()">
+            <i class="bi bi-lightning-charge-fill me-1"></i>Fill Mock Data
+          </button>
         </div>
 
         <form id="certificateForm" onsubmit="event.preventDefault(); saveToDatabase();">
           <input type="hidden" id="currentRecordId" value="">
 
-          <!-- BIRTH CERTIFICATE FIELDS -->
+          <!-- ============================================================
+               BIRTH CERTIFICATE FIELDS
+               ============================================================ -->
           <div id="birth-fields-container">
-            <!-- Section 1: Birth certificate owner -->
-            <div class="form-group-title">Birth certificate owner</div>
+
+            <div class="form-group-title">Birth Certificate Owner</div>
             <div class="form-card">
               <div class="input-field-wrapper">
-                <label for="fullName">Full Name (F.I.SH.):</label>
-                <input id="fullName" type="text" placeholder="ABDUVALIEV SARDORBEK ANVAR O'G'LI" required class="uppercase">
+                <label class="form-label" for="fullName">Full Name (F.I.SH.):</label>
+                <input id="fullName" type="text" class="form-control uppercase" placeholder="ABDUVALIEV SARDORBEK ANVAR O'G'LI" required>
                 <div id="fullNameError" class="error-msg">Full name is required.</div>
               </div>
-
               <div class="input-field-wrapper">
-                <label for="dob">Date of Birth (dd/mm/yyyy):</label>
-                <input id="dob" type="text" placeholder="15/10/1997" required>
+                <label class="form-label" for="dob">Date of Birth (dd/mm/yyyy):</label>
+                <input id="dob" type="text" class="form-control" placeholder="15/10/1997" required>
                 <div id="dobError" class="error-msg">Valid date format dd/mm/yyyy is required.</div>
               </div>
-
               <div class="input-field-wrapper">
-                <label for="region">Region of Birth (Viloyat):</label>
-                <input id="region" type="text" placeholder="Fergana" required>
+                <label class="form-label" for="region">Region of Birth (Viloyat):</label>
+                <input id="region" type="text" class="form-control" placeholder="Fergana" required>
                 <div id="regionError" class="error-msg">Region is required.</div>
               </div>
-
               <div class="input-field-wrapper">
-                <label for="city">City or District of Birth (Tuman/Shahar):</label>
-                <input id="city" type="text" placeholder="Rishton district" required>
+                <label class="form-label" for="city">City or District of Birth:</label>
+                <input id="city" type="text" class="form-control" placeholder="Rishton district" required>
                 <div id="cityError" class="error-msg">City or village is required.</div>
               </div>
-
               <div class="input-field-wrapper">
-                <label for="entryNumber">Registry Entry Number:</label>
-                <input id="entryNumber" type="text" placeholder="452">
+                <label class="form-label" for="entryNumber">Registry Entry Number:</label>
+                <input id="entryNumber" type="text" class="form-control" placeholder="452">
               </div>
-
               <div class="input-field-wrapper">
-                <label for="registryDate">Registry Date (dd/mm/yyyy):</label>
-                <input id="registryDate" type="text" placeholder="17/10/1997">
+                <label class="form-label" for="registryDate">Registry Date (dd/mm/yyyy):</label>
+                <input id="registryDate" type="text" class="form-control" placeholder="17/10/1997">
                 <div id="registryDateError" class="error-msg">Format should be dd/mm/yyyy.</div>
               </div>
             </div>
 
-            <!-- Section 2: Parents Details -->
             <div class="form-group-title">Parents Details</div>
             <div class="form-card">
               <div class="input-field-wrapper">
-                <label for="fatherName">Father's Full Name:</label>
-                <input id="fatherName" type="text" placeholder="ABDUVALIEV ANVARJON" class="uppercase">
+                <label class="form-label" for="fatherName">Father's Full Name:</label>
+                <input id="fatherName" type="text" class="form-control uppercase" placeholder="ABDUVALIEV ANVARJON">
               </div>
               <div class="input-field-wrapper">
-                <label for="fatherNationality">Father's Nationality:</label>
-                <input id="fatherNationality" type="text" value="Uzbek">
+                <label class="form-label" for="fatherNationality">Father's Nationality:</label>
+                <input id="fatherNationality" type="text" class="form-control" value="Uzbek">
               </div>
               <div class="input-field-wrapper">
-                <label for="motherName">Mother's Full Name:</label>
-                <input id="motherName" type="text" placeholder="ABDUVALIEVA SOJIDAXON" class="uppercase">
+                <label class="form-label" for="motherName">Mother's Full Name:</label>
+                <input id="motherName" type="text" class="form-control uppercase" placeholder="ABDUVALIEVA SOJIDAXON">
               </div>
               <div class="input-field-wrapper">
-                <label for="motherNationality">Mother's Nationality:</label>
-                <input id="motherNationality" type="text" value="Uzbek">
+                <label class="form-label" for="motherNationality">Mother's Nationality:</label>
+                <input id="motherNationality" type="text" class="form-control" value="Uzbek">
               </div>
             </div>
 
-            <!-- Section 3: Issuing Registry Office -->
-            <div class="form-group-title">Registry Office & Issue Details</div>
+            <div class="form-group-title">Registry Office &amp; Issue Details</div>
             <div class="form-card">
               <div class="input-field-wrapper">
-                <label for="regCity">Civil Registry City / District (e.g. Rishton):</label>
-                <input id="regCity" type="text" placeholder="Rishton">
+                <label class="form-label" for="regCity">Civil Registry City / District:</label>
+                <input id="regCity" type="text" class="form-control" placeholder="Rishton">
               </div>
               <div class="input-field-wrapper">
-                <label for="issueDate">Date of Issue (dd/mm/yyyy):</label>
-                <input id="issueDate" type="text" placeholder="17/10/1997">
+                <label class="form-label" for="issueDate">Date of Issue (dd/mm/yyyy):</label>
+                <input id="issueDate" type="text" class="form-control" placeholder="17/10/1997">
                 <div id="issueDateError" class="error-msg">Format should be dd/mm/yyyy.</div>
               </div>
               <div class="input-field-wrapper">
-                <label for="headName">Head of Civil Registry Office's Name:</label>
-                <input id="headName" type="text" placeholder="YUSUPOVA M. A.">
+                <label class="form-label" for="headName">Head of Civil Registry Office:</label>
+                <input id="headName" type="text" class="form-control" placeholder="YUSUPOVA M. A.">
               </div>
               <div class="input-field-wrapper">
-                <label for="idNumber">ID/Certificate Number (e.g., I-FR No 0852963):</label>
-                <input id="idNumber" type="text" placeholder="I-FR No 0852963">
+                <label class="form-label" for="idNumber">ID / Certificate Number:</label>
+                <input id="idNumber" type="text" class="form-control" placeholder="I-FR No 0852963">
               </div>
             </div>
-          </div>
 
-          <!-- MARRIAGE CERTIFICATE FIELDS -->
-          <div id="marriage-fields-container" style="display: none;">
-            <!-- Section 1: Husband Details -->
+          </div><!-- /birth-fields-container -->
+
+          <!-- ============================================================
+               MARRIAGE CERTIFICATE FIELDS
+               ============================================================ -->
+          <div id="marriage-fields-container" style="display:none;">
+
             <div class="form-group-title">Husband Details</div>
             <div class="form-card">
               <div class="input-field-wrapper">
-                <label for="husbandName">Husband's Name (Citizen):</label>
-                <input id="husbandName" type="text" placeholder="MAKHMUDOV NODIRBEK NOYIMJON UGLI" class="uppercase">
+                <label class="form-label" for="husbandName">Husband's Name (Citizen):</label>
+                <input id="husbandName" type="text" class="form-control uppercase" placeholder="MAKHMUDOV NODIRBEK NOYIMJON UGLI">
                 <div id="husbandNameError" class="error-msg">Husband's name is required.</div>
               </div>
               <div class="input-field-wrapper">
-                <label for="husbandDob">Date of Birth (dd/mm/yyyy):</label>
-                <input id="husbandDob" type="text" placeholder="10/09/1995">
+                <label class="form-label" for="husbandDob">Date of Birth (dd/mm/yyyy):</label>
+                <input id="husbandDob" type="text" class="form-control" placeholder="10/09/1995">
                 <div id="husbandDobError" class="error-msg">Valid date format dd/mm/yyyy is required.</div>
               </div>
               <div class="input-field-wrapper">
-                <label for="husbandBirthPlace">Place of Birth:</label>
-                <input id="husbandBirthPlace" type="text" placeholder="Markhamat district, Andijan">
+                <label class="form-label" for="husbandBirthPlace">Place of Birth:</label>
+                <input id="husbandBirthPlace" type="text" class="form-control" placeholder="Markhamat district, Andijan">
                 <div id="husbandBirthPlaceError" class="error-msg">Birth place is required.</div>
               </div>
               <div class="input-field-wrapper">
-                <label for="husbandCitizenship">Citizenship:</label>
-                <input id="husbandCitizenship" type="text" placeholder="UZBEKISTAN" class="uppercase">
+                <label class="form-label" for="husbandCitizenship">Citizenship:</label>
+                <input id="husbandCitizenship" type="text" class="form-control uppercase" placeholder="UZBEKISTAN">
                 <div id="husbandCitizenshipError" class="error-msg">Citizenship is required.</div>
               </div>
             </div>
 
-            <!-- Section 2: Wife Details -->
             <div class="form-group-title">Wife Details</div>
             <div class="form-card">
               <div class="input-field-wrapper">
-                <label for="wifeName">Wife's Name (Citizen):</label>
-                <input id="wifeName" type="text" placeholder="ERGASHEVA NILUFAR RAKHMONALI KIZI" class="uppercase">
+                <label class="form-label" for="wifeName">Wife's Name (Citizen):</label>
+                <input id="wifeName" type="text" class="form-control uppercase" placeholder="ERGASHEVA NILUFAR RAKHMONALI KIZI">
                 <div id="wifeNameError" class="error-msg">Wife's name is required.</div>
               </div>
               <div class="input-field-wrapper">
-                <label for="wifeDob">Date of Birth (dd/mm/yyyy):</label>
-                <input id="wifeDob" type="text" placeholder="17/12/2001">
+                <label class="form-label" for="wifeDob">Date of Birth (dd/mm/yyyy):</label>
+                <input id="wifeDob" type="text" class="form-control" placeholder="17/12/2001">
                 <div id="wifeDobError" class="error-msg">Valid date format dd/mm/yyyy is required.</div>
               </div>
               <div class="input-field-wrapper">
-                <label for="wifeBirthPlace">Place of Birth:</label>
-                <input id="wifeBirthPlace" type="text" placeholder="Markhamat district, Andijan">
+                <label class="form-label" for="wifeBirthPlace">Place of Birth:</label>
+                <input id="wifeBirthPlace" type="text" class="form-control" placeholder="Markhamat district, Andijan">
                 <div id="wifeBirthPlaceError" class="error-msg">Birth place is required.</div>
               </div>
               <div class="input-field-wrapper">
-                <label for="wifeCitizenship">Citizenship:</label>
-                <input id="wifeCitizenship" type="text" placeholder="UZBEKISTAN" class="uppercase">
+                <label class="form-label" for="wifeCitizenship">Citizenship:</label>
+                <input id="wifeCitizenship" type="text" class="form-control uppercase" placeholder="UZBEKISTAN">
                 <div id="wifeCitizenshipError" class="error-msg">Citizenship is required.</div>
               </div>
             </div>
 
-            <!-- Section 3: Marriage Details -->
             <div class="form-group-title">Marriage Details</div>
             <div class="form-card">
               <div class="input-field-wrapper">
-                <label for="marriageDate">Date of Marriage (dd/mm/yyyy):</label>
-                <input id="marriageDate" type="text" placeholder="16/01/2025">
+                <label class="form-label" for="marriageDate">Date of Marriage (dd/mm/yyyy):</label>
+                <input id="marriageDate" type="text" class="form-control" placeholder="16/01/2025">
                 <div id="marriageDateError" class="error-msg">Valid date format dd/mm/yyyy is required.</div>
               </div>
               <div class="input-field-wrapper">
-                <label for="marriageDateWords">Marriage Date in words:</label>
-                <input id="marriageDateWords" type="text" placeholder="Two thousand twenty five">
+                <label class="form-label" for="marriageDateWords">Marriage Date in Words:</label>
+                <input id="marriageDateWords" type="text" class="form-control" placeholder="Two thousand twenty five">
                 <div id="marriageDateWordsError" class="error-msg">Marriage date in words is required.</div>
               </div>
               <div class="input-field-wrapper">
-                <label for="recordNumber">Marriage Record Number (№):</label>
-                <input id="recordNumber" type="text" placeholder="2-1711-25-00050">
+                <label class="form-label" for="recordNumber">Marriage Record Number (№):</label>
+                <input id="recordNumber" type="text" class="form-control" placeholder="2-1711-25-00050">
                 <div id="recordNumberError" class="error-msg">Record number is required.</div>
               </div>
               <div class="input-field-wrapper">
-                <label for="recordDate">Filing Date (dd/mm/yyyy):</label>
-                <input id="recordDate" type="text" placeholder="16/01/2025">
+                <label class="form-label" for="recordDate">Filing Date (dd/mm/yyyy):</label>
+                <input id="recordDate" type="text" class="form-control" placeholder="16/01/2025">
                 <div id="recordDateError" class="error-msg">Valid date format dd/mm/yyyy is required.</div>
               </div>
             </div>
 
-            <!-- Section 4: Surname updates & Signatories -->
-            <div class="form-group-title">Surnames & Civil Registry Office</div>
+            <div class="form-group-title">Surnames &amp; Civil Registry Office</div>
             <div class="form-card">
               <div class="input-field-wrapper">
-                <label for="husbandNewSurname">Surname Given to Husband:</label>
-                <input id="husbandNewSurname" type="text" placeholder="MAKHMUDOV" class="uppercase">
+                <label class="form-label" for="husbandNewSurname">Surname Given to Husband:</label>
+                <input id="husbandNewSurname" type="text" class="form-control uppercase" placeholder="MAKHMUDOV">
                 <div id="husbandNewSurnameError" class="error-msg">Husband's new surname is required.</div>
               </div>
               <div class="input-field-wrapper">
-                <label for="wifeNewSurname">Surname Given to Wife:</label>
-                <input id="wifeNewSurname" type="text" placeholder="MAKHMUDOVA" class="uppercase">
+                <label class="form-label" for="wifeNewSurname">Surname Given to Wife:</label>
+                <input id="wifeNewSurname" type="text" class="form-control uppercase" placeholder="MAKHMUDOVA">
                 <div id="wifeNewSurnameError" class="error-msg">Wife's new surname is required.</div>
               </div>
               <div class="input-field-wrapper">
-                <label for="regPlace">Registration Office / District:</label>
-                <input id="regPlace" type="text" placeholder="Markhamat district">
+                <label class="form-label" for="regPlace">Registration Office / District:</label>
+                <input id="regPlace" type="text" class="form-control" placeholder="Markhamat district">
                 <div id="regPlaceError" class="error-msg">Registration office is required.</div>
               </div>
               <div class="input-field-wrapper">
-                <label for="m-issueDate">Date of Issue (dd/mm/yyyy):</label>
-                <input id="m-issueDate" type="text" placeholder="16/01/2025">
+                <label class="form-label" for="m-issueDate">Date of Issue (dd/mm/yyyy):</label>
+                <input id="m-issueDate" type="text" class="form-control" placeholder="16/01/2025">
                 <div id="m-issueDateError" class="error-msg">Format should be dd/mm/yyyy.</div>
               </div>
               <div class="input-field-wrapper">
-                <label for="chairmanName">Chairman's Name:</label>
-                <input id="chairmanName" type="text" placeholder="M.O.SOTVOLDIEVA">
+                <label class="form-label" for="chairmanName">Chairman's Name:</label>
+                <input id="chairmanName" type="text" class="form-control" placeholder="M.O.SOTVOLDIEVA">
                 <div id="chairmanNameError" class="error-msg">Chairman's name is required.</div>
               </div>
               <div class="input-field-wrapper">
-                <label for="certNumber">Certificate Serial / Number (e.g. N № 05842224):</label>
-                <input id="certNumber" type="text" placeholder="N № 05842224">
+                <label class="form-label" for="certNumber">Certificate Serial / Number:</label>
+                <input id="certNumber" type="text" class="form-control" placeholder="N № 05842224">
                 <div id="certNumberError" class="error-msg">Certificate number is required.</div>
+              </div>
             </div>
-          </div>
-        </div>
 
-          <!-- DIVORCE CERTIFICATE FIELDS -->
-          <div id="divorce-fields-container" style="display: none;">
-            <!-- Section 1: Divorcing Spouses -->
+          </div><!-- /marriage-fields-container -->
+
+          <!-- ============================================================
+               DIVORCE CERTIFICATE FIELDS
+               ============================================================ -->
+          <div id="divorce-fields-container" style="display:none;">
+
             <div class="form-group-title">Spouses Details</div>
             <div class="form-card">
               <div class="input-field-wrapper">
-                <label for="divorceHusbandName">Husband's Name (Citizen):</label>
-                <input id="divorceHusbandName" type="text" placeholder="KIPCHAKOV DONIYOR TASHKENBOEVICH" class="uppercase">
+                <label class="form-label" for="divorceHusbandName">Husband's Name (Citizen):</label>
+                <input id="divorceHusbandName" type="text" class="form-control uppercase" placeholder="KIPCHAKOV DONIYOR TASHKENBOEVICH">
                 <div id="divorceHusbandNameError" class="error-msg">Husband's name is required.</div>
               </div>
               <div class="input-field-wrapper">
-                <label for="divorceWifeName">Wife's Name (Citizen):</label>
-                <input id="divorceWifeName" type="text" placeholder="KIPCHAKOVA MALIKAKHON" class="uppercase">
+                <label class="form-label" for="divorceWifeName">Wife's Name (Citizen):</label>
+                <input id="divorceWifeName" type="text" class="form-control uppercase" placeholder="KIPCHAKOVA MALIKAKHON">
                 <div id="divorceWifeNameError" class="error-msg">Wife's name is required.</div>
               </div>
             </div>
 
-            <!-- Section 2: Marriage Dissolution filing details -->
             <div class="form-group-title">Marriage Dissolution Details</div>
             <div class="form-card">
               <div class="input-field-wrapper">
-                <label for="divorceRecordNumber">Record Number (№):</label>
-                <input id="divorceRecordNumber" type="text" placeholder="147">
+                <label class="form-label" for="divorceRecordNumber">Record Number (№):</label>
+                <input id="divorceRecordNumber" type="text" class="form-control" placeholder="147">
                 <div id="divorceRecordNumberError" class="error-msg">Record number is required.</div>
               </div>
               <div class="input-field-wrapper">
-                <label for="divorceRecordDate">Filing Date (dd/mm/yyyy):</label>
-                <input id="divorceRecordDate" type="text" placeholder="19/10/2018">
+                <label class="form-label" for="divorceRecordDate">Filing Date (dd/mm/yyyy):</label>
+                <input id="divorceRecordDate" type="text" class="form-control" placeholder="19/10/2018">
                 <div id="divorceRecordDateError" class="error-msg">Valid date format dd/mm/yyyy is required.</div>
               </div>
             </div>
 
-            <!-- Section 3: Surnames after Dissolution -->
             <div class="form-group-title">Surnames after Marriage Dissolution</div>
             <div class="form-card">
               <div class="input-field-wrapper">
-                <label for="divorceHusbandSurname">Surname Given to Husband:</label>
-                <input id="divorceHusbandSurname" type="text" placeholder="KIPCHAKOV" class="uppercase">
+                <label class="form-label" for="divorceHusbandSurname">Surname Given to Husband:</label>
+                <input id="divorceHusbandSurname" type="text" class="form-control uppercase" placeholder="KIPCHAKOV">
                 <div id="divorceHusbandSurnameError" class="error-msg">Husband's surname is required.</div>
               </div>
               <div class="input-field-wrapper">
-                <label for="divorceWifeSurname">Surname Given to Wife:</label>
-                <input id="divorceWifeSurname" type="text" placeholder="JURAEVA" class="uppercase">
+                <label class="form-label" for="divorceWifeSurname">Surname Given to Wife:</label>
+                <input id="divorceWifeSurname" type="text" class="form-control uppercase" placeholder="JURAEVA">
                 <div id="divorceWifeSurnameError" class="error-msg">Wife's surname is required.</div>
               </div>
             </div>
 
-            <!-- Section 4: Civil Registry Office & Issue Details -->
-            <div class="form-group-title">Office & Recipient Details</div>
+            <div class="form-group-title">Office &amp; Recipient Details</div>
             <div class="form-card">
               <div class="input-field-wrapper">
-                <label for="divorceRegPlace">Registration Place (Office/District):</label>
-                <input id="divorceRegPlace" type="text" placeholder="Norin district Civil registry office">
+                <label class="form-label" for="divorceRegPlace">Registration Place (Office/District):</label>
+                <input id="divorceRegPlace" type="text" class="form-control" placeholder="Norin district Civil registry office">
                 <div id="divorceRegPlaceError" class="error-msg">Registration place is required.</div>
               </div>
               <div class="input-field-wrapper">
-                <label for="divorceGivenTo">The Certificate is Given to:</label>
-                <input id="divorceGivenTo" type="text" placeholder="JURAEVA MALIKAKHON" class="uppercase">
+                <label class="form-label" for="divorceGivenTo">The Certificate is Given to:</label>
+                <input id="divorceGivenTo" type="text" class="form-control uppercase" placeholder="JURAEVA MALIKAKHON">
                 <div id="divorceGivenToError" class="error-msg">Recipient's name is required.</div>
               </div>
               <div class="input-field-wrapper">
-                <label for="divorceIssueDate">Date of Issue (dd/mm/yyyy):</label>
-                <input id="divorceIssueDate" type="text" placeholder="04/12/2018">
+                <label class="form-label" for="divorceIssueDate">Date of Issue (dd/mm/yyyy):</label>
+                <input id="divorceIssueDate" type="text" class="form-control" placeholder="04/12/2018">
                 <div id="divorceIssueDateError" class="error-msg">Valid date format dd/mm/yyyy is required.</div>
               </div>
               <div class="input-field-wrapper">
-                <label for="divorceHeadName">Head of Civil Registry Office's Name:</label>
-                <input id="divorceHeadName" type="text" placeholder="M.ALIBOEVA">
+                <label class="form-label" for="divorceHeadName">Head of Civil Registry Office:</label>
+                <input id="divorceHeadName" type="text" class="form-control" placeholder="M.ALIBOEVA">
                 <div id="divorceHeadNameError" class="error-msg">Head name is required.</div>
               </div>
               <div class="input-field-wrapper">
-                <label for="divorceCertNumber">Certificate Serial / Number (e.g. I-NA № 0036626):</label>
-                <input id="divorceCertNumber" type="text" placeholder="I-NA № 0036626">
+                <label class="form-label" for="divorceCertNumber">Certificate Serial / Number:</label>
+                <input id="divorceCertNumber" type="text" class="form-control" placeholder="I-NA № 0036626">
                 <div id="divorceCertNumberError" class="error-msg">Certificate number is required.</div>
               </div>
             </div>
 
-            <!-- Section 5: Official Seal Text -->
             <div class="form-group-title">Official Seal Text (Bottom-Left)</div>
             <div class="form-card">
               <div class="input-field-wrapper">
-                <label for="divorceSealText">Official Seal Text (Multi-line):</label>
-                <textarea id="divorceSealText" rows="5" style="width:100%; border: 1px solid var(--panel-border); background: var(--input-bg); color: var(--text-main); border-radius: 6px; padding: 8px; font-family: inherit; font-size: 13px;" placeholder="Seal: Ministry of Justice of the&#10;Republic of Uzbekistan&#10;State Services of Namangan region&#10;Department of Registration of Civil&#10;condition of Norin district"></textarea>
+                <label class="form-label" for="divorceSealText">Official Seal Text (Multi-line):</label>
+                <textarea id="divorceSealText" class="form-control" rows="5"
+                  placeholder="Seal: Ministry of Justice of the&#10;Republic of Uzbekistan&#10;State Services of Namangan region&#10;Department of Registration of Civil&#10;condition of Norin district"></textarea>
                 <div id="divorceSealTextError" class="error-msg">Official seal text is required.</div>
               </div>
             </div>
-          </div>
-        </form>
-      </div>
 
-      <!-- Tab Content: HISTORY -->
-      <div class="tab-content" id="content-history" style="display: none;">
+          </div><!-- /divorce-fields-container -->
+
+        </form>
+      </div><!-- /content-form -->
+
+      <!-- ----------------------------------------------------------------
+           TAB: HISTORY
+           ---------------------------------------------------------------- -->
+      <div class="tab-content" id="content-history" style="display:none;">
         <div class="history-container">
           <div class="search-wrapper">
             <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
             </svg>
-            <input type="text" class="search-input" id="search-history" placeholder="Search saved records..." oninput="filterHistory()">
+            <input type="text" class="form-control search-input" id="search-history" placeholder="Search saved records..." oninput="filterHistory()">
           </div>
           <div class="records-list" id="records-list-container">
             <div class="empty-history">Connecting database to load records...</div>
           </div>
         </div>
-      </div>
+      </div><!-- /content-history -->
 
-      <!-- Action Buttons area (Sticky bottom) -->
+      <!-- ----------------------------------------------------------------
+           ACTION BUTTONS (Sticky Bottom)
+           ---------------------------------------------------------------- -->
       <div class="sidebar-actions">
-        <button class="btn btn-primary" onclick="exportPDF()">
-          <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-          Export PDF
+        <button class="btn-action-primary" onclick="exportPDF()">
+          <i class="bi bi-file-earmark-pdf-fill"></i> Export PDF
         </button>
-        <button class="btn btn-primary" onclick="exportWord()">
-          <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-          Export Word
+        <button class="btn-action-word" onclick="exportWord()">
+          <i class="bi bi-file-earmark-word-fill"></i> Export Word
         </button>
-        <button class="btn btn-secondary" onclick="printDocument()" style="grid-column: span 2;">
-          <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
-          Print Document
+        <button class="btn-action-secondary" onclick="printDocument()">
+          <i class="bi bi-printer-fill"></i> Print Document
         </button>
-        <button class="btn btn-danger" onclick="clearForm()" style="grid-column: span 2; background: transparent; border: 1px solid var(--error); color: var(--error); transition: all 0.2s ease;" onmouseover="this.style.background='var(--error)'; this.style.color='#ffffff';" onmouseout="this.style.background='transparent'; this.style.color='var(--error)';">
-          <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-          Clear Form
+        <button class="btn-action-danger" onclick="clearForm()">
+          <i class="bi bi-trash3-fill"></i> Clear Form
         </button>
       </div>
-    </div>
 
-    <!-- ==========================================================================
-         PREVIEW CONTAINER (RIGHT PANEL)
-         ========================================================================== -->
+    </div><!-- /sidebar -->
+
+    <!-- ==================================================================
+         PREVIEW PANE — RIGHT PANEL
+         ================================================================== -->
     <div class="preview-pane">
-      
       <div class="preview-canvas">
-        
-        <!-- ==========================================================================
-             THE TRANSLATED BIRTH CERTIFICATE SHEET
-             ========================================================================== -->
+
+        <!-- A4 Certificate Sheet -->
         <div id="certificate-preview" class="certificate-sheet">
-          <!-- BIRTH CERTIFICATE PREVIEW SHEET -->
+
+          <!-- BIRTH CERTIFICATE PREVIEW -->
           <div id="preview-birth-sheet">
             <div class="translation-header">Translated from Uzbek</div>
-            
+
             <div class="doc-title-container">
               <div class="doc-country">REPUBLIC OF UZBEKISTAN</div>
               <div class="doc-title">BIRTH CERTIFICATE</div>
@@ -1467,33 +479,24 @@
                 <td class="label">Birth Place:</td>
                 <td class="value">
                   <div class="sub-grid">
-                    <div class="sub-grid-item">
-                      <strong>State:</strong>
-                      <span>Uzbekistan</span>
-                    </div>
-                    <div class="sub-grid-item">
-                      <strong>Region of:</strong>
-                      <span id="preview-region"><span class="placeholder-text">[REGION]</span></span>
-                    </div>
-                    <div class="sub-grid-item">
-                      <strong>City of, village:</strong>
-                      <span id="preview-city"><span class="placeholder-text">[CITY / DISTRICT]</span></span>
-                    </div>
+                    <div class="sub-grid-item"><strong>State:</strong><span>Uzbekistan</span></div>
+                    <div class="sub-grid-item"><strong>Region of:</strong><span id="preview-region"><span class="placeholder-text">[REGION]</span></span></div>
+                    <div class="sub-grid-item"><strong>City of, village:</strong><span id="preview-city"><span class="placeholder-text">[CITY / DISTRICT]</span></span></div>
                   </div>
                 </td>
               </tr>
             </table>
 
             <div class="registry-sentence">
-              in certification of this, entry No 
-              <span id="preview-entryNumber"><span class="placeholder-text">[ENTRY NO]</span></span> 
-              was made into the Birth Registry on 
-              <span id="preview-registryDate"><span class="placeholder-text">[REGISTRY DATE]</span></span> 
+              in certification of this, entry No
+              <span id="preview-entryNumber"><span class="placeholder-text">[ENTRY NO]</span></span>
+              was made into the Birth Registry on
+              <span id="preview-registryDate"><span class="placeholder-text">[REGISTRY DATE]</span></span>
               year.
             </div>
 
             <div class="section-title">Parents:</div>
-            
+
             <table class="parents-table">
               <tr>
                 <td class="label">Father:</td>
@@ -1521,7 +524,7 @@
               </tr>
             </table>
 
-            <div class="section-title">REGISTRATION OFFICE & DETAILS</div>
+            <div class="section-title">REGISTRATION OFFICE &amp; DETAILS</div>
 
             <table class="registry-office-table">
               <tr>
@@ -1553,12 +556,12 @@
               </div>
               <div class="footer-spacer"></div>
             </div>
-          </div>
+          </div><!-- /preview-birth-sheet -->
 
-          <!-- MARRIAGE CERTIFICATE PREVIEW SHEET -->
-          <div id="preview-marriage-sheet" style="display: none;">
+          <!-- MARRIAGE CERTIFICATE PREVIEW -->
+          <div id="preview-marriage-sheet" style="display:none;">
             <div class="translation-header">Translated form Uzbek into English</div>
-            
+
             <div class="doc-title-container">
               <div class="doc-title">MARRIAGE CERTIFICATE</div>
             </div>
@@ -1590,7 +593,7 @@
               </tr>
             </table>
 
-            <div style="height: 15px;"></div>
+            <div style="height:15px;"></div>
 
             <table class="certificate-table">
               <tr>
@@ -1620,20 +623,20 @@
             </table>
 
             <div class="registry-sentence">
-              were married on <span id="preview-m-marriageDate"><span class="placeholder-text">[MARRIAGE DATE]</span></span> 
+              were married on <span id="preview-m-marriageDate"><span class="placeholder-text">[MARRIAGE DATE]</span></span>
               (<span id="preview-m-marriageDateWords"><span class="placeholder-text">[MARRIAGE DATE IN WORDS]</span></span>)
             </div>
 
-            <div class="registry-sentence" style="text-indent: 0; margin-top: 10px;">
-              Marriage record № <span id="preview-m-recordNumber"><span class="placeholder-text">[RECORD NO]</span></span> 
+            <div class="registry-sentence" style="text-indent:0; margin-top:10px;">
+              Marriage record № <span id="preview-m-recordNumber"><span class="placeholder-text">[RECORD NO]</span></span>
               was filed on <span id="preview-m-recordDate"><span class="placeholder-text">[RECORD DATE]</span></span>.
             </div>
 
-            <div class="registry-sentence" style="text-indent: 0; margin-top: 15px; font-weight: bold;">
+            <div class="registry-sentence" style="text-indent:0; margin-top:15px; font-weight:bold;">
               In the marriage the following surnames were given to:
             </div>
 
-            <table class="parents-table" style="margin-top: 5px;">
+            <table class="parents-table" style="margin-top:5px;">
               <tr>
                 <td class="label">Husband:</td>
                 <td class="value font-bold uppercase" id="preview-m-husbandNewSurname">
@@ -1648,7 +651,7 @@
               </tr>
             </table>
 
-            <div style="height: 15px;"></div>
+            <div style="height:15px;"></div>
 
             <table class="registry-office-table">
               <tr>
@@ -1665,2064 +668,176 @@
               </tr>
             </table>
 
-            <div class="signature-section" style="margin-top: 25px;">
-              <div class="signature-officer" style="width: 45%;">Chairman of the Civil Registry Office</div>
-              <div class="signature-signed" style="width: 20%; text-align: center; font-style: italic;">(signed)</div>
-              <div class="signature-name" style="width: 35%; text-align: right; font-weight: bold; border-bottom: 1px solid #000;" id="preview-m-chairmanName">
+            <div class="signature-section" style="margin-top:25px;">
+              <div class="signature-officer" style="width:45%;">Chairman of the Civil Registry Office</div>
+              <div class="signature-signed" style="width:20%; text-align:center; font-style:italic;">(signed)</div>
+              <div class="signature-name" style="width:35%; text-align:right; font-weight:bold; border-bottom:1px solid #000;" id="preview-m-chairmanName">
                 <span class="placeholder-text">[CHAIRMAN NAME]</span>
               </div>
             </div>
 
-            <div class="footer-section" style="margin-top: 20px;">
+            <div class="footer-section" style="margin-top:20px;">
               <div class="official-seal"><strong>Official Seal:</strong></div>
-              <div class="id-number-section" id="preview-m-certNumber" style="border: none; font-weight: bold; padding: 0;">
+              <div class="id-number-section" id="preview-m-certNumber" style="border:none; font-weight:bold; padding:0;">
                 <span class="placeholder-text">[CERTIFICATE NO]</span>
               </div>
               <div class="footer-spacer"></div>
             </div>
-          </div>
+          </div><!-- /preview-marriage-sheet -->
 
-          <!-- DIVORCE CERTIFICATE PREVIEW SHEET -->
-          <div id="preview-divorce-sheet" style="display: none;">
+          <!-- DIVORCE CERTIFICATE PREVIEW -->
+          <div id="preview-divorce-sheet" style="display:none;">
             <div class="translation-header">Translated from Uzbek into English</div>
-            
-            <div style="text-align: center; font-size: 10pt; font-weight: bold; margin-top: 15px; text-transform: uppercase;">
+
+            <div style="text-align:center; font-size:10pt; font-weight:bold; margin-top:15px; text-transform:uppercase;">
               -STATE EMBLEM OF THE REPUBLIC OF UZBEKISTAN-
             </div>
-            
-            <div class="doc-title-container" style="margin-top: 20px; margin-bottom: 25px;">
+
+            <div class="doc-title-container" style="margin-top:20px; margin-bottom:25px;">
               <div class="doc-title">DIVORCE CERTIFICATE</div>
             </div>
 
-            <table class="certificate-table" style="margin-bottom: 5px;">
+            <table class="certificate-table" style="margin-bottom:5px;">
               <tr>
-                <td class="label" style="width: 25%;">Citizen:</td>
-                <td class="value font-bold uppercase" id="preview-d-husbandName" style="text-align: center; border-bottom: 1px solid #000; font-weight: bold;">
+                <td class="label" style="width:25%;">Citizen:</td>
+                <td class="value font-bold uppercase" id="preview-d-husbandName" style="text-align:center; border-bottom:1px solid #000; font-weight:bold;">
                   <span class="placeholder-text">[HUSBAND CITIZEN NAME]</span>
                 </td>
               </tr>
               <tr>
                 <td></td>
-                <td style="font-size: 9pt; text-align: center; color: var(--text-muted); padding-top: 2px;">(Full name)</td>
+                <td style="font-size:9pt; text-align:center; color:var(--text-muted); padding-top:2px;">(Full name)</td>
               </tr>
             </table>
 
-            <table class="certificate-table" style="margin-top: 5px; margin-bottom: 5px;">
+            <table class="certificate-table" style="margin-top:5px; margin-bottom:5px;">
               <tr>
-                <td class="label" style="width: 25%;">and citizen:</td>
-                <td class="value font-bold uppercase" id="preview-d-wifeName" style="text-align: center; border-bottom: 1px solid #000; font-weight: bold;">
+                <td class="label" style="width:25%;">and citizen:</td>
+                <td class="value font-bold uppercase" id="preview-d-wifeName" style="text-align:center; border-bottom:1px solid #000; font-weight:bold;">
                   <span class="placeholder-text">[WIFE CITIZEN NAME]</span>
                 </td>
               </tr>
               <tr>
                 <td></td>
-                <td style="font-size: 9pt; text-align: center; color: var(--text-muted); padding-top: 2px;">(Full name)</td>
+                <td style="font-size:9pt; text-align:center; color:var(--text-muted); padding-top:2px;">(Full name)</td>
               </tr>
             </table>
 
-            <div class="registry-sentence" style="text-indent: 0; margin: 15px 0;">
+            <div class="registry-sentence" style="text-indent:0; margin:15px 0;">
               are dissolved their marriage.
             </div>
 
-            <div class="registry-sentence" style="text-indent: 0; margin: 15px 0; font-weight: bold;">
-              Record № <span id="preview-d-recordNumber" style="border-bottom: 1px solid #000;"><span class="placeholder-text">[RECORD NO]</span></span> was filed on <span id="preview-d-recordDate" style="border-bottom: 1px solid #000;"><span class="placeholder-text">[RECORD DATE]</span></span>,
+            <div class="registry-sentence" style="text-indent:0; margin:15px 0; font-weight:bold;">
+              Record № <span id="preview-d-recordNumber" style="border-bottom:1px solid #000;"><span class="placeholder-text">[RECORD NO]</span></span>
+              was filed on <span id="preview-d-recordDate" style="border-bottom:1px solid #000;"><span class="placeholder-text">[RECORD DATE]</span></span>,
             </div>
 
-            <div class="registry-sentence" style="text-indent: 0; margin: 20px 0; font-weight: bold;">
+            <div class="registry-sentence" style="text-indent:0; margin:20px 0; font-weight:bold;">
               Following surnames were given after the marriage dissolution:
             </div>
 
-            <table class="parents-table" style="margin-top: 5px;">
+            <table class="parents-table" style="margin-top:5px;">
               <tr>
-                <td class="label" style="width: 25%;">Husband:</td>
-                <td class="value font-bold uppercase" id="preview-d-husbandSurname" style="font-weight: bold;">
+                <td class="label" style="width:25%;">Husband:</td>
+                <td class="value font-bold uppercase" id="preview-d-husbandSurname" style="font-weight:bold;">
                   <span class="placeholder-text">[HUSBAND SURNAME]</span>
                 </td>
               </tr>
               <tr>
-                <td class="label" style="width: 25%;">Wife:</td>
-                <td class="value font-bold uppercase" id="preview-d-wifeSurname" style="font-weight: bold;">
+                <td class="label" style="width:25%;">Wife:</td>
+                <td class="value font-bold uppercase" id="preview-d-wifeSurname" style="font-weight:bold;">
                   <span class="placeholder-text">[WIFE SURNAME]</span>
                 </td>
               </tr>
             </table>
 
-            <div style="height: 15px;"></div>
+            <div style="height:15px;"></div>
 
             <table class="registry-office-table">
               <tr>
-                <td class="label" style="width: 35%;">Registration Place:</td>
-                <td class="value" id="preview-d-regPlace" style="font-style: italic;">
+                <td class="label" style="width:35%;">Registration Place:</td>
+                <td class="value" id="preview-d-regPlace" style="font-style:italic;">
                   <span class="placeholder-text">[REGISTRATION PLACE]</span>
                 </td>
               </tr>
               <tr>
-                <td class="label" style="width: 35%;">The certificate is given to:</td>
+                <td class="label" style="width:35%;">The certificate is given to:</td>
                 <td class="value font-bold uppercase" id="preview-d-givenTo">
                   <span class="placeholder-text">[RECIPIENT NAME]</span>
                 </td>
               </tr>
               <tr>
-                <td class="label" style="width: 35%;">Date of issue:</td>
-                <td class="value" id="preview-d-issueDate" style="font-style: italic;">
+                <td class="label" style="width:35%;">Date of issue:</td>
+                <td class="value" id="preview-d-issueDate" style="font-style:italic;">
                   <span class="placeholder-text">[DATE OF ISSUE]</span>
                 </td>
               </tr>
             </table>
 
-            <div class="signature-section" style="margin-top: 25px;">
-              <div class="signature-officer" style="width: 45%;">Head of the Civil Registry office</div>
-              <div class="signature-signed" style="width: 20%; text-align: center; font-style: italic;">(signed)</div>
-              <div class="signature-name" style="width: 35%; text-align: right; font-weight: bold; border-bottom: 1px solid #000;" id="preview-d-headName">
+            <div class="signature-section" style="margin-top:25px;">
+              <div class="signature-officer" style="width:45%;">Head of the Civil Registry office</div>
+              <div class="signature-signed" style="width:20%; text-align:center; font-style:italic;">(signed)</div>
+              <div class="signature-name" style="width:35%; text-align:right; font-weight:bold; border-bottom:1px solid #000;" id="preview-d-headName">
                 <span class="placeholder-text">[HEAD NAME]</span>
               </div>
             </div>
 
-            <div class="footer-section" style="margin-top: 25px; align-items: flex-end;">
-              <div class="official-seal" id="preview-d-sealText" style="width: 45%; font-size: 8pt; font-style: italic; line-height: 1.4; font-weight: normal; white-space: pre-line;">
+            <div class="footer-section" style="margin-top:25px; align-items:flex-end;">
+              <div class="official-seal" id="preview-d-sealText" style="width:45%; font-size:8pt; font-style:italic; line-height:1.4; font-weight:normal; white-space:pre-line;">
                 <span class="placeholder-text">[OFFICIAL SEAL TEXT]</span>
               </div>
-              <div class="id-number-section" id="preview-d-certNumber" style="border: none; font-weight: bold; padding: 0; text-align: center; width: 35%; font-size: 11pt;">
+              <div class="id-number-section" id="preview-d-certNumber" style="border:none; font-weight:bold; padding:0; text-align:center; width:35%; font-size:11pt;">
                 <span class="placeholder-text">[CERTIFICATE NO]</span>
               </div>
-              <div class="footer-spacer" style="width: 20%;"></div>
+              <div class="footer-spacer" style="width:20%;"></div>
             </div>
-          </div>
+          </div><!-- /preview-divorce-sheet -->
+
+        </div><!-- /certificate-preview -->
+
+      </div><!-- /preview-canvas -->
+    </div><!-- /preview-pane -->
+
+  </div><!-- /dashboard -->
+
+  <!-- =====================================================================
+       BOOTSTRAP TOAST (notification)
+       ===================================================================== -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3 no-print">
+    <div id="toast-notification" class="toast align-items-center app-toast" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body" id="toast-message">Notification Message</div>
+        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- =====================================================================
+       BOOTSTRAP MODAL (confirm delete)
+       ===================================================================== -->
+  <div class="modal fade no-print" id="confirm-modal" tabindex="-1" aria-labelledby="modal-title" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modal-title">Confirm Action</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-
+        <div class="modal-body" id="modal-body">
+          Are you sure you want to perform this action?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="modal-cancel-btn" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-danger" id="modal-confirm-btn">Delete</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Toast Element -->
-  <div class="toast no-print" id="toast-notification">
-    <span id="toast-message">Notification Message</span>
-  </div>
+  <!-- Bootstrap 5 JS Bundle (includes Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- Confirmation Modal -->
-  <div class="modal-overlay no-print" id="confirm-modal">
-    <div class="modal-card">
-      <div class="modal-title" id="modal-title">Confirm Action</div>
-      <div class="modal-body" id="modal-body">Are you sure you want to perform this action?</div>
-      <div class="modal-actions">
-        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-        <button class="btn btn-primary" id="modal-confirm-btn" style="background: var(--error); grid-column: span 1; box-shadow: none;">Delete</button>
-      </div>
-    </div>
-  </div>
+  <!-- Application Logic -->
+  <script src="app.js"></script>
 
-  <!-- ==========================================================================
-       JAVASCRIPT LOGIC
-       ========================================================================== -->
-  <script>
-    // Database Configuration
-    const TURSO_URL = "https://birthcertificate-khan0200.aws-ap-northeast-1.turso.io/v2/pipeline";
-    const TURSO_TOKEN = "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3ODQ5NTcyNzAsImlkIjoiMDE5Zjk3YmUtNDIwMS03YTY3LTkxODUtODIzMGMyMmYyYjU1Iiwia2lkIjoiVFZIaHctQ1VfMTczOVlqa2dZRGpKbGJfQlVpQWVLckxTelhfbDVMUTlzRSIsInJpZCI6ImQwNGFhNWUyLTRiYTAtNGMzNC1iZjQ5LTViZTgxM2U5NjIyNiJ9.srRd3vUHK48oKsluQJk6E4xY2jHT1eqyj5oUdhmLsOeNXYt7T5MEqojBdRenZshw-3wg8TXrAaleU9LHkTFCCA";
-
-    let currentMode = 'birth'; // 'birth', 'marriage', or 'divorce'
-    let savedRecords = []; // Global history memory
-
-    // Mock Data for Quick Fill (Birth Mode)
-    const MOCK_DATA = {
-      fullName: "ABDUVALIEV SARDORBEK ANVAR O'G'LI",
-      dob: "15/10/1997",
-      region: "Fergana",
-      city: "Rishton district",
-      entryNumber: "452",
-      registryDate: "17/10/1997",
-      fatherName: "ABDUVALIEV ANVARJON",
-      fatherNationality: "Uzbek",
-      motherName: "ABDUVALIEVA SOJIDAXON",
-      motherNationality: "Uzbek",
-      regCity: "Rishton",
-      issueDate: "17/10/1997",
-      headName: "YUSUPOVA M. A.",
-      idNumber: "I-FR No 0852963"
-    };
-
-    // Mock Data for Quick Fill (Marriage Mode)
-    const MARRIAGE_MOCK_DATA = {
-      husbandName: "MAKHMUDOV NODIRBEK NOYIMJON UGLI",
-      husbandDob: "10/09/1995",
-      husbandBirthPlace: "Markhamat district, Andijan",
-      husbandCitizenship: "Uzbekistan",
-      wifeName: "ERGASHEVA NILUFAR RAKHMONALI KIZI",
-      wifeDob: "17/12/2001",
-      wifeBirthPlace: "Markhamat district, Andijan",
-      wifeCitizenship: "Uzbekistan",
-      marriageDate: "16/01/2025",
-      marriageDateWords: "Two thousand twenty five",
-      recordNumber: "2-1711-25-00050",
-      recordDate: "16/01/2025",
-      husbandNewSurname: "MAKHMUDOV",
-      wifeNewSurname: "MAKHMUDOVA",
-      regPlace: "Markhamat district",
-      issueDate: "16/01/2025",
-      chairmanName: "M.O.SOTVOLDIEVA",
-      certNumber: "N № 05842224"
-    };
-
-    // Mock Data for Quick Fill (Divorce Mode)
-    const DIVORCE_MOCK_DATA = {
-      husbandName: "KIPCHAKOV DONIYOR TASHKENBOEVICH",
-      wifeName: "KIPCHAKOVA MALIKAKHON",
-      recordNumber: "147",
-      recordDate: "19/10/2018",
-      husbandNewSurname: "KIPCHAKOV",
-      wifeNewSurname: "JURAEVA",
-      regPlace: "Norin district Civil registry office",
-      givenTo: "JURAEVA MALIKAKHON",
-      issueDate: "04/12/2018",
-      headName: "M.ALIBOEVA",
-      sealText: "Seal: Ministry of Justice of the\nRepublic of Uzbekistan\nState Services of Namangan region\nDepartment of Registration of Civil\ncondition of Norin district",
-      certNumber: "I-NA № 0036626"
-    };
-
-    // ==========================================================================
-    // 1. RECEPTIVE AND DYNAMIC DESIGN & VIEW CONTROLS
-    // ==========================================================================
-
-    // Tab Switching (Form vs History)
-    function switchTab(tab) {
-      document.getElementById('tab-form').classList.toggle('active', tab === 'form');
-      document.getElementById('tab-history').classList.toggle('active', tab === 'history');
-      
-      document.getElementById('content-form').style.display = tab === 'form' ? 'flex' : 'none';
-      document.getElementById('content-history').style.display = tab === 'history' ? 'flex' : 'none';
-      
-      if (tab === 'history') {
-        loadHistoryFromTurso();
-      }
-    }
-
-    // Document Mode Switcher (Birth vs Marriage vs Divorce)
-    function switchMode(mode) {
-      if (currentMode === mode) return;
-      currentMode = mode;
-
-      // Update switcher active tab states
-      document.getElementById('btn-mode-birth').classList.toggle('active', mode === 'birth');
-      document.getElementById('btn-mode-marriage').classList.toggle('active', mode === 'marriage');
-      document.getElementById('btn-mode-divorce').classList.toggle('active', mode === 'divorce');
-
-      // Update form description text
-      const descText = document.getElementById('form-desc-text');
-      if (descText) {
-        if (mode === 'birth') {
-          descText.textContent = 'Translate Uzbek birth certificates to English';
-        } else if (mode === 'marriage') {
-          descText.textContent = 'Translate Uzbek marriage certificates to English';
-        } else {
-          descText.textContent = 'Translate Uzbek divorce certificates to English';
-        }
-      }
-
-      // Toggle form field containers
-      document.getElementById('birth-fields-container').style.display = mode === 'birth' ? 'block' : 'none';
-      document.getElementById('marriage-fields-container').style.display = mode === 'marriage' ? 'block' : 'none';
-      document.getElementById('divorce-fields-container').style.display = mode === 'divorce' ? 'block' : 'none';
-
-      // Toggle preview sheets
-      document.getElementById('preview-birth-sheet').style.display = mode === 'birth' ? 'block' : 'none';
-      document.getElementById('preview-marriage-sheet').style.display = mode === 'marriage' ? 'block' : 'none';
-      document.getElementById('preview-divorce-sheet').style.display = mode === 'divorce' ? 'block' : 'none';
-
-      // Reset active record ID
-      document.getElementById('currentRecordId').value = "";
-
-      // Load database history lists and clear form
-      loadHistoryFromTurso();
-      clearForm();
-    }
-
-    // Zoom Preview Sheet Controller
-    const zoomSlider = document.getElementById('zoom-slider');
-    const zoomVal = document.getElementById('zoom-val');
-    const certificatePreview = document.getElementById('certificate-preview');
-
-    zoomSlider.addEventListener('input', (e) => {
-      const scale = e.target.value;
-      zoomVal.textContent = `${Math.round(scale * 100)}%`;
-      certificatePreview.style.transform = `scale(${scale})`;
-    });
-
-    // Dark/Light Theme toggling
-    const themeToggle = document.getElementById('theme-toggle');
-    const themeIcon = document.getElementById('theme-icon');
-    
-    themeToggle.addEventListener('click', () => {
-      const currentTheme = document.body.getAttribute('data-theme');
-      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-      document.body.setAttribute('data-theme', newTheme);
-      
-      // Update toggle icon
-      if (newTheme === 'light') {
-        themeIcon.innerHTML = `
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-        `;
-        themeIcon.setAttribute('viewBox', '0 0 24 24');
-      } else {
-        themeIcon.innerHTML = `
-          <circle cx="12" cy="12" r="5"></circle>
-          <line x1="12" y1="1" x2="12" y2="3"></line>
-          <line x1="12" y1="21" x2="12" y2="23"></line>
-          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-          <line x1="1" y1="12" x2="3" y2="12"></line>
-          <line x1="21" y1="12" x2="23" y2="12"></line>
-          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-        `;
-        themeIcon.setAttribute('viewBox', '0 0 24 24');
-      }
-    });
-
-    // Modal Manager
-    let modalCallback = null;
-    function openConfirmModal(title, body, confirmBtnText, callback) {
-      document.getElementById('modal-title').textContent = title;
-      document.getElementById('modal-body').textContent = body;
-      const confirmBtn = document.getElementById('modal-confirm-btn');
-      confirmBtn.textContent = confirmBtnText;
-      
-      modalCallback = callback;
-      
-      confirmBtn.onclick = () => {
-        if (modalCallback) modalCallback();
-        closeModal();
-      };
-      
-      document.getElementById('confirm-modal').classList.add('open');
-    }
-    
-    function closeModal() {
-      document.getElementById('confirm-modal').classList.remove('open');
-      modalCallback = null;
-    }
-
-    // Toast Manager
-    function showToast(message, type = 'success') {
-      const toast = document.getElementById('toast-notification');
-      toast.className = `toast show no-print ${type}`;
-      document.getElementById('toast-message').textContent = message;
-      
-      setTimeout(() => {
-        toast.classList.remove('show');
-      }, 4000);
-    }
-
-    // ==========================================================================
-    // 2. TEXT PROCESSING HELPERS & REACTIVE LIVE PREVIEW SYNC
-    // ==========================================================================
-
-    // Helper to format Date: dd/mm/yyyy to 'Month day, year'
-    function formatDate(str) {
-      if (!str) return '';
-      const parts = str.split(/[./-]/);
-      if (parts.length !== 3) return str;
-      
-      const day = parseInt(parts[0], 10);
-      const month = parseInt(parts[1], 10) - 1;
-      const year = parseInt(parts[2], 10);
-      
-      const dateObj = new Date(year, month, day);
-      if (isNaN(dateObj.getTime())) return str;
-      
-      const options = { year: 'numeric', month: 'long', day: 'numeric' };
-      return dateObj.toLocaleDateString('en-US', options);
-    }
-
-    // Helper to translate year digits to written English words
-    function getWrittenYear(dateStr) {
-      if (!dateStr) return '';
-      const parts = dateStr.split(/[./-]/);
-      if (parts.length !== 3) return '';
-      const year = parseInt(parts[2], 10);
-      if (isNaN(year)) return '';
-
-      const units = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
-      const teens = ["ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"];
-      const tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
-
-      function numberToWords(num) {
-        if (num === 0) return "zero";
-        let words = "";
-        if (num >= 1000) {
-          const thousands = Math.floor(num / 1000);
-          words += numberToWords(thousands) + " thousand ";
-          num %= 1000;
-        }
-        if (num >= 100) {
-          const hundreds = Math.floor(num / 100);
-          words += units[hundreds] + " hundred ";
-          num %= 100;
-        }
-        if (num > 0) {
-          if (words !== "") words += "and ";
-          if (num < 10) words += units[num];
-          else if (num < 20) words += teens[num - 10];
-          else {
-            const tenDigit = Math.floor(num / 10);
-            const unitDigit = num % 10;
-            words += tens[tenDigit];
-            if (unitDigit > 0) words += " " + units[unitDigit];
-          }
-        }
-        return words.trim();
-      }
-
-      const result = numberToWords(year);
-      return result.charAt(0).toUpperCase() + result.slice(1);
-    }
-
-    // Input elements and corresponding preview element IDs (Birth certificate)
-    const syncMapping = {
-      fullName: { previewId: 'preview-fullName', format: val => val ? val.toUpperCase() : '' },
-      dob: { previewId: 'preview-dob', format: val => formatDate(val) },
-      region: { previewId: 'preview-region', format: val => val ? val.charAt(0).toUpperCase() + val.slice(1).toLowerCase() : '' },
-      city: { previewId: 'preview-city', format: val => val ? val.charAt(0).toUpperCase() + val.slice(1).toLowerCase() : '' },
-      entryNumber: { previewId: 'preview-entryNumber', format: val => val || '_____' },
-      registryDate: { previewId: 'preview-registryDate', format: val => formatDate(val) || '__________' },
-      fatherName: { previewId: 'preview-fatherName', format: val => val ? val.toUpperCase() : '' },
-      fatherNationality: { previewId: 'preview-fatherNationality', format: val => val || '' },
-      motherName: { previewId: 'preview-motherName', format: val => val ? val.toUpperCase() : '' },
-      motherNationality: { previewId: 'preview-motherNationality', format: val => val || '' },
-      regCity: { previewId: 'preview-regCity', format: val => val ? `Civil registry office of ${val} district` : '' },
-      issueDate: { previewId: 'preview-issueDate', format: val => formatDate(val) },
-      headName: { previewId: 'preview-headName', format: val => val || '' },
-      idNumber: { previewId: 'preview-idNumber', format: val => val || '' }
-    };
-
-    // Input elements and corresponding preview element IDs (Marriage certificate)
-    const marriageSyncMapping = {
-      husbandName: { previewId: 'preview-m-husbandName', format: val => val ? val.toUpperCase() : '' },
-      husbandDob: { previewId: 'preview-m-husbandDob', format: val => formatDate(val) },
-      husbandBirthPlace: { previewId: 'preview-m-husbandBirthPlace', format: val => val || '' },
-      husbandCitizenship: { previewId: 'preview-m-husbandCitizenship', format: val => val ? val.toUpperCase() : '' },
-      wifeName: { previewId: 'preview-m-wifeName', format: val => val ? val.toUpperCase() : '' },
-      wifeDob: { previewId: 'preview-m-wifeDob', format: val => formatDate(val) },
-      wifeBirthPlace: { previewId: 'preview-m-wifeBirthPlace', format: val => val || '' },
-      wifeCitizenship: { previewId: 'preview-m-wifeCitizenship', format: val => val ? val.toUpperCase() : '' },
-      marriageDate: { previewId: 'preview-m-marriageDate', format: val => formatDate(val) },
-      marriageDateWords: { previewId: 'preview-m-marriageDateWords', format: val => val || '' },
-      recordNumber: { previewId: 'preview-m-recordNumber', format: val => val || '' },
-      recordDate: { previewId: 'preview-m-recordDate', format: val => formatDate(val) },
-      husbandNewSurname: { previewId: 'preview-m-husbandNewSurname', format: val => val ? val.toUpperCase() : '' },
-      wifeNewSurname: { previewId: 'preview-m-wifeNewSurname', format: val => val ? val.toUpperCase() : '' },
-      regPlace: { previewId: 'preview-m-regPlace', format: val => val ? (val.toLowerCase().startsWith('civil') ? val : `Civil registry office of ${val}`) : '' },
-      issueDate: { previewId: 'preview-m-issueDate', inputId: 'm-issueDate', format: val => formatDate(val) },
-      chairmanName: { previewId: 'preview-m-chairmanName', format: val => val || '' },
-      certNumber: { previewId: 'preview-m-certNumber', format: val => val || '' }
-    };
-
-    // Input elements and corresponding preview element IDs (Divorce certificate)
-    const divorceSyncMapping = {
-      husbandName: { previewId: 'preview-d-husbandName', inputId: 'divorceHusbandName', format: val => val ? val.toUpperCase() : '' },
-      wifeName: { previewId: 'preview-d-wifeName', inputId: 'divorceWifeName', format: val => val ? val.toUpperCase() : '' },
-      recordNumber: { previewId: 'preview-d-recordNumber', inputId: 'divorceRecordNumber', format: val => val || '' },
-      recordDate: { previewId: 'preview-d-recordDate', inputId: 'divorceRecordDate', format: val => formatDate(val) },
-      husbandNewSurname: { previewId: 'preview-d-husbandSurname', inputId: 'divorceHusbandSurname', format: val => val ? val.toUpperCase() : '' },
-      wifeNewSurname: { previewId: 'preview-d-wifeSurname', inputId: 'divorceWifeSurname', format: val => val ? val.toUpperCase() : '' },
-      regPlace: { previewId: 'preview-d-regPlace', inputId: 'divorceRegPlace', format: val => val || '' },
-      givenTo: { previewId: 'preview-d-givenTo', inputId: 'divorceGivenTo', format: val => val ? val.toUpperCase() : '' },
-      issueDate: { previewId: 'preview-d-issueDate', inputId: 'divorceIssueDate', format: val => formatDate(val) },
-      headName: { previewId: 'preview-d-headName', inputId: 'divorceHeadName', format: val => val || '' },
-      sealText: { previewId: 'preview-d-sealText', inputId: 'divorceSealText', format: val => val || '' },
-      certNumber: { previewId: 'preview-d-certNumber', inputId: 'divorceCertNumber', format: val => val || '' }
-    };
-
-    // Initialize listeners for real-time reactivity
-    function initReactivity() {
-      // Birth reactivity
-      Object.keys(syncMapping).forEach(key => {
-        const inputId = syncMapping[key].inputId || key;
-        const input = document.getElementById(inputId);
-        if (!input) return;
-
-        input.addEventListener('input', (e) => {
-          let value = e.target.value;
-
-          // Auto-format Date fields: dd/mm/yyyy
-          if (inputId === 'dob' || inputId === 'registryDate' || inputId === 'issueDate') {
-            if (!e.inputType || !e.inputType.startsWith('delete')) {
-              let digits = value.replace(/\D/g, '');
-              if (digits.length > 8) digits = digits.slice(0, 8);
-              
-              let formatted = '';
-              if (digits.length > 0) {
-                formatted += digits.slice(0, 2);
-                if (digits.length === 2 && value.length === 2) formatted += '/';
-              }
-              if (digits.length > 2) {
-                formatted += '/' + digits.slice(2, 4);
-                if (digits.length === 4 && value.length === 5) formatted += '/';
-              }
-              if (digits.length > 4) {
-                formatted += '/' + digits.slice(4, 8);
-              }
-              e.target.value = formatted;
-              value = formatted;
-            }
-          }
-
-          // Case styling rules
-          if (inputId === 'fullName' || inputId === 'fatherName' || inputId === 'motherName') {
-            const cursorPosition = e.target.selectionStart;
-            e.target.value = value.toUpperCase();
-            e.target.setSelectionRange(cursorPosition, cursorPosition);
-            value = e.target.value;
-          } else if (inputId === 'region' || inputId === 'city') {
-            const cursorPosition = e.target.selectionStart;
-            if (value.length > 0) {
-              e.target.value = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
-            }
-            e.target.setSelectionRange(cursorPosition, cursorPosition);
-            value = e.target.value;
-          }
-
-          validateField(key, value);
-          updatePreviewField(key, value);
-        });
-      });
-
-      // Marriage reactivity
-      Object.keys(marriageSyncMapping).forEach(key => {
-        const inputId = marriageSyncMapping[key].inputId || key;
-        const input = document.getElementById(inputId);
-        if (!input) return;
-
-        input.addEventListener('input', (e) => {
-          let value = e.target.value;
-
-          // Auto-format Date fields: dd/mm/yyyy
-          if (inputId === 'husbandDob' || inputId === 'wifeDob' || inputId === 'marriageDate' || inputId === 'recordDate' || inputId === 'm-issueDate') {
-            if (!e.inputType || !e.inputType.startsWith('delete')) {
-              let digits = value.replace(/\D/g, '');
-              if (digits.length > 8) digits = digits.slice(0, 8);
-              
-              let formatted = '';
-              if (digits.length > 0) {
-                formatted += digits.slice(0, 2);
-                if (digits.length === 2 && value.length === 2) formatted += '/';
-              }
-              if (digits.length > 2) {
-                formatted += '/' + digits.slice(2, 4);
-                if (digits.length === 4 && value.length === 5) formatted += '/';
-              }
-              if (digits.length > 4) {
-                formatted += '/' + digits.slice(4, 8);
-              }
-              e.target.value = formatted;
-              value = formatted;
-            }
-          }
-
-          // Case styling rules
-          if (inputId === 'husbandName' || inputId === 'wifeName' || inputId === 'husbandNewSurname' || inputId === 'wifeNewSurname') {
-            const cursorPosition = e.target.selectionStart;
-            e.target.value = value.toUpperCase();
-            e.target.setSelectionRange(cursorPosition, cursorPosition);
-            value = e.target.value;
-          }
-
-          validateField(key, value);
-          updatePreviewField(key, value);
-        });
-      });
-
-      // Divorce reactivity
-      Object.keys(divorceSyncMapping).forEach(key => {
-        const inputId = divorceSyncMapping[key].inputId;
-        const input = document.getElementById(inputId);
-        if (!input) return;
-
-        input.addEventListener('input', (e) => {
-          let value = e.target.value;
-
-          // Auto-format Date fields: dd/mm/yyyy
-          if (inputId === 'divorceRecordDate' || inputId === 'divorceIssueDate') {
-            if (!e.inputType || !e.inputType.startsWith('delete')) {
-              let digits = value.replace(/\D/g, '');
-              if (digits.length > 8) digits = digits.slice(0, 8);
-              
-              let formatted = '';
-              if (digits.length > 0) {
-                formatted += digits.slice(0, 2);
-                if (digits.length === 2 && value.length === 2) formatted += '/';
-              }
-              if (digits.length > 2) {
-                formatted += '/' + digits.slice(2, 4);
-                if (digits.length === 4 && value.length === 5) formatted += '/';
-              }
-              if (digits.length > 4) {
-                formatted += '/' + digits.slice(4, 8);
-              }
-              e.target.value = formatted;
-              value = formatted;
-            }
-          }
-
-          // Case styling rules
-          if (inputId === 'divorceHusbandName' || inputId === 'divorceWifeName' || inputId === 'divorceHusbandSurname' || inputId === 'divorceWifeSurname' || inputId === 'divorceGivenTo') {
-            const cursorPosition = e.target.selectionStart;
-            e.target.value = value.toUpperCase();
-            e.target.setSelectionRange(cursorPosition, cursorPosition);
-            value = e.target.value;
-          }
-
-          validateField(key, value);
-          updatePreviewField(key, value);
-        });
-      });
-    }
-
-    // Dynamic field update routing
-    function updatePreviewField(key, rawValue) {
-      let mode = 'birth';
-      if (marriageSyncMapping[key]) mode = 'marriage';
-      if (divorceSyncMapping[key]) mode = 'divorce';
-      updatePreviewFieldForced(mode, key, rawValue);
-    }
-
-    // Helper to sync preview sheet HTML
-    function updatePreviewFieldForced(mode, inputId, rawValue) {
-      let config;
-      if (mode === 'birth') config = syncMapping[inputId];
-      else if (mode === 'marriage') config = marriageSyncMapping[inputId];
-      else config = divorceSyncMapping[inputId];
-
-      if (!config) return;
-      const previewEl = document.getElementById(config.previewId);
-      if (!previewEl) return;
-
-      const formattedVal = config.format(rawValue);
-
-      if (!rawValue) {
-        let placeholderText = "";
-        if (mode === 'birth') {
-          switch (inputId) {
-            case 'fullName': placeholderText = "[CITIZEN NAME]"; break;
-            case 'dob': placeholderText = "[DATE OF BIRTH]"; break;
-            case 'region': placeholderText = "[REGION]"; break;
-            case 'city': placeholderText = "[CITY / DISTRICT]"; break;
-            case 'entryNumber': placeholderText = "[ENTRY NO]"; break;
-            case 'registryDate': placeholderText = "[REGISTRY DATE]"; break;
-            case 'fatherName': placeholderText = "[FATHER NAME]"; break;
-            case 'fatherNationality': placeholderText = "[NATIONALITY]"; break;
-            case 'motherName': placeholderText = "[MOTHER NAME]"; break;
-            case 'motherNationality': placeholderText = "[NATIONALITY]"; break;
-            case 'regCity': placeholderText = "[REGISTRATION PLACE]"; break;
-            case 'issueDate': placeholderText = "[DATE OF ISSUE]"; break;
-            case 'headName': placeholderText = "[HEAD NAME]"; break;
-            case 'idNumber': placeholderText = "[ID NUMBER]"; break;
-            default: placeholderText = "______";
-          }
-          if (inputId === 'regCity') {
-            previewEl.innerHTML = `<span class="placeholder-text">[REGISTRATION PLACE]</span>`;
-          } else {
-            previewEl.innerHTML = `<span class="placeholder-text">${placeholderText}</span>`;
-          }
-        } else if (mode === 'marriage') {
-          switch (inputId) {
-            case 'husbandName': placeholderText = "[HUSBAND CITIZEN NAME]"; break;
-            case 'husbandDob': placeholderText = "[DATE OF BIRTH]"; break;
-            case 'husbandBirthPlace': placeholderText = "[BIRTH PLACE]"; break;
-            case 'husbandCitizenship': placeholderText = "[CITIZENSHIP]"; break;
-            case 'wifeName': placeholderText = "[WIFE CITIZEN NAME]"; break;
-            case 'wifeDob': placeholderText = "[DATE OF BIRTH]"; break;
-            case 'wifeBirthPlace': placeholderText = "[BIRTH PLACE]"; break;
-            case 'wifeCitizenship': placeholderText = "[CITIZENSHIP]"; break;
-            case 'marriageDate': placeholderText = "[MARRIAGE DATE]"; break;
-            case 'marriageDateWords': placeholderText = "[MARRIAGE DATE IN WORDS]"; break;
-            case 'recordNumber': placeholderText = "[RECORD NO]"; break;
-            case 'recordDate': placeholderText = "[RECORD DATE]"; break;
-            case 'husbandNewSurname': placeholderText = "[HUSBAND SURNAME]"; break;
-            case 'wifeNewSurname': placeholderText = "[WIFE SURNAME]"; break;
-            case 'regPlace': placeholderText = "[REGISTRATION PLACE]"; break;
-            case 'issueDate': placeholderText = "[DATE OF ISSUE]"; break;
-            case 'chairmanName': placeholderText = "[CHAIRMAN NAME]"; break;
-            case 'certNumber': placeholderText = "[CERTIFICATE NO]"; break;
-            default: placeholderText = "______";
-          }
-          if (inputId === 'regPlace') {
-            previewEl.innerHTML = `<span class="placeholder-text">[REGISTRATION PLACE]</span>`;
-          } else {
-            previewEl.innerHTML = `<span class="placeholder-text">${placeholderText}</span>`;
-          }
-        } else {
-          // Divorce mode placeholders
-          switch (inputId) {
-            case 'husbandName': placeholderText = "[HUSBAND CITIZEN NAME]"; break;
-            case 'wifeName': placeholderText = "[WIFE CITIZEN NAME]"; break;
-            case 'recordNumber': placeholderText = "[RECORD NO]"; break;
-            case 'recordDate': placeholderText = "[RECORD DATE]"; break;
-            case 'husbandNewSurname': placeholderText = "[HUSBAND SURNAME]"; break;
-            case 'wifeNewSurname': placeholderText = "[WIFE SURNAME]"; break;
-            case 'regPlace': placeholderText = "[REGISTRATION PLACE]"; break;
-            case 'givenTo': placeholderText = "[RECIPIENT NAME]"; break;
-            case 'issueDate': placeholderText = "[DATE OF ISSUE]"; break;
-            case 'headName': placeholderText = "[HEAD NAME]"; break;
-            case 'sealText': placeholderText = "[OFFICIAL SEAL TEXT]"; break;
-            case 'certNumber': placeholderText = "[CERTIFICATE NO]"; break;
-            default: placeholderText = "______";
-          }
-          if (inputId === 'sealText') {
-            previewEl.innerHTML = `<span class="placeholder-text">[OFFICIAL SEAL TEXT]</span>`;
-          } else {
-            previewEl.innerHTML = `<span class="placeholder-text">${placeholderText}</span>`;
-          }
-        }
-      } else {
-        if (inputId === 'sealText') {
-          previewEl.textContent = formattedVal;
-        } else {
-          previewEl.textContent = formattedVal;
-        }
-      }
-
-      // Special handling: Birth year in words
-      if (mode === 'birth' && inputId === 'dob') {
-        const wordsEl = document.getElementById('preview-dobWords');
-        if (wordsEl) {
-          const spelling = getWrittenYear(rawValue);
-          wordsEl.innerHTML = spelling ? spelling : `<span class="placeholder-text">[BIRTH YEAR IN WORDS]</span>`;
-        }
-      }
-    }
-
-    // Force validation of fields
-    function validateField(id, val) {
-      const dateRegex = /^\d{2}[./-]\d{2}[./-]\d{4}$/;
-      let isValid = true;
-
-      const birthRequired = ['fullName', 'region', 'city'];
-      const birthDates = ['dob', 'registryDate', 'issueDate'];
-      
-      const marriageRequired = ['husbandName', 'husbandDob', 'husbandBirthPlace', 'husbandCitizenship', 'wifeName', 'wifeDob', 'wifeBirthPlace', 'wifeCitizenship', 'marriageDate', 'marriageDateWords', 'recordNumber', 'recordDate', 'regPlace', 'issueDate', 'chairmanName', 'certNumber'];
-      const marriageDates = ['husbandDob', 'wifeDob', 'marriageDate', 'recordDate', 'issueDate'];
-
-      const divorceRequired = ['husbandName', 'wifeName', 'recordNumber', 'recordDate', 'husbandNewSurname', 'wifeNewSurname', 'regPlace', 'givenTo', 'issueDate', 'headName', 'sealText', 'certNumber'];
-      const divorceDates = ['recordDate', 'issueDate'];
-
-      let activeRequired, activeDates;
-      if (currentMode === 'birth') {
-        activeRequired = birthRequired;
-        activeDates = birthDates;
-      } else if (currentMode === 'marriage') {
-        activeRequired = marriageRequired;
-        activeDates = marriageDates;
-      } else {
-        activeRequired = divorceRequired;
-        activeDates = divorceDates;
-      }
-
-      let mapping;
-      if (currentMode === 'birth') mapping = syncMapping;
-      else if (currentMode === 'marriage') mapping = marriageSyncMapping;
-      else mapping = divorceSyncMapping;
-
-      const inputId = (mapping[id] && mapping[id].inputId) ? mapping[id].inputId : id;
-      const errEl = document.getElementById(`${inputId}Error`);
-      if (!errEl) return true;
-
-      const trimmedVal = val.trim();
-
-      if (activeRequired.includes(id) && !activeDates.includes(id)) {
-        const matches = !!trimmedVal;
-        errEl.style.display = matches ? 'none' : 'block';
-        isValid = matches;
-      } else if (activeDates.includes(id)) {
-        const isRequired = id === 'dob' || id === 'husbandDob' || id === 'wifeDob' || id === 'marriageDate' || id === 'recordDate';
-        const matches = dateRegex.test(trimmedVal);
-        if (isRequired) {
-          errEl.style.display = matches ? 'none' : 'block';
-          isValid = matches;
-        } else {
-          const hasText = !!trimmedVal;
-          errEl.style.display = (!hasText || matches) ? 'none' : 'block';
-          isValid = !hasText || matches;
-        }
-      }
-      return isValid;
-    }
-
-    // Validate entire form before saving
-    function validateForm() {
-      let isFormValid = true;
-      const mapping = (currentMode === 'birth') ? syncMapping : (currentMode === 'marriage' ? marriageSyncMapping : divorceSyncMapping);
-      Object.keys(mapping).forEach(key => {
-        const inputId = mapping[key].inputId || key;
-        const input = document.getElementById(inputId);
-        const isValid = validateField(key, input ? input.value : '');
-        if (!isValid) isFormValid = false;
-      });
-      return isFormValid;
-    }
-
-    // ==========================================================================
-    // 3. TURSO DATABASE INTEGRATION
-    // ==========================================================================
-
-    // Connection badge state
-    function setDbStatus(state, message = "") {
-      const badge = document.getElementById('db-status-badge');
-      const dot = document.getElementById('db-status-dot');
-      const text = document.getElementById('db-status-text');
-
-      if (!badge || !dot || !text) return;
-
-      dot.className = 'status-dot';
-      
-      if (state === 'connecting') {
-        dot.classList.add('connecting');
-        text.textContent = 'Turso Connecting';
-        badge.title = 'Connecting to Turso...';
-      } else if (state === 'connected') {
-        dot.classList.add('connected');
-        text.textContent = 'Turso Online';
-        badge.title = 'Successfully connected to Turso SQLite database';
-      } else {
-        dot.classList.add('error');
-        text.textContent = 'Turso Offline';
-        badge.title = `Error: ${message || 'Failed connection'}. Click to retry.`;
-      }
-    }
-
-    // Direct HTTP implementation of query pipeline
-    async function runTursoQuery(sql, args = []) {
-      const hranaArgs = args.map(arg => {
-        if (arg === null || arg === undefined) {
-          return { type: "null" };
-        } else if (typeof arg === "number") {
-          return { type: "integer", value: arg.toString() };
-        } else {
-          return { type: "text", value: arg.toString() };
-        }
-      });
-
-      const response = await fetch(TURSO_URL, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${TURSO_TOKEN}`,
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          requests: [
-            {
-              type: "execute",
-              stmt: {
-                sql: sql,
-                args: hranaArgs
-              }
-            },
-            {
-              type: "close"
-            }
-          ]
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP Error ${response.status}: ${response.statusText}`);
-      }
-
-      const payload = await response.json();
-      const executeResult = payload.results[0];
-
-      if (executeResult.type === "error") {
-        throw new Error(executeResult.error.message || "SQLite Execution Error");
-      }
-
-      const result = executeResult.response.result;
-      const cols = result.cols.map(c => c.name);
-      
-      const parsedRows = result.rows.map(row => {
-        const obj = {};
-        cols.forEach((col, idx) => {
-          const cell = row[idx];
-          if (cell.type === "null") {
-            obj[col] = null;
-          } else if (cell.type === "integer") {
-            obj[col] = parseInt(cell.value, 10);
-          } else if (cell.type === "float") {
-            obj[col] = parseFloat(cell.value);
-          } else {
-            obj[col] = cell.value;
-          }
-        });
-        return obj;
-      });
-
-      return {
-        rows: parsedRows,
-        affectedRowCount: result.affected_row_count,
-        lastInsertRowid: result.last_insert_rowid
-      };
-    }
-
-    // Database initialization on start
-    async function initializeDatabase() {
-      setDbStatus('connecting');
-      try {
-        const sqlBirth = `
-          CREATE TABLE IF NOT EXISTS birth_certificates (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            fullName TEXT NOT NULL,
-            dob TEXT NOT NULL,
-            writtenYear TEXT NOT NULL,
-            region TEXT NOT NULL,
-            city TEXT NOT NULL,
-            entryNumber TEXT,
-            registryDate TEXT,
-            fatherName TEXT,
-            fatherNationality TEXT,
-            motherName TEXT,
-            motherNationality TEXT,
-            regCity TEXT,
-            issueDate TEXT,
-            headName TEXT,
-            idNumber TEXT,
-            createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
-          );
-        `;
-        const sqlMarriage = `
-          CREATE TABLE IF NOT EXISTS marriage_certificates (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            husbandName TEXT NOT NULL,
-            husbandDob TEXT NOT NULL,
-            husbandBirthPlace TEXT NOT NULL,
-            husbandCitizenship TEXT NOT NULL,
-            wifeName TEXT NOT NULL,
-            wifeDob TEXT NOT NULL,
-            wifeBirthPlace TEXT NOT NULL,
-            wifeCitizenship TEXT NOT NULL,
-            marriageDate TEXT NOT NULL,
-            marriageDateWords TEXT NOT NULL,
-            recordNumber TEXT NOT NULL,
-            recordDate TEXT NOT NULL,
-            husbandNewSurname TEXT NOT NULL,
-            wifeNewSurname TEXT NOT NULL,
-            regPlace TEXT NOT NULL,
-            issueDate TEXT NOT NULL,
-            chairmanName TEXT NOT NULL,
-            certNumber TEXT NOT NULL,
-            createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
-          );
-        `;
-        const sqlDivorce = `
-          CREATE TABLE IF NOT EXISTS divorce_certificates (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            husbandName TEXT NOT NULL,
-            wifeName TEXT NOT NULL,
-            recordNumber TEXT NOT NULL,
-            recordDate TEXT NOT NULL,
-            husbandNewSurname TEXT NOT NULL,
-            wifeNewSurname TEXT NOT NULL,
-            regPlace TEXT NOT NULL,
-            givenTo TEXT NOT NULL,
-            issueDate TEXT NOT NULL,
-            headName TEXT NOT NULL,
-            sealText TEXT NOT NULL,
-            certNumber TEXT NOT NULL,
-            createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
-          );
-        `;
-        await runTursoQuery(sqlBirth);
-        await runTursoQuery(sqlMarriage);
-        await runTursoQuery(sqlDivorce);
-        setDbStatus('connected');
-        console.log("Turso database schemas verified.");
-        await loadHistoryFromTurso();
-      } catch (err) {
-        console.error("Database initialization failed:", err);
-        setDbStatus('error', err.message);
-        showToast("Database Offline. Edits will not save.", "error");
-      }
-    }
-
-    // Save current form fields to Turso SQLite database
-    async function saveToDatabase() {
-      if (!validateForm()) {
-        showToast("Please fix the validation errors in the form.", "error");
-        return 'validation_failed';
-      }
-
-      const currentRecordId = document.getElementById("currentRecordId").value;
-      let recordIdToSave = currentRecordId;
-
-      if (currentMode === 'birth') {
-        const formData = {
-          fullName: document.getElementById("fullName").value.trim().toUpperCase(),
-          dob: document.getElementById("dob").value.trim(),
-          writtenYear: getWrittenYear(document.getElementById("dob").value.trim()),
-          region: document.getElementById("region").value.trim(),
-          city: document.getElementById("city").value.trim(),
-          entryNumber: document.getElementById("entryNumber").value.trim(),
-          registryDate: document.getElementById("registryDate").value.trim(),
-          fatherName: document.getElementById("fatherName").value.trim().toUpperCase(),
-          fatherNationality: document.getElementById("fatherNationality").value.trim(),
-          motherName: document.getElementById("motherName").value.trim().toUpperCase(),
-          motherNationality: document.getElementById("motherNationality").value.trim(),
-          regCity: document.getElementById("regCity").value.trim(),
-          issueDate: document.getElementById("issueDate").value.trim(),
-          headName: document.getElementById("headName").value.trim(),
-          idNumber: document.getElementById("idNumber").value.trim()
-        };
-
-        if (!recordIdToSave) {
-          try {
-            let checkSql = "";
-            let checkParams = [];
-            if (formData.idNumber) {
-              checkSql = "SELECT id FROM birth_certificates WHERE idNumber = ? LIMIT 1;";
-              checkParams = [formData.idNumber];
-            } else if (formData.fullName && formData.dob) {
-              checkSql = "SELECT id FROM birth_certificates WHERE fullName = ? AND dob = ? LIMIT 1;";
-              checkParams = [formData.fullName, formData.dob];
-            }
-            if (checkSql) {
-              const checkRes = await runTursoQuery(checkSql, checkParams);
-              if (checkRes.rows && checkRes.rows.length > 0) {
-                recordIdToSave = checkRes.rows[0].id;
-                document.getElementById("currentRecordId").value = recordIdToSave;
-              }
-            }
-          } catch (checkErr) {
-            console.error("Error checking for existing record:", checkErr);
-          }
-        }
-
-        try {
-          if (recordIdToSave) {
-            const sql = `
-              UPDATE birth_certificates SET 
-                fullName = ?, dob = ?, writtenYear = ?, region = ?, city = ?, 
-                entryNumber = ?, registryDate = ?, fatherName = ?, fatherNationality = ?, 
-                motherName = ?, motherNationality = ?, regCity = ?, issueDate = ?, 
-                headName = ?, idNumber = ?
-              WHERE id = ?;
-            `;
-            await runTursoQuery(sql, [
-              formData.fullName, formData.dob, formData.writtenYear, formData.region, formData.city,
-              formData.entryNumber, formData.registryDate, formData.fatherName, formData.fatherNationality,
-              formData.motherName, formData.motherNationality, formData.regCity, formData.issueDate,
-              formData.headName, formData.idNumber, parseInt(recordIdToSave, 10)
-            ]);
-            showToast(`Successfully updated database record for ${formData.fullName}`);
-          } else {
-            const sql = `
-              INSERT INTO birth_certificates (
-                fullName, dob, writtenYear, region, city, 
-                entryNumber, registryDate, fatherName, fatherNationality, 
-                motherName, motherNationality, regCity, issueDate, 
-                headName, idNumber
-              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-            `;
-            const result = await runTursoQuery(sql, [
-              formData.fullName, formData.dob, formData.writtenYear, formData.region, formData.city,
-              formData.entryNumber, formData.registryDate, formData.fatherName, formData.fatherNationality,
-              formData.motherName, formData.motherNationality, formData.regCity, formData.issueDate,
-              formData.headName, formData.idNumber
-            ]);
-            if (result.lastInsertRowid) {
-              document.getElementById("currentRecordId").value = result.lastInsertRowid;
-            }
-            showToast(`Successfully saved record for ${formData.fullName} to database`);
-          }
-          loadHistoryFromTurso();
-          return 'success';
-        } catch (err) {
-          console.error("Failed to save record:", err);
-          showToast("Database offline. Exporting document without saving.", "warning");
-          return 'db_error';
-        }
-      } else if (currentMode === 'marriage') {
-        // Marriage Mode Saving
-        const formData = {
-          husbandName: document.getElementById("husbandName").value.trim().toUpperCase(),
-          husbandDob: document.getElementById("husbandDob").value.trim(),
-          husbandBirthPlace: document.getElementById("husbandBirthPlace").value.trim(),
-          husbandCitizenship: document.getElementById("husbandCitizenship").value.trim().toUpperCase(),
-          wifeName: document.getElementById("wifeName").value.trim().toUpperCase(),
-          wifeDob: document.getElementById("wifeDob").value.trim(),
-          wifeBirthPlace: document.getElementById("wifeBirthPlace").value.trim(),
-          wifeCitizenship: document.getElementById("wifeCitizenship").value.trim().toUpperCase(),
-          marriageDate: document.getElementById("marriageDate").value.trim(),
-          marriageDateWords: document.getElementById("marriageDateWords").value.trim(),
-          recordNumber: document.getElementById("recordNumber").value.trim(),
-          recordDate: document.getElementById("recordDate").value.trim(),
-          husbandNewSurname: document.getElementById("husbandNewSurname").value.trim().toUpperCase(),
-          wifeNewSurname: document.getElementById("wifeNewSurname").value.trim().toUpperCase(),
-          regPlace: document.getElementById("regPlace").value.trim(),
-          issueDate: document.getElementById("m-issueDate").value.trim(),
-          chairmanName: document.getElementById("chairmanName").value.trim(),
-          certNumber: document.getElementById("certNumber").value.trim()
-        };
-
-        if (!recordIdToSave) {
-          try {
-            let checkSql = "";
-            let checkParams = [];
-            if (formData.certNumber) {
-              checkSql = "SELECT id FROM marriage_certificates WHERE certNumber = ? LIMIT 1;";
-              checkParams = [formData.certNumber];
-            } else if (formData.husbandName && formData.wifeName && formData.marriageDate) {
-              checkSql = "SELECT id FROM marriage_certificates WHERE husbandName = ? AND wifeName = ? AND marriageDate = ? LIMIT 1;";
-              checkParams = [formData.husbandName, formData.wifeName, formData.marriageDate];
-            }
-            if (checkSql) {
-              const checkRes = await runTursoQuery(checkSql, checkParams);
-              if (checkRes.rows && checkRes.rows.length > 0) {
-                recordIdToSave = checkRes.rows[0].id;
-                document.getElementById("currentRecordId").value = recordIdToSave;
-              }
-            }
-          } catch (checkErr) {
-            console.error("Error checking for existing marriage record:", checkErr);
-          }
-        }
-
-        try {
-          if (recordIdToSave) {
-            const sql = `
-              UPDATE marriage_certificates SET 
-                husbandName = ?, husbandDob = ?, husbandBirthPlace = ?, husbandCitizenship = ?,
-                wifeName = ?, wifeDob = ?, wifeBirthPlace = ?, wifeCitizenship = ?,
-                marriageDate = ?, marriageDateWords = ?, recordNumber = ?, recordDate = ?,
-                husbandNewSurname = ?, wifeNewSurname = ?, regPlace = ?, issueDate = ?,
-                chairmanName = ?, certNumber = ?
-              WHERE id = ?;
-            `;
-            await runTursoQuery(sql, [
-              formData.husbandName, formData.husbandDob, formData.husbandBirthPlace, formData.husbandCitizenship,
-              formData.wifeName, formData.wifeDob, formData.wifeBirthPlace, formData.wifeCitizenship,
-              formData.marriageDate, formData.marriageDateWords, formData.recordNumber, formData.recordDate,
-              formData.husbandNewSurname, formData.wifeNewSurname, formData.regPlace, formData.issueDate,
-              formData.chairmanName, formData.certNumber, parseInt(recordIdToSave, 10)
-            ]);
-            showToast(`Successfully updated marriage record for ${formData.husbandName} & ${formData.wifeName}`);
-          } else {
-            const sql = `
-              INSERT INTO marriage_certificates (
-                husbandName, husbandDob, husbandBirthPlace, husbandCitizenship,
-                wifeName, wifeDob, wifeBirthPlace, wifeCitizenship,
-                marriageDate, marriageDateWords, recordNumber, recordDate,
-                husbandNewSurname, wifeNewSurname, regPlace, issueDate,
-                chairmanName, certNumber
-              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-            `;
-            const result = await runTursoQuery(sql, [
-              formData.husbandName, formData.husbandDob, formData.husbandBirthPlace, formData.husbandCitizenship,
-              formData.wifeName, formData.wifeDob, formData.wifeBirthPlace, formData.wifeCitizenship,
-              formData.marriageDate, formData.marriageDateWords, formData.recordNumber, formData.recordDate,
-              formData.husbandNewSurname, formData.wifeNewSurname, formData.regPlace, formData.issueDate,
-              formData.chairmanName, formData.certNumber
-            ]);
-            if (result.lastInsertRowid) {
-              document.getElementById("currentRecordId").value = result.lastInsertRowid;
-            }
-            showToast(`Successfully saved marriage record for ${formData.husbandName} & ${formData.wifeName} to database`);
-          }
-          loadHistoryFromTurso();
-          return 'success';
-        } catch (err) {
-          console.error("Failed to save marriage record:", err);
-          showToast("Database offline. Exporting document without saving.", "warning");
-          return 'db_error';
-        }
-      } else {
-        // Divorce Mode Saving
-        const formData = {
-          husbandName: document.getElementById("divorceHusbandName").value.trim().toUpperCase(),
-          wifeName: document.getElementById("divorceWifeName").value.trim().toUpperCase(),
-          recordNumber: document.getElementById("divorceRecordNumber").value.trim(),
-          recordDate: document.getElementById("divorceRecordDate").value.trim(),
-          husbandNewSurname: document.getElementById("divorceHusbandSurname").value.trim().toUpperCase(),
-          wifeNewSurname: document.getElementById("divorceWifeSurname").value.trim().toUpperCase(),
-          regPlace: document.getElementById("divorceRegPlace").value.trim(),
-          givenTo: document.getElementById("divorceGivenTo").value.trim().toUpperCase(),
-          issueDate: document.getElementById("divorceIssueDate").value.trim(),
-          headName: document.getElementById("divorceHeadName").value.trim(),
-          sealText: document.getElementById("divorceSealText").value.trim(),
-          certNumber: document.getElementById("divorceCertNumber").value.trim()
-        };
-
-        if (!recordIdToSave) {
-          try {
-            let checkSql = "";
-            let checkParams = [];
-            if (formData.certNumber) {
-              checkSql = "SELECT id FROM divorce_certificates WHERE certNumber = ? LIMIT 1;";
-              checkParams = [formData.certNumber];
-            } else if (formData.husbandName && formData.wifeName && formData.recordNumber) {
-              checkSql = "SELECT id FROM divorce_certificates WHERE husbandName = ? AND wifeName = ? AND recordNumber = ? LIMIT 1;";
-              checkParams = [formData.husbandName, formData.wifeName, formData.recordNumber];
-            }
-            if (checkSql) {
-              const checkRes = await runTursoQuery(checkSql, checkParams);
-              if (checkRes.rows && checkRes.rows.length > 0) {
-                recordIdToSave = checkRes.rows[0].id;
-                document.getElementById("currentRecordId").value = recordIdToSave;
-              }
-            }
-          } catch (checkErr) {
-            console.error("Error checking for existing divorce record:", checkErr);
-          }
-        }
-
-        try {
-          if (recordIdToSave) {
-            const sql = `
-              UPDATE divorce_certificates SET 
-                husbandName = ?, wifeName = ?, recordNumber = ?, recordDate = ?,
-                husbandNewSurname = ?, wifeNewSurname = ?, regPlace = ?, givenTo = ?, 
-                issueDate = ?, headName = ?, sealText = ?, certNumber = ?
-              WHERE id = ?;
-            `;
-            await runTursoQuery(sql, [
-              formData.husbandName, formData.wifeName, formData.recordNumber, formData.recordDate,
-              formData.husbandNewSurname, formData.wifeNewSurname, formData.regPlace, formData.givenTo,
-              formData.issueDate, formData.headName, formData.sealText, formData.certNumber, parseInt(recordIdToSave, 10)
-            ]);
-            showToast(`Successfully updated divorce record for ${formData.husbandName} & ${formData.wifeName}`);
-          } else {
-            const sql = `
-              INSERT INTO divorce_certificates (
-                husbandName, wifeName, recordNumber, recordDate,
-                husbandNewSurname, wifeNewSurname, regPlace, givenTo,
-                issueDate, headName, sealText, certNumber
-              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-            `;
-            const result = await runTursoQuery(sql, [
-              formData.husbandName, formData.wifeName, formData.recordNumber, formData.recordDate,
-              formData.husbandNewSurname, formData.wifeNewSurname, formData.regPlace, formData.givenTo,
-              formData.issueDate, formData.headName, formData.sealText, formData.certNumber
-            ]);
-            if (result.lastInsertRowid) {
-              document.getElementById("currentRecordId").value = result.lastInsertRowid;
-            }
-            showToast(`Successfully saved divorce record for ${formData.husbandName} & ${formData.wifeName} to database`);
-          }
-          loadHistoryFromTurso();
-          return 'success';
-        } catch (err) {
-          console.error("Failed to save divorce record:", err);
-          showToast("Database offline. Exporting document without saving.", "warning");
-          return 'db_error';
-        }
-      }
-    }
-
-    // Load saved database history records
-    async function loadHistoryFromTurso() {
-      const container = document.getElementById("records-list-container");
-      if (!container) return;
-      
-      try {
-        let table = 'birth_certificates';
-        if (currentMode === 'marriage') table = 'marriage_certificates';
-        if (currentMode === 'divorce') table = 'divorce_certificates';
-
-        const result = await runTursoQuery(`SELECT * FROM ${table} ORDER BY id DESC;`);
-        savedRecords = result.rows;
-        renderHistoryList(savedRecords);
-      } catch (err) {
-        console.error("Failed to load database history:", err);
-        container.innerHTML = `<div class="empty-history" style="color: var(--error);">Failed to load database records: ${err.message}</div>`;
-      }
-    }
-
-    // Render historical lists in HTML
-    function renderHistoryList(records) {
-      const container = document.getElementById("records-list-container");
-      if (!container) return;
-      
-      if (records.length === 0) {
-        container.innerHTML = '<div class="empty-history">No saved translation certificates found.</div>';
-        return;
-      }
-
-      container.innerHTML = "";
-      records.forEach(rec => {
-        const card = document.createElement("div");
-        card.className = "record-card";
-        card.onclick = () => loadRecordIntoForm(rec.id);
-
-        let titleText = "";
-        let metaHTML = "";
-
-        if (currentMode === 'birth') {
-          titleText = rec.fullName;
-          metaHTML = `
-            <span><strong>DOB:</strong> ${rec.dob}</span>
-            <span><strong>Entry:</strong> ${rec.entryNumber || 'N/A'}</span>
-            <span><strong>ID:</strong> ${rec.idNumber || 'N/A'}</span>
-          `;
-        } else if (currentMode === 'marriage') {
-          titleText = `${rec.husbandName} & ${rec.wifeName}`;
-          metaHTML = `
-            <span><strong>Married:</strong> ${rec.marriageDate}</span>
-            <span><strong>Record:</strong> ${rec.recordNumber || 'N/A'}</span>
-            <span><strong>Cert:</strong> ${rec.certNumber || 'N/A'}</span>
-          `;
-        } else {
-          titleText = `${rec.husbandName} & ${rec.wifeName}`;
-          metaHTML = `
-            <span><strong>Divorced:</strong> ${rec.recordDate}</span>
-            <span><strong>Record:</strong> ${rec.recordNumber || 'N/A'}</span>
-            <span><strong>Cert:</strong> ${rec.certNumber || 'N/A'}</span>
-          `;
-        }
-
-        card.innerHTML = `
-          <div class="record-name">${titleText}</div>
-          <div class="record-meta">
-            ${metaHTML}
-          </div>
-          <div class="record-actions">
-            <button class="record-btn" onclick="event.stopPropagation(); loadRecordIntoForm(${rec.id});" title="Load into editor">Edit</button>
-            <button class="record-btn" onclick="event.stopPropagation(); quickExportWord(${rec.id});" title="Download Word file">Word</button>
-            <button class="record-btn record-btn-delete" onclick="event.stopPropagation(); askDeleteRecord(${rec.id}, '${titleText.replace(/'/g, "\\'")}');" title="Delete record from database">Delete</button>
-          </div>
-        `;
-        container.appendChild(card);
-      });
-    }
-
-    // Filter history on search
-    function filterHistory() {
-      const query = document.getElementById("search-history").value.trim().toLowerCase();
-      if (!query) {
-        renderHistoryList(savedRecords);
-        return;
-      }
-      
-      let filtered = [];
-      if (currentMode === 'birth') {
-        filtered = savedRecords.filter(rec => 
-          rec.fullName.toLowerCase().includes(query) || 
-          rec.idNumber.toLowerCase().includes(query) ||
-          rec.entryNumber.toLowerCase().includes(query) ||
-          rec.dob.includes(query)
-        );
-      } else if (currentMode === 'marriage') {
-        filtered = savedRecords.filter(rec => 
-          rec.husbandName.toLowerCase().includes(query) || 
-          rec.wifeName.toLowerCase().includes(query) ||
-          rec.certNumber.toLowerCase().includes(query) ||
-          rec.recordNumber.toLowerCase().includes(query) ||
-          rec.marriageDate.includes(query)
-        );
-      } else {
-        filtered = savedRecords.filter(rec => 
-          rec.husbandName.toLowerCase().includes(query) || 
-          rec.wifeName.toLowerCase().includes(query) ||
-          rec.certNumber.toLowerCase().includes(query) ||
-          rec.recordNumber.toLowerCase().includes(query) ||
-          rec.recordDate.includes(query)
-        );
-      }
-      renderHistoryList(filtered);
-    }
-
-    // Load a database record details back into the active form
-    function loadRecordIntoForm(id) {
-      const record = savedRecords.find(r => r.id === id);
-      if (!record) return;
-
-      document.getElementById("currentRecordId").value = record.id;
-      
-      let mapping;
-      if (currentMode === 'birth') mapping = syncMapping;
-      else if (currentMode === 'marriage') mapping = marriageSyncMapping;
-      else mapping = divorceSyncMapping;
-
-      // Populate fields
-      Object.keys(mapping).forEach(key => {
-        const inputId = mapping[key].inputId || key;
-        const input = document.getElementById(inputId);
-        if (input) {
-          input.value = record[key] || "";
-          
-          // Re-trigger live formatting and preview syncing
-          updatePreviewFieldForced(currentMode, key, input.value);
-          validateField(key, input.value);
-        }
-      });
-      
-      switchTab('form');
-      const displayName = `${record.husbandName || record.fullName} & ${record.wifeName || ''}`;
-      showToast(`Loaded details for ${displayName}`);
-    }
-
-    // Action dialog to delete record
-    function askDeleteRecord(id, name) {
-      openConfirmModal(
-        "Delete Record?",
-        `Are you sure you want to permanently delete the translation record of "${name}" from Turso database?`,
-        "Delete Permanent",
-        () => deleteRecordFromDb(id, name)
-      );
-    }
-
-    // SQL query to remove record
-    async function deleteRecordFromDb(id, name) {
-      try {
-        let table = 'birth_certificates';
-        if (currentMode === 'marriage') table = 'marriage_certificates';
-        if (currentMode === 'divorce') table = 'divorce_certificates';
-
-        await runTursoQuery(`DELETE FROM ${table} WHERE id = ?;`, [id]);
-        showToast(`Deleted record for ${name}`);
-        
-        // Reset current record ID if we deleted the currently edited one
-        const currentIdVal = document.getElementById("currentRecordId").value;
-        if (currentIdVal && parseInt(currentIdVal, 10) === id) {
-          document.getElementById("currentRecordId").value = "";
-          clearForm();
-        }
-        
-        loadHistoryFromTurso();
-      } catch (err) {
-        console.error("Failed to delete record:", err);
-        showToast(`Delete failed: ${err.message}`, "error");
-      }
-    }
-
-
-    // ==========================================================================
-    // 4. EXPORT UTILITIES (WORD & PDF & PRINT)
-    // ==========================================================================
-
-    // Native Microsoft Word Export helper
-    function getWordDocumentHtml(element) {
-      // Clone preview structure for export
-      const clone = element.cloneNode(true);
-      
-      // Remove any placeholders
-      clone.querySelectorAll('.placeholder-text').forEach(el => {
-        el.textContent = '_____________________';
-        el.style.color = '#000000';
-      });
-
-      const bodyHtml = clone.innerHTML;
-
-      return `
-        <html xmlns:o='urn:schemas-microsoft-com:office:office' 
-              xmlns:w='urn:schemas-microsoft-com:office:word' 
-              xmlns='http://www.w3.org/TR/REC-html40'>
-        <head>
-          <title>Certificate Translation</title>
-          ${'<!--'}[if gte mso 9]>
-          <xml>
-            <w:WordDocument>
-              <w:View>Print</w:View>
-              <w:Zoom>100</w:Zoom>
-              <w:DoNotOptimizeForBrowser/>
-            </w:WordDocument>
-          </xml>
-          <![endif]${'-->'}
-          <style>
-            @page {
-              size: A4 portrait;
-              margin: 1.5cm 1.5cm 1.5cm 2cm;
-            }
-            body { 
-              font-family: 'Times New Roman', Times, serif; 
-              font-size: 12pt; 
-              line-height: 1.5; 
-              color: #000000;
-            }
-            .translation-header {
-              text-align: right;
-              font-size: 10pt;
-              font-style: italic;
-              margin-bottom: 20px;
-              text-transform: uppercase;
-              font-weight: bold;
-              border-bottom: 1px solid #111;
-              padding-bottom: 4px;
-            }
-            .doc-title-container {
-              text-align: center;
-              margin-bottom: 30px;
-            }
-            .doc-country {
-              font-size: 14pt;
-              font-weight: bold;
-              margin-bottom: 4px;
-            }
-            .doc-title {
-              font-size: 14pt;
-              font-weight: bold;
-            }
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              margin-bottom: 20px;
-            }
-            td {
-              padding: 5px 0;
-              vertical-align: top;
-            }
-            .label {
-              width: 35%;
-              font-weight: bold;
-            }
-            .value {
-              width: 65%;
-              border-bottom: 1px solid #000000;
-            }
-            .font-bold {
-              font-weight: bold;
-            }
-            .uppercase {
-              text-transform: uppercase;
-            }
-            .sub-grid {
-              margin-top: 2px;
-            }
-            .sub-grid-item {
-              margin-bottom: 4px;
-            }
-            .registry-sentence {
-              margin: 24px 0;
-              text-align: left;
-              text-indent: 0.5in;
-              line-height: 1.6;
-              font-size: 11pt;
-            }
-            .registry-sentence span {
-              border-bottom: 1px solid #000000;
-            }
-            .section-title {
-              font-weight: bold;
-              font-size: 12pt;
-              margin-top: 14px;
-              margin-bottom: 10px;
-              border-bottom: 1px solid #333;
-              padding-bottom: 2px;
-            }
-            .signature-section {
-              margin-top: 40px;
-              clear: both;
-            }
-            .signature-officer {
-              float: left;
-              width: 45%;
-              font-weight: bold;
-            }
-            .signature-signed {
-              float: left;
-              width: 20%;
-              text-align: center;
-              font-style: italic;
-            }
-            .signature-name {
-              float: right;
-              width: 35%;
-              text-align: right;
-              font-weight: bold;
-              border-bottom: 1px solid #000000;
-            }
-            .footer-section {
-                margin-top: 30px;
-                clear: both;
-              }
-              .official-seal {
-                float: left;
-                width: 35%;
-                font-weight: bold;
-              }
-              .id-number-section {
-                float: left;
-                width: 30%;
-                text-align: center;
-                font-weight: bold;
-                font-size: 12pt;
-                border: 1px solid #111;
-                padding: 5px 10px;
-              }
-              .footer-spacer {
-                float: right;
-                width: 35%;
-              }
-          </style>
-        </head>
-        <body>
-          ${bodyHtml}
-        </body>
-        </html>
-      `;
-    }
-
-    // Export current editor preview to Word Document file (.doc)
-    async function exportWord() {
-      const saveResult = await saveToDatabase();
-      if (saveResult === 'validation_failed') return;
-
-      const element = document.getElementById('certificate-preview');
-      const htmlString = getWordDocumentHtml(element);
-      
-      const blob = new Blob(['\ufeff' + htmlString], { type: 'application/msword' });
-      const url = URL.createObjectURL(blob);
-      
-      let name = "";
-      let filename = "";
-      if (currentMode === 'birth') {
-        name = document.getElementById('fullName').value.trim() || 'Birth';
-        filename = `${name.replace(/\s+/g, '_')}_BirthCertificate_Translation.doc`;
-      } else if (currentMode === 'marriage') {
-        const hName = document.getElementById('husbandName').value.trim() || 'Husband';
-        const wName = document.getElementById('wifeName').value.trim() || 'Wife';
-        name = `${hName}_${wName}`;
-        filename = `${name.replace(/\s+/g, '_')}_MarriageCertificate_Translation.doc`;
-      } else {
-        const hName = document.getElementById('divorceHusbandName').value.trim() || 'Husband';
-        const wName = document.getElementById('divorceWifeName').value.trim() || 'Wife';
-        name = `${hName}_${wName}`;
-        filename = `${name.replace(/\s+/g, '_')}_DivorceCertificate_Translation.doc`;
-      }
-      
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      
-      showToast("Downloaded Word translation document (.doc)");
-    }
-
-    // Helper to download arbitrary record history values as Word file
-    function quickExportWord(id) {
-      const record = savedRecords.find(r => r.id === id);
-      if (!record) return;
-      
-      if (currentMode === 'birth') {
-        const tempDiv = document.createElement('div');
-        tempDiv.style.display = 'none';
-        document.body.appendChild(tempDiv);
-        
-        tempDiv.innerHTML = `
-          <div id="temp-cert-preview">
-            <div class="translation-header">Translated from Uzbek</div>
-            <div class="doc-title-container">
-              <div class="doc-country">REPUBLIC OF UZBEKISTAN</div>
-              <div class="doc-title">BIRTH CERTIFICATE</div>
-            </div>
-            <table class="certificate-table">
-              <tr><td class="label">Citizen:</td><td class="value font-bold uppercase">\${record.fullName}</td></tr>
-              <tr><td class="label">Born on:</td><td class="value">\${formatDate(record.dob)}</td></tr>
-              <tr><td class="label">(in words):</td><td class="value">\${getWrittenYear(record.dob)}</td></tr>
-              <tr>
-                <td class="label">Birth Place:</td>
-                <td class="value">
-                  <div class="sub-grid">
-                    <div class="sub-grid-item"><strong>State:</strong> <span>Uzbekistan</span></div>
-                    <div class="sub-grid-item"><strong>Region of:</strong> <span>\${record.region}</span></div>
-                    <div class="sub-grid-item"><strong>City of, village:</strong> <span>\${record.city}</span></div>
-                  </div>
-                </td>
-              </tr>
-            </table>
-            <div class="registry-sentence">
-              in certification of this, entry No <span>\${record.entryNumber || '_____'}</span> was made into the Birth Registry on <span>\${formatDate(record.registryDate) || '__________'}</span> year.
-            </div>
-            <div class="section-title">Parents:</div>
-            <table class="parents-table">
-              <tr><td class="label">Father:</td><td class="value font-bold uppercase">\${record.fatherName}</td></tr>
-              <tr><td class="label">Nationality:</td><td class="value">\${record.fatherNationality}</td></tr>
-              <tr><td class="label">Mother:</td><td class="value font-bold uppercase">\${record.motherName}</td></tr>
-              <tr><td class="label">Nationality:</td><td class="value">\${record.motherNationality}</td></tr>
-            </table>
-            <div class="section-title">REGISTRATION OFFICE & DETAILS</div>
-            <table class="registry-office-table">
-              <tr><td class="label">Registration Place:</td><td class="value">Civil registry office of \${record.regCity} district</td></tr>
-              <tr><td class="label">Date of issue:</td><td class="value">\${formatDate(record.issueDate)}</td></tr>
-            </table>
-            <div class="signature-section">
-              <div class="signature-officer">Head of the Civil Registry Office</div>
-              <div class="signature-signed">(signed)</div>
-              <div class="signature-name">\${record.headName}</div>
-            </div>
-            <div class="footer-section">
-              <div class="official-seal"><strong>Official Seal</strong></div>
-              <div class="id-number-section">\${record.idNumber}</div>
-              <div class="footer-spacer"></div>
-            </div>
-          </div>
-        `;
-
-        const htmlString = getWordDocumentHtml(tempDiv.querySelector('#temp-cert-preview'));
-        const blob = new Blob(['\ufeff' + htmlString], { type: 'application/msword' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${record.fullName.replace(/\s+/g, '_')}_BirthCertificate_Translation.doc`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        tempDiv.remove();
-        showToast(`Exported ${record.fullName} to Word`);
-      } else if (currentMode === 'marriage') {
-        // Marriage quick export
-        const tempDiv = document.createElement('div');
-        tempDiv.style.display = 'none';
-        document.body.appendChild(tempDiv);
-        
-        const regFormatted = record.regPlace.toLowerCase().startsWith('civil') ? record.regPlace : `Civil registry office of ${record.regPlace}`;
-
-        tempDiv.innerHTML = `
-          <div id="temp-cert-preview">
-            <div class="translation-header">Translated from Uzbek into English</div>
-            <div class="doc-title-container">
-              <div class="doc-title" style="text-align: center; font-size: 14pt; font-weight: bold; margin-top: 30px; margin-bottom: 20px;">MARRIAGE CERTIFICATE</div>
-            </div>
-            <table class="certificate-table" style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">
-              <tr><td class="label" style="width: 35%; font-weight: bold;">Citizen:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">\${record.husbandName}</td></tr>
-              <tr><td class="label" style="font-weight: bold;">was born:</td><td class="value" style="border-bottom: 1px solid #000;">\${formatDate(record.husbandDob)}</td></tr>
-              <tr><td class="label" style="font-weight: bold;">Birth Place:</td><td class="value" style="border-bottom: 1px solid #000;">\${record.husbandBirthPlace}</td></tr>
-              <tr><td class="label" style="font-weight: bold;">Citizenship:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">\${record.husbandCitizenship}</td></tr>
-            </table>
-            <table class="certificate-table" style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">
-              <tr><td class="label" style="width: 35%; font-weight: bold;">Citizen:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">\${record.wifeName}</td></tr>
-              <tr><td class="label" style="font-weight: bold;">was born:</td><td class="value" style="border-bottom: 1px solid #000;">\${formatDate(record.wifeDob)}</td></tr>
-              <tr><td class="label" style="font-weight: bold;">Birth Place:</td><td class="value" style="border-bottom: 1px solid #000;">\${record.wifeBirthPlace}</td></tr>
-              <tr><td class="label" style="font-weight: bold;">Citizenship:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">\${record.wifeCitizenship}</td></tr>
-            </table>
-            <div class="registry-sentence" style="margin: 24px 0; text-indent: 0.5in; text-align: left; font-size: 11pt; line-height: 1.6;">
-              were married on <span style="border-bottom: 1px solid #000;">\${formatDate(record.marriageDate)}</span> (<span style="border-bottom: 1px solid #000;">\${record.marriageDateWords}</span>)
-            </div>
-            <div class="registry-sentence" style="margin: 24px 0; text-align: left; font-size: 11pt; line-height: 1.6;">
-              Marriage record № <span style="border-bottom: 1px solid #000;">\${record.recordNumber}</span> was filed on <span style="border-bottom: 1px solid #000;">\${formatDate(record.recordDate)}</span>.
-            </div>
-            <div class="registry-sentence" style="margin: 24px 0; font-weight: bold; text-align: left; font-size: 11pt; line-height: 1.6;">
-              In the marriage the following surnames were given to:
-            </div>
-            <table class="parents-table" style="width: 100%; border-collapse: collapse; margin-top: 5px;">
-              <tr><td class="label" style="width: 35%; font-weight: bold;">Husband:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">\${record.husbandNewSurname}</td></tr>
-              <tr><td class="label" style="font-weight: bold;">Wife:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">\${record.wifeNewSurname}</td></tr>
-            </table>
-            <table class="registry-office-table" style="width: 100%; border-collapse: collapse; margin-top: 15px;">
-              <tr><td class="label" style="width: 35%; font-weight: bold;">Place of registration:</td><td class="value" style="border-bottom: 1px solid #000;">\${regFormatted}</td></tr>
-              <tr><td class="label" style="font-weight: bold;">Date of issue:</td><td class="value" style="border-bottom: 1px solid #000;">\${formatDate(record.issueDate)}</td></tr>
-            </table>
-            <div class="signature-section" style="margin-top: 40px; clear: both;">
-              <div class="signature-officer" style="float: left; width: 45%; font-weight: bold;">Chairman of the Civil Registry Office</div>
-              <div class="signature-signed" style="float: left; width: 20%; text-align: center; font-style: italic;">(signed)</div>
-              <div class="signature-name" style="float: right; width: 35%; text-align: right; font-weight: bold; border-bottom: 1px solid #000000;">\${record.chairmanName}</div>
-            </div>
-            <div class="footer-section" style="margin-top: 30px; clear: both;">
-              <div class="official-seal" style="float: left; width: 35%; font-weight: bold;">Official Seal:</div>
-              <div class="id-number-section" style="float: left; width: 30%; text-align: center; font-weight: bold; border: none;">\${record.certNumber}</div>
-              <div class="footer-spacer" style="float: right; width: 35%;"></div>
-            </div>
-          </div>
-        `;
-
-        const htmlString = getWordDocumentHtml(tempDiv.querySelector('#temp-cert-preview'));
-        const blob = new Blob(['\ufeff' + htmlString], { type: 'application/msword' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        const name = `${record.husbandName.replace(/\s+/g, '_')}_${record.wifeName.replace(/\s+/g, '_')}`;
-        a.download = `${name}_MarriageCertificate_Translation.doc`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        tempDiv.remove();
-        showToast(`Exported ${record.husbandName} & ${record.wifeName} to Word`);
-      } else {
-        // Divorce quick export
-        const tempDiv = document.createElement('div');
-        tempDiv.style.display = 'none';
-        document.body.appendChild(tempDiv);
-
-        tempDiv.innerHTML = `
-          <div id="temp-cert-preview">
-            <div class="translation-header">Translated from Uzbek into English</div>
-            <div style="text-align: center; font-size: 10pt; font-weight: bold; margin-top: 15px; text-transform: uppercase;">-STATE EMBLEM OF THE REPUBLIC OF UZBEKISTAN-</div>
-            <div class="doc-title-container" style="margin-top: 20px; margin-bottom: 25px;">
-              <div class="doc-title" style="text-align: center; font-size: 14pt; font-weight: bold;">DIVORCE CERTIFICATE</div>
-            </div>
-
-            <table class="certificate-table" style="width: 100%; border-collapse: collapse; margin-bottom: 5px;">
-              <tr>
-                <td class="label" style="width: 25%; font-weight: bold;">Citizen:</td>
-                <td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; text-align: center; border-bottom: 1px solid #000;">\${record.husbandName}</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td style="font-size: 9pt; text-align: center; padding-top: 2px;">(Full name)</td>
-              </tr>
-            </table>
-
-            <table class="certificate-table" style="width: 100%; border-collapse: collapse; margin-top: 5px; margin-bottom: 5px;">
-              <tr>
-                <td class="label" style="width: 25%; font-weight: bold;">and citizen:</td>
-                <td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; text-align: center; border-bottom: 1px solid #000;">\${record.wifeName}</td>
-              </tr>
-              <tr>
-                <td></td>
-                <td style="font-size: 9pt; text-align: center; padding-top: 2px;">(Full name)</td>
-              </tr>
-            </table>
-
-            <div class="registry-sentence" style="margin: 15px 0; text-align: left;">are dissolved their marriage.</div>
-            <div class="registry-sentence" style="margin: 15px 0; font-weight: bold; text-align: left;">
-              Record № <span style="border-bottom: 1px solid #000;">\${record.recordNumber}</span> was filed on <span style="border-bottom: 1px solid #000;">\${formatDate(record.recordDate)}</span>,
-            </div>
-            <div class="registry-sentence" style="margin: 20px 0; font-weight: bold; text-align: left;">Following surnames were given after the marriage dissolution:</div>
-
-            <table class="parents-table" style="width: 100%; border-collapse: collapse; margin-top: 5px;">
-              <tr><td class="label" style="width: 25%; font-weight: bold;">Husband:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">\${record.husbandNewSurname}</td></tr>
-              <tr><td class="label" style="font-weight: bold;">Wife:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">\${record.wifeNewSurname}</td></tr>
-            </table>
-
-            <table class="registry-office-table" style="width: 100%; border-collapse: collapse; margin-top: 15px;">
-              <tr><td class="label" style="width: 35%; font-weight: bold;">Registration Place:</td><td class="value" style="font-style: italic; border-bottom: 1px solid #000;">\${record.regPlace}</td></tr>
-              <tr><td class="label" style="font-weight: bold;">The certificate is given to:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">\${record.givenTo}</td></tr>
-              <tr><td class="label" style="font-weight: bold;">Date of issue:</td><td class="value" style="font-style: italic; border-bottom: 1px solid #000;">\${formatDate(record.issueDate)}</td></tr>
-            </table>
-
-            <div class="signature-section" style="margin-top: 40px; clear: both;">
-              <div class="signature-officer" style="float: left; width: 45%; font-weight: bold;">Head of the Civil Registry office</div>
-              <div class="signature-signed" style="float: left; width: 20%; text-align: center; font-style: italic;">(signed)</div>
-              <div class="signature-name" style="float: right; width: 35%; text-align: right; font-weight: bold; border-bottom: 1px solid #000000;">\${record.headName}</div>
-            </div>
-
-            <div class="footer-section" style="margin-top: 30px; clear: both;">
-              <div class="official-seal" style="float: left; width: 45%; font-size: 8pt; font-style: italic; font-weight: normal; white-space: pre-line;">\${record.sealText}</div>
-              <div class="id-number-section" style="float: left; width: 35%; text-align: center; font-weight: bold; border: none; font-size: 11pt;">\${record.certNumber}</div>
-              <div class="footer-spacer" style="float: right; width: 20%;"></div>
-            </div>
-          </div>
-        `;
-
-        const htmlString = getWordDocumentHtml(tempDiv.querySelector('#temp-cert-preview'));
-        const blob = new Blob(['\ufeff' + htmlString], { type: 'application/msword' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        const name = `${record.husbandName.replace(/\s+/g, '_')}_${record.wifeName.replace(/\s+/g, '_')}`;
-        a.download = `${name}_DivorceCertificate_Translation.doc`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        tempDiv.remove();
-        showToast(`Exported ${record.husbandName} & ${record.wifeName} to Word`);
-      }
-    }
-
-    // Export current editor preview page to PDF format using html2pdf.js
-    async function exportPDF() {
-      const saveResult = await saveToDatabase();
-      if (saveResult === 'validation_failed') return;
-
-      const element = document.getElementById('certificate-preview');
-      element.classList.add('pdf-exporting');
-
-      let name = "";
-      let filename = "";
-      if (currentMode === 'birth') {
-        name = document.getElementById('fullName').value.trim() || 'Birth';
-        filename = `${name.replace(/\s+/g, '_')}_BirthCertificate_Translation.pdf`;
-      } else if (currentMode === 'marriage') {
-        const hName = document.getElementById('husbandName').value.trim() || 'Husband';
-        const wName = document.getElementById('wifeName').value.trim() || 'Wife';
-        name = `${hName}_${wName}`;
-        filename = `${name.replace(/\s+/g, '_')}_MarriageCertificate_Translation.pdf`;
-      } else {
-        const hName = document.getElementById('divorceHusbandName').value.trim() || 'Husband';
-        const wName = document.getElementById('divorceWifeName').value.trim() || 'Wife';
-        name = `${hName}_${wName}`;
-        filename = `${name.replace(/\s+/g, '_')}_DivorceCertificate_Translation.pdf`;
-      }
-      
-      const opt = {
-        margin:       0,
-        filename:     filename,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2.5, useCORS: true, logging: false },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
-
-      try {
-        showToast("Generating PDF download...");
-        await html2pdf().set(opt).from(element).save();
-        showToast("Downloaded PDF Document");
-      } catch (err) {
-        console.error("PDF generation failed:", err);
-        showToast("Failed to generate PDF.", "error");
-      } finally {
-        element.classList.remove('pdf-exporting');
-      }
-    }
-
-    // Print current document preview with auto-save
-    async function printDocument() {
-      const saveResult = await saveToDatabase();
-      if (saveResult === 'validation_failed') return;
-      
-      window.print();
-    }
-
-    // Clear all inputs and restore placeholders
-    function clearForm() {
-      const form = document.getElementById("certificateForm");
-      if (form) {
-        form.reset();
-      }
-      document.getElementById("currentRecordId").value = "";
-      
-      // Reset preview fields to placeholders for birth mode
-      const birthFields = ['fullName', 'dob', 'region', 'city', 'entryNumber', 'registryDate', 'fatherName', 'fatherNationality', 'motherName', 'motherNationality', 'regCity', 'issueDate', 'headName', 'idNumber'];
-      birthFields.forEach(id => {
-        updatePreviewFieldForced('birth', id, "");
-        const errEl = document.getElementById(`${id}Error`);
-        if (errEl) errEl.style.display = 'none';
-      });
-
-      // Reset preview fields to placeholders for marriage mode
-      const marriageFields = ['husbandName', 'husbandDob', 'husbandBirthPlace', 'husbandCitizenship', 'wifeName', 'wifeDob', 'wifeBirthPlace', 'wifeCitizenship', 'marriageDate', 'marriageDateWords', 'recordNumber', 'recordDate', 'husbandNewSurname', 'wifeNewSurname', 'regPlace', 'issueDate', 'chairmanName', 'certNumber'];
-      marriageFields.forEach(key => {
-        updatePreviewFieldForced('marriage', key, "");
-        const mapping = marriageSyncMapping[key];
-        const inputId = mapping.inputId || key;
-        const errEl = document.getElementById(`${inputId}Error`);
-        if (errEl) errEl.style.display = 'none';
-      });
-
-      // Reset preview fields to placeholders for divorce mode
-      const divorceFields = ['husbandName', 'wifeName', 'recordNumber', 'recordDate', 'husbandNewSurname', 'wifeNewSurname', 'regPlace', 'givenTo', 'issueDate', 'headName', 'sealText', 'certNumber'];
-      divorceFields.forEach(key => {
-        updatePreviewFieldForced('divorce', key, "");
-        const mapping = divorceSyncMapping[key];
-        const inputId = mapping.inputId || key;
-        const errEl = document.getElementById(`${inputId}Error`);
-        if (errEl) errEl.style.display = 'none';
-      });
-      
-      showToast("Form cleared.");
-    }
-
-    // Auto-fills form values with sample Uzbek data to facilitate testing
-    function fillMockData() {
-      if (currentMode === 'birth') {
-        Object.keys(MOCK_DATA).forEach(id => {
-          const input = document.getElementById(id);
-          if (input) {
-            input.value = MOCK_DATA[id];
-            updatePreviewField(id, MOCK_DATA[id]);
-            validateField(id, MOCK_DATA[id]);
-          }
-        });
-      } else if (currentMode === 'marriage') {
-        Object.keys(MARRIAGE_MOCK_DATA).forEach(key => {
-          const mapping = marriageSyncMapping[key];
-          const inputId = mapping.inputId || key;
-          const input = document.getElementById(inputId);
-          if (input) {
-            input.value = MARRIAGE_MOCK_DATA[key];
-            updatePreviewField(key, MARRIAGE_MOCK_DATA[key]);
-            validateField(key, MARRIAGE_MOCK_DATA[key]);
-          }
-        });
-      } else {
-        Object.keys(DIVORCE_MOCK_DATA).forEach(key => {
-          const mapping = divorceSyncMapping[key];
-          const inputId = mapping.inputId || key;
-          const input = document.getElementById(inputId);
-          if (input) {
-            input.value = DIVORCE_MOCK_DATA[key];
-            updatePreviewField(key, DIVORCE_MOCK_DATA[key]);
-            validateField(key, DIVORCE_MOCK_DATA[key]);
-          }
-        });
-      }
-      document.getElementById("currentRecordId").value = "";
-      showToast("Form loaded with realistic sample data.");
-    }
-
-    // Setup Autocomplete suggestions from database history
-    function initAutocomplete() {
-      const fields = ['region', 'city', 'regCity', 'headName', 'husbandBirthPlace', 'wifeBirthPlace', 'regPlace', 'chairmanName', 'divorceRegPlace', 'divorceHeadName'];
-
-      fields.forEach(fieldId => {
-        const input = document.getElementById(fieldId);
-        if (!input) return;
-
-        // Create suggestions container dynamically
-        let suggestionsContainer = document.getElementById(`suggestions-${fieldId}`);
-        if (!suggestionsContainer) {
-          suggestionsContainer = document.createElement('div');
-          suggestionsContainer.className = 'autocomplete-suggestions';
-          suggestionsContainer.id = `suggestions-${fieldId}`;
-          input.parentNode.appendChild(suggestionsContainer);
-        }
-
-        const showSuggestions = () => {
-          const typedVal = input.value.trim().toLowerCase();
-          
-          let defaultVals = [];
-          if (fieldId === 'region') {
-            defaultVals = ['Andijan', 'Bukhara', 'Fergana', 'Jizzakh', 'Khorezm', 'Namangan', 'Navoi', 'Samarkand', 'Sirdaryo', 'Surxondaryo', 'Tashkent', 'Karakalpakstan', 'Kashkadaryo'];
-          }
-          
-          const allVals = [
-            ...defaultVals,
-            ...savedRecords.map(r => r[fieldId] || '')
-          ]
-            .map(v => v.trim())
-            .filter(v => v !== '');
-          
-          const uniqueVals = [...new Set(allVals)];
-          const matches = uniqueVals.filter(v => 
-            v.toLowerCase().includes(typedVal)
-          );
-
-          if (matches.length > 0) {
-            suggestionsContainer.innerHTML = '';
-            matches.forEach(match => {
-              const div = document.createElement('div');
-              div.className = 'autocomplete-suggestion';
-              div.textContent = match;
-              div.addEventListener('click', () => {
-                input.value = match;
-                input.dispatchEvent(new Event('input', { bubbles: true }));
-                suggestionsContainer.style.display = 'none';
-              });
-              suggestionsContainer.appendChild(div);
-            });
-            suggestionsContainer.style.display = 'block';
-          } else {
-            suggestionsContainer.style.display = 'none';
-          }
-        };
-
-        input.addEventListener('focus', showSuggestions);
-        input.addEventListener('input', showSuggestions);
-      });
-
-      document.addEventListener('click', (e) => {
-        if (!e.target.closest('.input-field-wrapper')) {
-          document.querySelectorAll('.autocomplete-suggestions').forEach(el => {
-            el.style.display = 'none';
-          });
-        }
-      });
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      initializeDatabase();
-      initAutocomplete();
-      initReactivity();
-    });
-  </script>
 </body>
 </html>
