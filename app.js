@@ -1324,7 +1324,7 @@ function getWordDocumentHtml(element) {
       <style>
         @page {
           size: A4 portrait;
-          margin: 1.5cm 1.5cm 1.5cm 2cm;
+          margin: 2cm 1.5cm 1.5cm 2cm;
         }
         body { 
           font-family: 'Times New Roman', Times, serif; 

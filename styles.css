@@ -651,7 +651,7 @@ textarea.form-control {
   color: #111;
   width: 210mm;
   min-height: 297mm;
-  padding: 8mm 15mm 20mm 20mm;
+  padding: 20mm 15mm 20mm 20mm;
   box-shadow: var(--shadow-lg);
   transform-origin: top center;
   transition: transform 0.1s ease;
@@ -951,7 +951,7 @@ textarea.form-control {
   .certificate-sheet .signature-name { border-bottom-style: solid; border-bottom-color: #000; }
   .certificate-sheet .placeholder-text { display: none !important; }
 
-  @page { size: A4 portrait; margin: 8mm 15mm 15mm 20mm; }
+  @page { size: A4 portrait; margin: 20mm 15mm 15mm 20mm; }
 }
 
 /* --------------------------------------------------------------------------
