@@ -1366,7 +1366,7 @@ function getWordDocumentHtml(element) {
       <style>
         @page {
           size: A4 portrait;
-          margin: 1cm 1.5cm 1cm 1.5cm;
+          margin: 0.5cm 1.5cm 0.5cm 1.5cm;
         }
         body { 
           font-family: 'Times New Roman', Times, serif; 
@@ -1378,7 +1378,7 @@ function getWordDocumentHtml(element) {
           text-align: right;
           font-size: 10pt;
           font-style: italic;
-          margin-bottom: 20px;
+          margin-bottom: 10px;
           text-transform: uppercase;
           font-weight: bold;
           border-bottom: 1px solid #111;
@@ -1400,7 +1400,7 @@ function getWordDocumentHtml(element) {
         table {
           width: 100%;
           border-collapse: collapse;
-          margin-bottom: 20px;
+          margin-bottom: 10px;
         }
         td {
           padding: 3px 0;
@@ -1439,8 +1439,8 @@ function getWordDocumentHtml(element) {
         .section-title {
           font-weight: bold;
           font-size: 12pt;
-          margin-top: 14px;
-          margin-bottom: 10px;
+          margin-top: 10px;
+          margin-bottom: 8px;
           border-bottom: 1px solid #333;
           padding-bottom: 2px;
         }
