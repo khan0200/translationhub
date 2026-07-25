@@ -1,0 +1,2500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Birth Certificate Translation Hub</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,500&display=swap" rel="stylesheet">
+  <!-- html2pdf.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <style>
+    /* ==========================================================================
+       1. DESIGN SYSTEM & MODERN STYLING (GLASSMORPHISM / THEME CONFIG)
+       ========================================================================== */
+    :root {
+      --bg-gradient: radial-gradient(circle at 10% 20%, #151726 0%, #0b0c13 90%);
+      --panel-bg: rgba(20, 22, 38, 0.65);
+      --panel-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent: #2563eb;
+      --accent-hover: #3b82f6;
+      --accent-glow: rgba(37, 99, 235, 0.4);
+      --success: #10b981;
+      --success-glow: rgba(16, 185, 129, 0.4);
+      --error: #ef4444;
+      --input-bg: rgba(11, 12, 19, 0.7);
+      --input-border: rgba(255, 255, 255, 0.12);
+      --card-bg: rgba(255, 255, 255, 0.02);
+      
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+      --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.4);
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    [data-theme="light"] {
+      --bg-gradient: radial-gradient(circle at 10% 20%, #f3f4f6 0%, #e5e7eb 90%);
+      --panel-bg: rgba(255, 255, 255, 0.8);
+      --panel-border: rgba(0, 0, 0, 0.08);
+      --text-main: #1f2937;
+      --text-muted: #6b7280;
+      --accent: #1d4ed8;
+      --accent-hover: #2563eb;
+      --accent-glow: rgba(29, 78, 216, 0.2);
+      --success: #059669;
+      --success-glow: rgba(5, 150, 105, 0.2);
+      --error: #dc2626;
+      --input-bg: rgba(255, 255, 255, 0.9);
+      --input-border: rgba(0, 0, 0, 0.15);
+      --card-bg: rgba(0, 0, 0, 0.02);
+      --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      transition: background 0.3s ease;
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.1);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 4px;
+    }
+    [data-theme="light"] ::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.2);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* ==========================================================================
+       2. HEADER SECTION
+       ========================================================================== */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 32px;
+      background: var(--panel-bg);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--panel-border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--accent), #10b981);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 20px;
+      color: white;
+      box-shadow: 0 0 15px var(--accent-glow);
+    }
+
+    .brand-title {
+      font-weight: 700;
+      font-size: 18px;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 20px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--panel-border);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      position: relative;
+    }
+
+    .status-dot.connecting {
+      background: #f59e0b;
+      box-shadow: 0 0 8px #f59e0b;
+      animation: pulse 1.5s infinite;
+    }
+
+    .status-dot.connected {
+      background: var(--success);
+      box-shadow: 0 0 8px var(--success-glow);
+    }
+
+    .status-dot.error {
+      background: var(--error);
+      box-shadow: 0 0 8px var(--error);
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.3; }
+      50% { opacity: 1; }
+      100% { opacity: 0.3; }
+    }
+
+    .theme-toggle-btn {
+      background: none;
+      border: 1px solid var(--panel-border);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-main);
+      transition: var(--transition);
+    }
+
+    .theme-toggle-btn:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: var(--accent);
+    }
+
+    /* ==========================================================================
+       3. MAIN LAYOUT
+       ========================================================================== */
+    .dashboard {
+      display: grid;
+      grid-template-columns: 460px 1fr;
+      flex-grow: 1;
+      height: calc(100vh - 73px);
+      overflow: hidden;
+    }
+
+    /* ==========================================================================
+       4. SIDEBAR PANEL (FORM & HISTORIC RECORDS)
+       ========================================================================== */
+    .sidebar {
+      background: var(--panel-bg);
+      backdrop-filter: blur(16px);
+      border-right: 1px solid var(--panel-border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .tab-header {
+      display: flex;
+      border-bottom: 1px solid var(--panel-border);
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 14px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .tab-btn.active {
+      color: var(--text-main);
+    }
+
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 20%;
+      width: 60%;
+      height: 3px;
+      background: var(--accent);
+      border-top-left-radius: 3px;
+      border-top-right-radius: 3px;
+      box-shadow: 0 -2px 10px var(--accent-glow);
+    }
+
+    .tab-content {
+      flex-grow: 1;
+      overflow-y: auto;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Form Fields Styling */
+    .form-group-title {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-group-title::after {
+      content: '';
+      flex-grow: 1;
+      height: 1px;
+      background: var(--panel-border);
+    }
+
+    .form-card {
+      background: var(--card-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .input-field-wrapper {
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .input-field-wrapper:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13.5px;
+      color: var(--text-main);
+      transition: var(--transition);
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .uppercase {
+      text-transform: uppercase;
+    }
+
+    .error-msg {
+      color: var(--error);
+      font-size: 11px;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .region-suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .suggestion-chip {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 4px 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--panel-border);
+      border-radius: 20px;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: var(--transition);
+    }
+
+    .suggestion-chip:hover {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    /* Actions Area (Fixed Bottom of Sidebar) */
+    .sidebar-actions {
+      padding: 18px 24px;
+      background: rgba(0, 0, 0, 0.2);
+      border-top: 1px solid var(--panel-border);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 16px;
+      font-size: 13.5px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      border: none;
+      transition: var(--transition);
+      text-decoration: none;
+      text-align: center;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 4px 12px var(--accent-glow);
+      grid-column: span 2;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--accent-hover);
+      box-shadow: 0 4px 20px var(--accent-glow);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:disabled {
+      background: var(--text-muted);
+      cursor: not-allowed;
+      box-shadow: none;
+      opacity: 0.6;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
+      border: 1px solid var(--panel-border);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: var(--text-muted);
+    }
+
+    .btn-quick-fill {
+      align-self: flex-end;
+      padding: 6px 12px;
+      font-size: 11px;
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 6px;
+      cursor: pointer;
+      margin-bottom: 12px;
+      transition: var(--transition);
+    }
+
+    .btn-quick-fill:hover {
+      background: rgba(16, 185, 129, 0.25);
+      border-color: #10b981;
+    }
+
+    /* History / Saved records panel */
+    .history-container {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      height: 100%;
+    }
+
+    .search-wrapper {
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 8px;
+      padding: 10px 14px 10px 36px !important;
+      font-size: 13px;
+      color: var(--text-main);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+      width: 16px;
+      height: 16px;
+    }
+
+    .records-list {
+      flex-grow: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-right: 4px;
+    }
+
+    .record-card {
+      background: var(--card-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 10px;
+      padding: 14px;
+      transition: var(--transition);
+      position: relative;
+      cursor: pointer;
+    }
+
+    .record-card:hover {
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.04);
+      transform: translateX(2px);
+    }
+
+    .record-name {
+      font-weight: 700;
+      font-size: 13.5px;
+      margin-bottom: 4px;
+      color: var(--text-main);
+      word-break: break-all;
+    }
+
+    .record-meta {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .record-actions {
+      margin-top: 10px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .record-btn {
+      padding: 4px 8px;
+      font-size: 10.5px;
+      font-weight: 600;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--panel-border);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .record-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .record-btn-delete {
+      color: var(--error);
+      border-color: rgba(239, 68, 68, 0.2);
+      background: rgba(239, 68, 68, 0.05);
+    }
+
+    .record-btn-delete:hover {
+      background: var(--error);
+      color: white;
+      border-color: var(--error);
+    }
+
+    .empty-history {
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    /* ==========================================================================
+       5. PREVIEW CANVAS AREA (THE DOCUMENT PAGE PREVIEW)
+       ========================================================================== */
+    .preview-pane {
+      background: rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .preview-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 24px;
+      background: var(--panel-bg);
+      border-bottom: 1px solid var(--panel-border);
+    }
+
+    .preview-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .zoom-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .zoom-slider {
+      width: 100px;
+      height: 4px;
+      -webkit-appearance: none;
+      background: var(--panel-border);
+      border-radius: 2px;
+      outline: none;
+    }
+
+    .zoom-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .zoom-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .zoom-value {
+      font-size: 11px;
+      font-weight: 700;
+      width: 32px;
+      text-align: right;
+    }
+
+    .preview-canvas {
+      flex-grow: 1;
+      overflow: auto;
+      padding: 40px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      position: relative;
+    }
+
+    /* Elegant CSS translation sheet formatting */
+    .certificate-sheet {
+      background: white;
+      color: #111111;
+      width: 210mm;
+      min-height: 297mm;
+      padding: 8mm 15mm 20mm 20mm;
+      box-shadow: var(--shadow-lg);
+      transform-origin: top center;
+      transition: transform 0.1s ease;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.6;
+      font-size: 12pt;
+      box-sizing: border-box;
+    }
+
+    .certificate-sheet,
+    .certificate-sheet * {
+      font-family: 'Times New Roman', Times, serif !important;
+    }
+
+    .translation-header {
+      text-align: right;
+      font-size: 10pt;
+      font-style: italic;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      font-weight: bold;
+      border-bottom: 1px solid #111;
+      padding-bottom: 4px;
+    }
+
+    .doc-title-container {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .doc-country {
+      font-size: 14pt;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .doc-title {
+      font-size: 14pt;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .certificate-table, .parents-table, .registry-office-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    .certificate-table td, .parents-table td, .registry-office-table td {
+      padding: 5px 0;
+      vertical-align: top;
+    }
+
+    .label {
+      width: 35%;
+      font-weight: bold;
+      padding-right: 10px;
+    }
+
+    .value {
+      width: 65%;
+      border-bottom: 1px dotted #888;
+      position: relative;
+    }
+
+    .font-bold {
+      font-weight: bold;
+    }
+
+    .value.uppercase {
+      text-transform: uppercase;
+    }
+
+    /* Sub-grid for Place of Birth */
+    .sub-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .sub-grid-item {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+    }
+
+    .registry-sentence {
+      margin: 24px 0;
+      text-align: justify;
+      text-indent: 30px;
+      line-height: 1.8;
+    }
+
+    .registry-sentence span {
+      border-bottom: 1px dotted #888;
+      padding: 0 4px;
+    }
+
+    .section-title {
+      font-weight: bold;
+      font-size: 12pt;
+      margin-top: 14px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #333;
+      padding-bottom: 2px;
+      letter-spacing: 0.5px;
+    }
+
+    .signature-section {
+      margin-top: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .signature-officer {
+      font-weight: bold;
+      width: 50%;
+    }
+    .signature-signed {
+      width: 20%;
+      text-align: center;
+      font-style: italic;
+    }
+    .signature-name {
+      width: 30%;
+      text-align: right;
+      font-weight: bold;
+      border-bottom: 1px dotted #888;
+    }
+
+    .footer-section {
+      margin-top: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      clear: both;
+    }
+
+    .official-seal {
+      width: 35%;
+      font-weight: bold;
+      text-align: left;
+    }
+
+    .id-number-section {
+      font-weight: bold;
+      font-size: 12pt;
+      border: 1px solid #111;
+      padding: 6px 12px;
+      display: inline-block;
+      text-align: center;
+    }
+
+    .footer-spacer {
+      width: 35%;
+    }
+
+    .placeholder-text {
+      color: #aaa;
+      font-style: italic;
+      font-size: 11px;
+    }
+
+    /* PDF formatting specific overrides */
+    .certificate-sheet.pdf-exporting {
+      box-shadow: none;
+      transform: scale(1) !important;
+      margin: 0 !important;
+      min-height: auto !important;
+      height: auto !important;
+    }
+
+    .certificate-sheet.pdf-exporting .value,
+    .certificate-sheet.pdf-exporting .registry-sentence span,
+    .certificate-sheet.pdf-exporting .signature-name {
+      border-bottom-style: solid;
+      border-bottom-color: #000;
+    }
+
+    .certificate-sheet.pdf-exporting .placeholder-text {
+      visibility: hidden;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1f2937;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 8px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transform: translateY(150%);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 1000;
+      border-left: 4px solid var(--accent);
+    }
+    .toast.success {
+      border-left-color: var(--success);
+    }
+    .toast.error {
+      border-left-color: var(--error);
+    }
+    .toast.show {
+      transform: translateY(0);
+    }
+
+    /* Modal dialog */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      z-index: 999;
+    }
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .modal-card {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: var(--shadow-lg);
+      transform: scale(0.9);
+      transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      color: var(--text-main);
+    }
+    .modal-overlay.open .modal-card {
+      transform: scale(1);
+    }
+    .modal-title {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .modal-body {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    /* ==========================================================================
+       6. NATIVE BROWSER PRINT LAYOUT override
+       ========================================================================== */
+    @media print {
+      body {
+        background: white;
+        color: black;
+      }
+      header, .sidebar, .sidebar-actions, .preview-bar, .toast, .modal-overlay {
+        display: none !important;
+      }
+      .dashboard {
+        display: block;
+        height: auto;
+        overflow: visible;
+      }
+      .preview-pane {
+        background: none;
+        height: auto;
+        overflow: visible;
+      }
+      .preview-canvas {
+        padding: 0;
+        overflow: visible;
+      }
+      .certificate-sheet {
+        box-shadow: none !important;
+        transform: none !important;
+        margin: 0 !important;
+        width: 100% !important;
+        min-height: auto !important;
+        padding: 0 !important;
+      }
+      .certificate-sheet .value,
+      .certificate-sheet .registry-sentence span,
+      .certificate-sheet .signature-name {
+        border-bottom-style: solid;
+        border-bottom-color: #000;
+      }
+      .certificate-sheet .placeholder-text {
+        display: none !important;
+      }
+      @page {
+        size: A4 portrait;
+        margin: 8mm 15mm 15mm 20mm;
+      }
+    }
+
+    /* Autocomplete dropdown styles */
+    .input-field-wrapper {
+      position: relative;
+    }
+
+    .autocomplete-suggestions {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      z-index: 999;
+      border-radius: 8px;
+      max-height: 150px;
+      overflow-y: auto;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+      margin-top: 2px;
+      display: none;
+    }
+
+    [data-theme="light"] .autocomplete-suggestions {
+      background: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    [data-theme="dark"] .autocomplete-suggestions {
+      background: #1e1e2e;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .autocomplete-suggestion {
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: background 0.15s ease;
+      color: var(--text-main);
+      text-align: left;
+    }
+
+    .autocomplete-suggestion:hover {
+      background: var(--primary-light);
+      color: var(--primary-color);
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <!-- ==========================================================================
+       HEADER
+       ========================================================================== -->
+  <header class="no-print">
+    <div class="brand">
+      <div class="brand-logo">BT</div>
+      <div>
+        <div class="brand-title">Translation Hub</div>
+        <div class="brand-subtitle">Uzbekistan Translation Template Standard v2.0</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="zoom-control">
+        <span>Zoom:</span>
+        <input type="range" class="zoom-slider" id="zoom-slider" min="0.5" max="1.5" step="0.05" value="1">
+        <span class="zoom-value" id="zoom-val">100%</span>
+      </div>
+      <button class="theme-toggle-btn" id="theme-toggle" title="Toggle Dark/Light Mode">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="theme-icon">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==========================================================================
+       DASHBOARD CONTAINER
+       ========================================================================== */ -->
+  <div class="dashboard">
+    
+    <!-- ==========================================================================
+         SIDEBAR (LEFT PANEL)
+         ========================================================================== -->
+    <div class="sidebar no-print">
+      <div class="tab-header">
+        <button class="tab-btn active" id="tab-form" onclick="switchTab('form')">Certificate Form</button>
+        <button class="tab-btn" id="tab-history" onclick="switchTab('history')">Saved Records</button>
+      </div>
+
+      <!-- Tab Content: FORM -->
+      <div class="tab-content" id="content-form">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 13px; font-weight: 500; color: var(--text-muted);">Translate Uzbek birth certificates to English</span>
+          <button class="btn-quick-fill" onclick="fillMockData()">⚡ Fill Mock Data</button>
+        </div>
+
+        <form id="birthForm" onsubmit="event.preventDefault(); saveToDatabase();">
+          
+          <!-- Section 1: Child Details -->
+          <div class="form-group-title">Child Details</div>
+          <div class="form-card">
+            <div class="input-field-wrapper">
+              <label for="fullName">Full Name (F.I.SH.):</label>
+              <input id="fullName" type="text" placeholder="ABDUVALIEV SARDORBEK ANVAR O'G'LI" required class="uppercase">
+              <div id="fullNameError" class="error-msg">Full name is required.</div>
+            </div>
+
+            <div class="input-field-wrapper">
+              <label for="dob">Date of Birth (dd/mm/yyyy):</label>
+              <input id="dob" type="text" placeholder="15/10/1997" required>
+              <div id="dobError" class="error-msg">Valid date format dd/mm/yyyy is required.</div>
+            </div>
+
+            <div class="input-field-wrapper">
+              <label for="region">Region of Birth (Viloyat):</label>
+              <input id="region" type="text" placeholder="Fergana" required>
+              <div id="regionError" class="error-msg">Region is required.</div>
+            </div>
+
+            <div class="input-field-wrapper">
+              <label for="city">City or District of Birth (Tuman/Shahar):</label>
+              <input id="city" type="text" placeholder="Rishton district" required>
+              <div id="cityError" class="error-msg">City or village is required.</div>
+            </div>
+
+            <div class="input-field-wrapper">
+              <label for="entryNumber">Registry Entry Number:</label>
+              <input id="entryNumber" type="text" placeholder="452">
+            </div>
+
+            <div class="input-field-wrapper">
+              <label for="registryDate">Registry Date (dd/mm/yyyy):</label>
+              <input id="registryDate" type="text" placeholder="17/10/1997">
+              <div id="registryDateError" class="error-msg">Format should be dd/mm/yyyy.</div>
+            </div>
+          </div>
+
+          <!-- Section 2: Parents Details -->
+          <div class="form-group-title">Parents Details</div>
+          <div class="form-card">
+            <div class="input-field-wrapper">
+              <label for="fatherName">Father's Full Name:</label>
+              <input id="fatherName" type="text" placeholder="ABDUVALIEV ANVARJON" class="uppercase">
+            </div>
+            <div class="input-field-wrapper">
+              <label for="fatherNationality">Father's Nationality:</label>
+              <input id="fatherNationality" type="text" value="Uzbek">
+            </div>
+            <div class="input-field-wrapper">
+              <label for="motherName">Mother's Full Name:</label>
+              <input id="motherName" type="text" placeholder="ABDUVALIEVA SOJIDAXON" class="uppercase">
+            </div>
+            <div class="input-field-wrapper">
+              <label for="motherNationality">Mother's Nationality:</label>
+              <input id="motherNationality" type="text" value="Uzbek">
+            </div>
+          </div>
+
+          <!-- Section 3: Issuing Registry Office -->
+          <div class="form-group-title">Registry Office & Issue Details</div>
+          <div class="form-card">
+            <div class="input-field-wrapper">
+              <label for="regCity">Civil Registry City / District (e.g. Rishton):</label>
+              <input id="regCity" type="text" placeholder="Rishton">
+            </div>
+            <div class="input-field-wrapper">
+              <label for="issueDate">Date of Issue (dd/mm/yyyy):</label>
+              <input id="issueDate" type="text" placeholder="17/10/1997">
+              <div id="issueDateError" class="error-msg">Format should be dd/mm/yyyy.</div>
+            </div>
+            <div class="input-field-wrapper">
+              <label for="headName">Head of Civil Registry Office's Name:</label>
+              <input id="headName" type="text" placeholder="YUSUPOVA M. A.">
+            </div>
+            <div class="input-field-wrapper">
+              <label for="idNumber">ID/Certificate Number (e.g., I-FR No 0852963):</label>
+              <input id="idNumber" type="text" placeholder="I-FR No 0852963">
+            </div>
+          </div>
+          
+          <input type="hidden" id="currentRecordId" value="">
+        </form>
+      </div>
+
+      <!-- Tab Content: HISTORY -->
+      <div class="tab-content" id="content-history" style="display: none;">
+        <div class="history-container">
+          <div class="search-wrapper">
+            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input type="text" class="search-input" id="search-history" placeholder="Search saved records..." oninput="filterHistory()">
+          </div>
+          <div class="records-list" id="records-list-container">
+            <div class="empty-history">Connecting database to load records...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons area (Sticky bottom) -->
+      <div class="sidebar-actions">
+        <button class="btn btn-primary" onclick="exportPDF()">
+          <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          Export PDF
+        </button>
+        <button class="btn btn-primary" onclick="exportWord()">
+          <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          Export Word
+        </button>
+        <button class="btn btn-secondary" onclick="printDocument()" style="grid-column: span 2;">
+          <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+          Print Document
+        </button>
+        <button class="btn btn-danger" onclick="clearForm()" style="grid-column: span 2; background: transparent; border: 1px solid var(--error); color: var(--error); transition: all 0.2s ease;" onmouseover="this.style.background='var(--error)'; this.style.color='#ffffff';" onmouseout="this.style.background='transparent'; this.style.color='var(--error)';">
+          <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+          Clear Form
+        </button>
+      </div>
+    </div>
+
+    <!-- ==========================================================================
+         PREVIEW CONTAINER (RIGHT PANEL)
+         ========================================================================== -->
+    <div class="preview-pane">
+      <div class="preview-bar no-print">
+        <div class="preview-title">A4 Translation Layout Preview</div>
+      </div>
+      
+      <div class="preview-canvas">
+        
+        <!-- ==========================================================================
+             THE TRANSLATED BIRTH CERTIFICATE SHEET
+             ========================================================================== -->
+        <div id="certificate-preview" class="certificate-sheet">
+          <div class="translation-header">Translated from Uzbek</div>
+          
+          <div class="doc-title-container">
+            <div class="doc-country">REPUBLIC OF UZBEKISTAN</div>
+            <div class="doc-title">BIRTH CERTIFICATE</div>
+          </div>
+
+          <table class="certificate-table">
+            <tr>
+              <td class="label">Citizen:</td>
+              <td class="value font-bold uppercase" id="preview-fullName">
+                <span class="placeholder-text">[CITIZEN NAME]</span>
+              </td>
+            </tr>
+            <tr>
+              <td class="label">Born on:</td>
+              <td class="value" id="preview-dob">
+                <span class="placeholder-text">[DATE OF BIRTH]</span>
+              </td>
+            </tr>
+            <tr>
+              <td class="label">(in words):</td>
+              <td class="value" id="preview-dobWords">
+                <span class="placeholder-text">[BIRTH YEAR IN WORDS]</span>
+              </td>
+            </tr>
+            <tr>
+              <td class="label">Birth Place:</td>
+              <td class="value">
+                <div class="sub-grid">
+                  <div class="sub-grid-item">
+                    <strong>State:</strong>
+                    <span>Uzbekistan</span>
+                  </div>
+                  <div class="sub-grid-item">
+                    <strong>Region of:</strong>
+                    <span id="preview-region"><span class="placeholder-text">[REGION]</span></span>
+                  </div>
+                  <div class="sub-grid-item">
+                    <strong>City of, village:</strong>
+                    <span id="preview-city"><span class="placeholder-text">[CITY / DISTRICT]</span></span>
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </table>
+
+          <div class="registry-sentence">
+            in certification of this, entry No 
+            <span id="preview-entryNumber"><span class="placeholder-text">[ENTRY NO]</span></span> 
+            was made into the Birth Registry on 
+            <span id="preview-registryDate"><span class="placeholder-text">[REGISTRY DATE]</span></span> 
+            year.
+          </div>
+
+          <div class="section-title">Parents:</div>
+          
+          <table class="parents-table">
+            <tr>
+              <td class="label">Father:</td>
+              <td class="value font-bold uppercase" id="preview-fatherName">
+                <span class="placeholder-text">[FATHER NAME]</span>
+              </td>
+            </tr>
+            <tr>
+              <td class="label">Nationality:</td>
+              <td class="value" id="preview-fatherNationality">
+                <span class="placeholder-text">[NATIONALITY]</span>
+              </td>
+            </tr>
+            <tr>
+              <td class="label">Mother:</td>
+              <td class="value font-bold uppercase" id="preview-motherName">
+                <span class="placeholder-text">[MOTHER NAME]</span>
+              </td>
+            </tr>
+            <tr>
+              <td class="label">Nationality:</td>
+              <td class="value" id="preview-motherNationality">
+                <span class="placeholder-text">[NATIONALITY]</span>
+              </td>
+            </tr>
+          </table>
+
+          <div class="section-title">REGISTRATION OFFICE & DETAILS</div>
+
+          <table class="registry-office-table">
+            <tr>
+              <td class="label">Registration Place:</td>
+              <td class="value" id="preview-regCity">
+                <span class="placeholder-text">[REGISTRATION PLACE]</span>
+              </td>
+            </tr>
+            <tr>
+              <td class="label">Date of issue:</td>
+              <td class="value" id="preview-issueDate">
+                <span class="placeholder-text">[DATE OF ISSUE]</span>
+              </td>
+            </tr>
+          </table>
+
+          <div class="signature-section">
+            <div class="signature-officer">Head of the Civil Registry Office</div>
+            <div class="signature-signed">(signed)</div>
+            <div class="signature-name" id="preview-headName">
+              <span class="placeholder-text">[HEAD NAME]</span>
+            </div>
+          </div>
+
+          <div class="footer-section">
+            <div class="official-seal"><strong>Official Seal</strong></div>
+            <div class="id-number-section" id="preview-idNumber">
+              <span class="placeholder-text">[ID NUMBER]</span>
+            </div>
+            <div class="footer-spacer"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Element -->
+  <div class="toast no-print" id="toast-notification">
+    <span id="toast-message">Notification Message</span>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="modal-overlay no-print" id="confirm-modal">
+    <div class="modal-card">
+      <div class="modal-title" id="modal-title">Confirm Action</div>
+      <div class="modal-body" id="modal-body">Are you sure you want to perform this action?</div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" id="modal-confirm-btn" style="background: var(--error); grid-column: span 1; box-shadow: none;">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================================
+       JAVASCRIPT LOGIC
+       ========================================================================== -->
+  <script>
+    // Database Configuration
+    const TURSO_URL = "https://birthcertificate-khan0200.aws-ap-northeast-1.turso.io/v2/pipeline";
+    const TURSO_TOKEN = "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3ODQ5NTcyNzAsImlkIjoiMDE5Zjk3YmUtNDIwMS03YTY3LTkxODUtODIzMGMyMmYyYjU1Iiwia2lkIjoiVFZIaHctQ1VfMTczOVlqa2dZRGpKbGJfQlVpQWVLckxTelhfbDVMUTlzRSIsInJpZCI6ImQwNGFhNWUyLTRiYTAtNGMzNC1iZjQ5LTViZTgxM2U5NjIyNiJ9.srRd3vUHK48oKsluQJk6E4xY2jHT1eqyj5oUdhmLsOeNXYt7T5MEqojBdRenZshw-3wg8TXrAaleU9LHkTFCCA";
+
+    let savedRecords = []; // Global history memory
+
+    // Mock Data for Quick Fill
+    const MOCK_DATA = {
+      fullName: "ABDUVALIEV SARDORBEK ANVAR O'G'LI",
+      dob: "15/10/1997",
+      region: "Fergana",
+      city: "Rishton district",
+      entryNumber: "452",
+      registryDate: "17/10/1997",
+      fatherName: "ABDUVALIEV ANVARJON",
+      fatherNationality: "Uzbek",
+      motherName: "ABDUVALIEVA SOJIDAXON",
+      motherNationality: "Uzbek",
+      regCity: "Rishton",
+      issueDate: "17/10/1997",
+      headName: "YUSUPOVA M. A.",
+      idNumber: "I-FR No 0852963"
+    };
+
+    // ==========================================================================
+    // 1. RECEPTIVE AND DYNAMIC DESIGN & VIEW CONTROLS
+    // ==========================================================================
+
+    // Tab Switching
+    function switchTab(tab) {
+      document.getElementById('tab-form').classList.toggle('active', tab === 'form');
+      document.getElementById('tab-history').classList.toggle('active', tab === 'history');
+      
+      document.getElementById('content-form').style.display = tab === 'form' ? 'flex' : 'none';
+      document.getElementById('content-history').style.display = tab === 'history' ? 'flex' : 'none';
+      
+      if (tab === 'history') {
+        loadHistoryFromTurso();
+      }
+    }
+
+    // Zoom Preview Sheet Controller
+    const zoomSlider = document.getElementById('zoom-slider');
+    const zoomVal = document.getElementById('zoom-val');
+    const certificatePreview = document.getElementById('certificate-preview');
+
+    zoomSlider.addEventListener('input', (e) => {
+      const scale = e.target.value;
+      zoomVal.textContent = `${Math.round(scale * 100)}%`;
+      certificatePreview.style.transform = `scale(${scale})`;
+    });
+
+    // Dark/Light Theme toggling
+    const themeToggle = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    
+    themeToggle.addEventListener('click', () => {
+      const currentTheme = document.body.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.body.setAttribute('data-theme', newTheme);
+      
+      // Update toggle icon
+      if (newTheme === 'light') {
+        themeIcon.innerHTML = `
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        `;
+        themeIcon.setAttribute('viewBox', '0 0 24 24');
+      } else {
+        themeIcon.innerHTML = `
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        `;
+        themeIcon.setAttribute('viewBox', '0 0 24 24');
+      }
+    });
+
+
+
+    // Modal Manager
+    let modalCallback = null;
+    function openConfirmModal(title, body, confirmBtnText, callback) {
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-body').textContent = body;
+      const confirmBtn = document.getElementById('modal-confirm-btn');
+      confirmBtn.textContent = confirmBtnText;
+      
+      modalCallback = callback;
+      
+      confirmBtn.onclick = () => {
+        if (modalCallback) modalCallback();
+        closeModal();
+      };
+      
+      document.getElementById('confirm-modal').classList.add('open');
+    }
+    
+    function closeModal() {
+      document.getElementById('confirm-modal').classList.remove('open');
+      modalCallback = null;
+    }
+
+    // Toast Manager
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast-notification');
+      toast.className = `toast show no-print ${type}`;
+      document.getElementById('toast-message').textContent = message;
+      
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 4000);
+    }
+
+
+    // ==========================================================================
+    // 2. TEXT PROCESSING HELPERS & REACTIVE LIVE PREVIEW SYNC
+    // ==========================================================================
+
+    // Helper to format Date: dd/mm/yyyy to 'Month day, year'
+    function formatDate(str) {
+      if (!str) return '';
+      // Support slashes, dots, and dashes
+      const parts = str.split(/[./-]/);
+      if (parts.length !== 3) return str;
+      
+      const day = parseInt(parts[0], 10);
+      const month = parseInt(parts[1], 10) - 1;
+      const year = parseInt(parts[2], 10);
+      
+      const dateObj = new Date(year, month, day);
+      if (isNaN(dateObj.getTime())) return str;
+      
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      return dateObj.toLocaleDateString('en-US', options);
+    }
+
+    // Helper to translate birth year to english text
+    function getWrittenYear(dateString) {
+      if (!dateString) return "";
+      const parts = dateString.split(/[./-]/);
+      if (parts.length !== 3) return "";
+      const year = parseInt(parts[2], 10);
+      if (isNaN(year)) return "";
+
+      const ones = ["", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"];
+      const teens = ["ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen",
+        "sixteen", "seventeen", "eighteen", "nineteen"];
+      const tens = ["", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"];
+
+      const thousand = Math.floor(year / 1000);
+      const hundred = Math.floor((year % 1000) / 100);
+      const lastTwo = year % 100;
+
+      let words = [];
+
+      if (thousand === 2) words.push("two thousand");
+      else if (thousand === 1) words.push("one thousand");
+
+      if (hundred > 0) words.push(ones[hundred] + " hundred");
+
+      if (lastTwo >= 10 && lastTwo < 20) {
+        words.push(teens[lastTwo - 10]);
+      } else {
+        const ten = Math.floor(lastTwo / 10);
+        const one = lastTwo % 10;
+        if (ten > 0) words.push(tens[ten]);
+        if (one > 0) words.push(ones[one]);
+      }
+
+      if (words.length === 0) return "";
+      const result = words.join(" ");
+      return result.charAt(0).toUpperCase() + result.slice(1);
+    }
+
+    // Input elements and corresponding preview element IDs
+    const syncMapping = {
+      fullName: { previewId: 'preview-fullName', format: val => val ? val.toUpperCase() : '' },
+      dob: { previewId: 'preview-dob', format: val => formatDate(val) },
+      region: { previewId: 'preview-region', format: val => val ? val.charAt(0).toUpperCase() + val.slice(1).toLowerCase() : '' },
+      city: { previewId: 'preview-city', format: val => val ? val.charAt(0).toUpperCase() + val.slice(1).toLowerCase() : '' },
+      entryNumber: { previewId: 'preview-entryNumber', format: val => val || '_____' },
+      registryDate: { previewId: 'preview-registryDate', format: val => formatDate(val) || '__________' },
+      fatherName: { previewId: 'preview-fatherName', format: val => val ? val.toUpperCase() : '' },
+      fatherNationality: { previewId: 'preview-fatherNationality', format: val => val || '' },
+      motherName: { previewId: 'preview-motherName', format: val => val ? val.toUpperCase() : '' },
+      motherNationality: { previewId: 'preview-motherNationality', format: val => val || '' },
+      regCity: { previewId: 'preview-regCity', format: val => val ? `Civil registry office of ${val} district` : '' },
+      issueDate: { previewId: 'preview-issueDate', format: val => formatDate(val) },
+      headName: { previewId: 'preview-headName', format: val => val || '' },
+      idNumber: { previewId: 'preview-idNumber', format: val => val || '' }
+    };
+
+    // Initialize listeners for real-time reactivity
+    Object.keys(syncMapping).forEach(inputId => {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+
+      // Event listener for live sync
+      input.addEventListener('input', (e) => {
+        let value = e.target.value;
+
+        // Auto-format Date fields: dd/mm/yyyy
+        if (inputId === 'dob' || inputId === 'registryDate' || inputId === 'issueDate') {
+          if (!e.inputType || !e.inputType.startsWith('delete')) {
+            let digits = value.replace(/\D/g, '');
+            if (digits.length > 8) digits = digits.slice(0, 8);
+            
+            let formatted = '';
+            if (digits.length > 0) {
+              formatted += digits.slice(0, 2);
+              if (digits.length === 2 && value.length === 2) {
+                formatted += '/';
+              }
+            }
+            if (digits.length > 2) {
+              formatted += '/' + digits.slice(2, 4);
+              if (digits.length === 4 && value.length === 5) {
+                formatted += '/';
+              }
+            }
+            if (digits.length > 4) {
+              formatted += '/' + digits.slice(4, 8);
+            }
+            e.target.value = formatted;
+            value = formatted;
+          }
+        }
+
+        // Apply casing rules on keypress/input to input field itself
+        if (inputId === 'fullName' || inputId === 'fatherName' || inputId === 'motherName') {
+          // Capitalize names in real-time
+          const cursorPosition = e.target.selectionStart;
+          e.target.value = value.toUpperCase();
+          e.target.setSelectionRange(cursorPosition, cursorPosition);
+          value = e.target.value;
+        } else if (inputId === 'region' || inputId === 'city') {
+          // Sentence-case region and cities
+          const cursorPosition = e.target.selectionStart;
+          if (value.length > 0) {
+            e.target.value = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+          }
+          e.target.setSelectionRange(cursorPosition, cursorPosition);
+          value = e.target.value;
+        }
+
+        // Validate on input
+        validateField(inputId, value);
+
+        // Update preview field
+        updatePreviewField(inputId, value);
+      });
+    });
+
+    // Custom helper to sync the preview field HTML
+    function updatePreviewField(inputId, rawValue) {
+      const config = syncMapping[inputId];
+      const previewEl = document.getElementById(config.previewId);
+      if (!previewEl) return;
+
+      const formattedVal = config.format(rawValue);
+
+      if (!rawValue) {
+        // Render fallback placeholder
+        let placeholderText = "";
+        switch (inputId) {
+          case 'fullName': placeholderText = "[CITIZEN NAME]"; break;
+          case 'dob': placeholderText = "[DATE OF BIRTH]"; break;
+          case 'region': placeholderText = "[REGION]"; break;
+          case 'city': placeholderText = "[CITY / DISTRICT]"; break;
+          case 'entryNumber': placeholderText = "[ENTRY NO]"; break;
+          case 'registryDate': placeholderText = "[REGISTRY DATE]"; break;
+          case 'fatherName': placeholderText = "[FATHER NAME]"; break;
+          case 'fatherNationality': placeholderText = "[NATIONALITY]"; break;
+          case 'motherName': placeholderText = "[MOTHER NAME]"; break;
+          case 'motherNationality': placeholderText = "[NATIONALITY]"; break;
+          case 'regCity': placeholderText = "[REGISTRATION PLACE]"; break;
+          case 'issueDate': placeholderText = "[DATE OF ISSUE]"; break;
+          case 'headName': placeholderText = "[HEAD NAME]"; break;
+          case 'idNumber': placeholderText = "[ID NUMBER]"; break;
+          default: placeholderText = "______";
+        }
+        
+        if (inputId === 'regCity') {
+          previewEl.innerHTML = `<span class="placeholder-text">[REGISTRATION PLACE]</span>`;
+        } else {
+          previewEl.innerHTML = `<span class="placeholder-text">${placeholderText}</span>`;
+        }
+      } else {
+        previewEl.textContent = formattedVal;
+      }
+
+      // Special handling: update birth year spelling
+      if (inputId === 'dob') {
+        const wordsEl = document.getElementById('preview-dobWords');
+        if (wordsEl) {
+          const spelling = getWrittenYear(rawValue);
+          if (spelling) {
+            wordsEl.textContent = spelling;
+          } else {
+            wordsEl.innerHTML = `<span class="placeholder-text">[BIRTH YEAR IN WORDS]</span>`;
+          }
+        }
+      }
+    }
+
+    // Force validation of fields
+    function validateField(id, val) {
+      const dateRegex = /^\d{2}[./-]\d{2}[./-]\d{4}$/;
+      let isValid = true;
+
+      if (id === 'fullName' || id === 'region' || id === 'city') {
+        const errEl = document.getElementById(`${id}Error`);
+        if (errEl) {
+          const matches = !!val.trim();
+          errEl.style.display = matches ? 'none' : 'block';
+          isValid = matches;
+        }
+      } else if (id === 'dob' || id === 'registryDate' || id === 'issueDate') {
+        const errEl = document.getElementById(`${id}Error`);
+        if (errEl) {
+          // If required (dob) or has some text, it must match regex
+          const isRequired = id === 'dob';
+          const matches = dateRegex.test(val.trim());
+          if (isRequired) {
+            errEl.style.display = matches ? 'none' : 'block';
+            isValid = matches;
+          } else {
+            const hasText = !!val.trim();
+            errEl.style.display = (!hasText || matches) ? 'none' : 'block';
+            isValid = !hasText || matches;
+          }
+        }
+      }
+      return isValid;
+    }
+
+    // Validate entire form before saving
+    function validateForm() {
+      let isFormValid = true;
+      Object.keys(syncMapping).forEach(id => {
+        const input = document.getElementById(id);
+        const isValid = validateField(id, input ? input.value : '');
+        if (!isValid) isFormValid = false;
+      });
+      return isFormValid;
+    }
+
+
+    // ==========================================================================
+    // 3. TURSO DATABASE INTEGRATION
+    // ==========================================================================
+
+    // Set connection badge state
+    function setDbStatus(state, message = "") {
+      const badge = document.getElementById('db-status-badge');
+      const dot = document.getElementById('db-status-dot');
+      const text = document.getElementById('db-status-text');
+
+      if (!badge || !dot || !text) return;
+
+      dot.className = 'status-dot';
+      
+      if (state === 'connecting') {
+        dot.classList.add('connecting');
+        text.textContent = 'Turso Connecting';
+        badge.title = 'Connecting to Turso...';
+      } else if (state === 'connected') {
+        dot.classList.add('connected');
+        text.textContent = 'Turso Online';
+        badge.title = 'Successfully connected to Turso SQLite database';
+      } else {
+        dot.classList.add('error');
+        text.textContent = 'Turso Offline';
+        badge.title = `Error: ${message || 'Failed connection'}. Click to retry.`;
+      }
+    }
+
+    // Direct HTTP implementation of query pipeline
+    async function runTursoQuery(sql, args = []) {
+      const hranaArgs = args.map(arg => {
+        if (arg === null || arg === undefined) {
+          return { type: "null" };
+        } else if (typeof arg === "number") {
+          return { type: "integer", value: arg.toString() };
+        } else {
+          return { type: "text", value: arg.toString() };
+        }
+      });
+
+      const response = await fetch(TURSO_URL, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${TURSO_TOKEN}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          requests: [
+            {
+              type: "execute",
+              stmt: {
+                sql: sql,
+                args: hranaArgs
+              }
+            },
+            {
+              type: "close"
+            }
+          ]
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP Error ${response.status}: ${response.statusText}`);
+      }
+
+      const payload = await response.json();
+      const executeResult = payload.results[0];
+
+      if (executeResult.type === "error") {
+        throw new Error(executeResult.error.message || "SQLite Execution Error");
+      }
+
+      const result = executeResult.response.result;
+      const cols = result.cols.map(c => c.name);
+      
+      const parsedRows = result.rows.map(row => {
+        const obj = {};
+        cols.forEach((col, idx) => {
+          const cell = row[idx];
+          if (cell.type === "null") {
+            obj[col] = null;
+          } else if (cell.type === "integer") {
+            obj[col] = parseInt(cell.value, 10);
+          } else if (cell.type === "float") {
+            obj[col] = parseFloat(cell.value);
+          } else {
+            obj[col] = cell.value;
+          }
+        });
+        return obj;
+      });
+
+      return {
+        rows: parsedRows,
+        affectedRowCount: result.affected_row_count,
+        lastInsertRowid: result.last_insert_rowid
+      };
+    }
+
+    // Database initialization on start
+    async function initializeDatabase() {
+      setDbStatus('connecting');
+      try {
+        // Create table query
+        const sql = `
+          CREATE TABLE IF NOT EXISTS birth_certificates (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            fullName TEXT NOT NULL,
+            dob TEXT NOT NULL,
+            writtenYear TEXT NOT NULL,
+            region TEXT NOT NULL,
+            city TEXT NOT NULL,
+            entryNumber TEXT,
+            registryDate TEXT,
+            fatherName TEXT,
+            fatherNationality TEXT,
+            motherName TEXT,
+            motherNationality TEXT,
+            regCity TEXT,
+            issueDate TEXT,
+            headName TEXT,
+            idNumber TEXT,
+            createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+          );
+        `;
+        await runTursoQuery(sql);
+        setDbStatus('connected');
+        console.log("Turso table schema verified.");
+      } catch (err) {
+        console.error("Database initialization failed:", err);
+        setDbStatus('error', err.message);
+        showToast("Database Offline. Edits will not save.", "error");
+      }
+    }
+
+    // Save current form fields to Turso SQLite database
+    async function saveToDatabase() {
+      if (!validateForm()) {
+        showToast("Please fix the validation errors in the form.", "error");
+        return 'validation_failed';
+      }
+
+      const saveBtn = document.getElementById("save-btn");
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.textContent = "Saving...";
+      }
+
+      const currentRecordId = document.getElementById("currentRecordId").value;
+
+      const formData = {
+        fullName: document.getElementById("fullName").value.trim().toUpperCase(),
+        dob: document.getElementById("dob").value.trim(),
+        writtenYear: getWrittenYear(document.getElementById("dob").value.trim()),
+        region: document.getElementById("region").value.trim(),
+        city: document.getElementById("city").value.trim(),
+        entryNumber: document.getElementById("entryNumber").value.trim(),
+        registryDate: document.getElementById("registryDate").value.trim(),
+        fatherName: document.getElementById("fatherName").value.trim().toUpperCase(),
+        fatherNationality: document.getElementById("fatherNationality").value.trim(),
+        motherName: document.getElementById("motherName").value.trim().toUpperCase(),
+        motherNationality: document.getElementById("motherNationality").value.trim(),
+        regCity: document.getElementById("regCity").value.trim(),
+        issueDate: document.getElementById("issueDate").value.trim(),
+        headName: document.getElementById("headName").value.trim(),
+        idNumber: document.getElementById("idNumber").value.trim()
+      };
+
+      // Search if a record already exists for the same certificate ID or name+DOB combination
+      let recordIdToSave = currentRecordId;
+      if (!recordIdToSave) {
+        try {
+          let checkSql = "";
+          let checkParams = [];
+          
+          if (formData.idNumber) {
+            checkSql = `SELECT id FROM birth_certificates WHERE idNumber = ? LIMIT 1;`;
+            checkParams = [formData.idNumber];
+          } else if (formData.fullName && formData.dob) {
+            checkSql = `SELECT id FROM birth_certificates WHERE fullName = ? AND dob = ? LIMIT 1;`;
+            checkParams = [formData.fullName, formData.dob];
+          }
+
+          if (checkSql) {
+            const checkRes = await runTursoQuery(checkSql, checkParams);
+            if (checkRes.rows && checkRes.rows.length > 0) {
+              recordIdToSave = checkRes.rows[0].id;
+              // Set it in the hidden input so the UI is updated too
+              document.getElementById("currentRecordId").value = recordIdToSave;
+            }
+          }
+        } catch (checkErr) {
+          console.error("Error checking for existing record:", checkErr);
+        }
+      }
+
+      try {
+        if (recordIdToSave) {
+          // Update existing record
+          const sql = `
+            UPDATE birth_certificates SET 
+              fullName = ?, dob = ?, writtenYear = ?, region = ?, city = ?, 
+              entryNumber = ?, registryDate = ?, fatherName = ?, fatherNationality = ?, 
+              motherName = ?, motherNationality = ?, regCity = ?, issueDate = ?, 
+              headName = ?, idNumber = ?
+            WHERE id = ?;
+          `;
+          await runTursoQuery(sql, [
+            formData.fullName, formData.dob, formData.writtenYear, formData.region, formData.city,
+            formData.entryNumber, formData.registryDate, formData.fatherName, formData.fatherNationality,
+            formData.motherName, formData.motherNationality, formData.regCity, formData.issueDate,
+            formData.headName, formData.idNumber, parseInt(recordIdToSave, 10)
+          ]);
+          showToast(`Successfully updated database record for ${formData.fullName}`);
+        } else {
+          // Insert new record
+          const sql = `
+            INSERT INTO birth_certificates (
+              fullName, dob, writtenYear, region, city, 
+              entryNumber, registryDate, fatherName, fatherNationality, 
+              motherName, motherNationality, regCity, issueDate, 
+              headName, idNumber
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+          `;
+          const result = await runTursoQuery(sql, [
+            formData.fullName, formData.dob, formData.writtenYear, formData.region, formData.city,
+            formData.entryNumber, formData.registryDate, formData.fatherName, formData.fatherNationality,
+            formData.motherName, formData.motherNationality, formData.regCity, formData.issueDate,
+            formData.headName, formData.idNumber
+          ]);
+          
+          // Store new row ID
+          if (result.lastInsertRowid) {
+            document.getElementById("currentRecordId").value = result.lastInsertRowid;
+          }
+          showToast(`Successfully saved record for ${formData.fullName} to database`);
+        }
+        
+        // Refresh records if open
+        loadHistoryFromTurso();
+        return 'success';
+      } catch (err) {
+        console.error("Failed to save record:", err);
+        showToast(`Database offline. Exporting document without saving.`, "warning");
+        return 'db_error';
+      } finally {
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = `
+            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+            Save to Turso DB
+          `;
+        }
+      }
+    }
+
+    // Load saved database history records
+    async function loadHistoryFromTurso() {
+      const container = document.getElementById("records-list-container");
+      
+      try {
+        const result = await runTursoQuery("SELECT * FROM birth_certificates ORDER BY id DESC;");
+        savedRecords = result.rows;
+        renderHistoryList(savedRecords);
+      } catch (err) {
+        console.error("Failed to load database history:", err);
+        container.innerHTML = `<div class="empty-history" style="color: var(--error);">Failed to load database records: ${err.message}</div>`;
+      }
+    }
+
+    // Render historical lists in HTML
+    function renderHistoryList(records) {
+      const container = document.getElementById("records-list-container");
+      
+      if (records.length === 0) {
+        container.innerHTML = `<div class="empty-history">No saved translation certificates found.</div>`;
+        return;
+      }
+
+      container.innerHTML = "";
+      records.forEach(rec => {
+        const card = document.createElement("div");
+        card.className = "record-card";
+        card.onclick = () => loadRecordIntoForm(rec.id);
+
+        card.innerHTML = `
+          <div class="record-name">${rec.fullName}</div>
+          <div class="record-meta">
+            <span><strong>DOB:</strong> ${rec.dob}</span>
+            <span><strong>Entry:</strong> ${rec.entryNumber || 'N/A'}</span>
+            <span><strong>ID:</strong> ${rec.idNumber || 'N/A'}</span>
+          </div>
+          <div class="record-actions">
+            <button class="record-btn" onclick="event.stopPropagation(); loadRecordIntoForm(${rec.id});" title="Load into editor">Edit</button>
+            <button class="record-btn" onclick="event.stopPropagation(); quickExportWord(${rec.id});" title="Download Word file">Word</button>
+            <button class="record-btn record-btn-delete" onclick="event.stopPropagation(); askDeleteRecord(${rec.id}, '${rec.fullName.replace(/'/g, "\\'")}');" title="Delete record from database">Delete</button>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // Filter history on search
+    function filterHistory() {
+      const query = document.getElementById("search-history").value.trim().toLowerCase();
+      if (!query) {
+        renderHistoryList(savedRecords);
+        return;
+      }
+      const filtered = savedRecords.filter(rec => 
+        rec.fullName.toLowerCase().includes(query) || 
+        rec.idNumber.toLowerCase().includes(query) ||
+        rec.entryNumber.toLowerCase().includes(query) ||
+        rec.dob.includes(query)
+      );
+      renderHistoryList(filtered);
+    }
+
+    // Load a database record details back into the active form
+    function loadRecordIntoForm(id) {
+      const record = savedRecords.find(r => r.id === id);
+      if (!record) return;
+
+      document.getElementById("currentRecordId").value = record.id;
+      
+      // Populate fields
+      Object.keys(syncMapping).forEach(fieldId => {
+        const input = document.getElementById(fieldId);
+        if (input) {
+          input.value = record[fieldId] || "";
+          
+          // Re-trigger live formatting and preview syncing
+          updatePreviewField(fieldId, input.value);
+          validateField(fieldId, input.value);
+        }
+      });
+      
+      switchTab('form');
+      showToast(`Loaded certificate details for ${record.fullName}`);
+    }
+
+    // Action dialog to delete record
+    function askDeleteRecord(id, name) {
+      openConfirmModal(
+        "Delete Record?",
+        `Are you sure you want to permanently delete the translation record of "${name}" from Turso database?`,
+        "Delete Permanent",
+        () => deleteRecordFromDb(id, name)
+      );
+    }
+
+    // SQL query to remove record
+    async function deleteRecordFromDb(id, name) {
+      try {
+        await runTursoQuery("DELETE FROM birth_certificates WHERE id = ?;", [id]);
+        showToast(`Deleted record for ${name}`);
+        
+        // Reset current record ID if we deleted the currently edited one
+        const currentIdVal = document.getElementById("currentRecordId").value;
+        if (currentIdVal && parseInt(currentIdVal, 10) === id) {
+          document.getElementById("currentRecordId").value = "";
+          document.getElementById("birthForm").reset();
+          // Reset previews
+          Object.keys(syncMapping).forEach(fieldId => updatePreviewField(fieldId, ""));
+        }
+        
+        // Reload history
+        loadHistoryFromTurso();
+      } catch (err) {
+        console.error("Failed to delete record:", err);
+        showToast(`Delete failed: ${err.message}`, "error");
+      }
+    }
+
+
+    // ==========================================================================
+    // 4. EXPORT UTILITIES (WORD & PDF & PRINT)
+    // ==========================================================================
+
+    // Native Microsoft Word Export helper
+    function getWordDocumentHtml(element) {
+      // Clone preview structure for export
+      const clone = element.cloneNode(true);
+      
+      // Remove any placeholders
+      clone.querySelectorAll('.placeholder-text').forEach(el => {
+        el.textContent = '_____________________';
+        el.style.color = '#000000';
+      });
+
+      const bodyHtml = clone.innerHTML;
+
+      return `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office' 
+              xmlns:w='urn:schemas-microsoft-com:office:word' 
+              xmlns='http://www.w3.org/TR/REC-html40'>
+        <head>
+          <title>Birth Certificate Translation</title>
+          \x3c!--[if gte mso 9]>
+          <xml>
+            <w:WordDocument>
+              <w:View>Print</w:View>
+              <w:Zoom>100</w:Zoom>
+              <w:DoNotOptimizeForBrowser/>
+            </w:WordDocument>
+          </xml>
+          <![endif]--\x3e;
+          <style>
+            @page {
+              size: A4 portrait;
+              margin: 1cm 1.5cm 1.5cm 2cm;
+            }
+            body { 
+              font-family: 'Times New Roman', Times, serif; 
+              font-size: 12pt; 
+              line-height: 1.5; 
+              color: #000000;
+            }
+            .translation-header {
+              text-align: right;
+              font-size: 10pt;
+              font-style: italic;
+              margin-bottom: 20px;
+              text-transform: uppercase;
+              font-weight: bold;
+              border-bottom: 1px solid #111;
+              padding-bottom: 4px;
+            }
+            .doc-title-container {
+              text-align: center;
+              margin-bottom: 30px;
+            }
+            .doc-country {
+              font-size: 14pt;
+              font-weight: bold;
+              margin-bottom: 4px;
+            }
+            .doc-title {
+              font-size: 14pt;
+              font-weight: bold;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-bottom: 20px;
+            }
+            td {
+              padding: 5px 0;
+              vertical-align: top;
+            }
+            .label {
+              width: 35%;
+              font-weight: bold;
+            }
+            .value {
+              width: 65%;
+              border-bottom: 1px solid #000000;
+            }
+            .font-bold {
+              font-weight: bold;
+            }
+            .uppercase {
+              text-transform: uppercase;
+            }
+            .sub-grid {
+              margin-top: 2px;
+            }
+            .sub-grid-item {
+              margin-bottom: 4px;
+            }
+            .registry-sentence {
+              margin: 24px 0;
+              text-align: justify;
+              text-indent: 0.5in;
+              line-height: 1.8;
+            }
+            .registry-sentence span {
+              border-bottom: 1px solid #000000;
+            }
+            .section-title {
+              font-weight: bold;
+              font-size: 12pt;
+              margin-top: 14px;
+              margin-bottom: 10px;
+              border-bottom: 1px solid #333;
+              padding-bottom: 2px;
+            }
+            .signature-section {
+              margin-top: 40px;
+            }
+            .signature-officer {
+              float: left;
+              width: 45%;
+              font-weight: bold;
+            }
+            .signature-signed {
+              float: left;
+              width: 20%;
+              text-align: center;
+              font-style: italic;
+            }
+            .signature-name {
+              float: right;
+              width: 35%;
+              text-align: right;
+              font-weight: bold;
+              border-bottom: 1px solid #000000;
+            }
+            .footer-section {
+                margin-top: 30px;
+                clear: both;
+              }
+              .official-seal {
+                float: left;
+                width: 35%;
+                font-weight: bold;
+              }
+              .id-number-section {
+                float: left;
+                width: 30%;
+                text-align: center;
+                font-weight: bold;
+                font-size: 12pt;
+                border: 1px solid #111;
+                padding: 5px 10px;
+              }
+              .footer-spacer {
+                float: right;
+                width: 35%;
+              }
+          <\/style>
+        <\/head>
+        <body>
+          ${bodyHtml}
+        <\/body>
+        <\/html>
+      `;
+    }
+
+    // Export current editor preview to Word Document file (.doc)
+    async function exportWord() {
+      const saveResult = await saveToDatabase();
+      if (saveResult === 'validation_failed') return;
+
+      const element = document.getElementById('certificate-preview');
+      const htmlString = getWordDocumentHtml(element);
+      
+      const blob = new Blob(['\ufeff' + htmlString], { type: 'application/msword' });
+      const url = URL.createObjectURL(blob);
+      
+      const name = document.getElementById('fullName').value.trim() || 'Birth';
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${name.replace(/\s+/g, '_')}_BirthCertificate_Translation.doc`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      showToast("Downloaded Word translation document (.doc)");
+    }
+
+    // Helper to download arbitrary record history values as Word file
+    function quickExportWord(id) {
+      const record = savedRecords.find(r => r.id === id);
+      if (!record) return;
+      
+      // Temporary off-screen container to generate layout
+      const tempDiv = document.createElement('div');
+      tempDiv.style.display = 'none';
+      document.body.appendChild(tempDiv);
+      
+      // Setup HTML
+      tempDiv.innerHTML = `
+        <div id="temp-cert-preview">
+          <div class="translation-header">Translated from Uzbek</div>
+          <div class="doc-title-container">
+            <div class="doc-country">REPUBLIC OF UZBEKISTAN</div>
+            <div class="doc-title">BIRTH CERTIFICATE</div>
+          </div>
+          <table class="certificate-table">
+            <tr><td class="label">Citizen:</td><td class="value font-bold uppercase">${record.fullName}</td></tr>
+            <tr><td class="label">Born on:</td><td class="value">${formatDate(record.dob)}</td></tr>
+            <tr><td class="label">(in words):</td><td class="value">${getWrittenYear(record.dob)}</td></tr>
+            <tr>
+              <td class="label">Birth Place:</td>
+              <td class="value">
+                <div class="sub-grid">
+                  <div class="sub-grid-item"><strong>State:</strong> <span>Uzbekistan</span></div>
+                  <div class="sub-grid-item"><strong>Region of:</strong> <span>${record.region}</span></div>
+                  <div class="sub-grid-item"><strong>City of, village:</strong> <span>${record.city}</span></div>
+                </div>
+              </td>
+            </tr>
+          </table>
+          <div class="registry-sentence">
+            in certification of this, entry No <span>${record.entryNumber || '_____'}</span> was made into the Birth Registry on <span>${formatDate(record.registryDate) || '__________'}</span> year.
+          </div>
+          <div class="section-title">Parents:</div>
+          <table class="parents-table">
+            <tr><td class="label">Father:</td><td class="value font-bold uppercase">${record.fatherName}</td></tr>
+            <tr><td class="label">Nationality:</td><td class="value">${record.fatherNationality}</td></tr>
+            <tr><td class="label">Mother:</td><td class="value font-bold uppercase">${record.motherName}</td></tr>
+            <tr><td class="label">Nationality:</td><td class="value">${record.motherNationality}</td></tr>
+          </table>
+          <div class="section-title">REGISTRATION OFFICE & DETAILS</div>
+          <table class="registry-office-table">
+            <tr><td class="label">Registration Place:</td><td class="value">Civil registry office of ${record.regCity} district</td></tr>
+            <tr><td class="label">Date of issue:</td><td class="value">${formatDate(record.issueDate)}</td></tr>
+          </table>
+          <div class="signature-section">
+            <div class="signature-officer">Head of the Civil Registry Office</div>
+            <div class="signature-signed">(signed)</div>
+            <div class="signature-name">${record.headName}</div>
+          </div>
+          <div class="footer-section">
+            <div class="official-seal"><strong>Official Seal</strong></div>
+            <div class="id-number-section">${record.idNumber}</div>
+            <div class="footer-spacer"></div>
+          </div>
+        </div>
+      `;
+
+      const htmlString = getWordDocumentHtml(tempDiv.querySelector('#temp-cert-preview'));
+      
+      const blob = new Blob(['\ufeff' + htmlString], { type: 'application/msword' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${record.fullName.replace(/\s+/g, '_')}_BirthCertificate_Translation.doc`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      tempDiv.remove();
+      
+      showToast(`Exported ${record.fullName} to Word`);
+    }
+
+    // Export current editor preview page to PDF format using html2pdf.js
+    async function exportPDF() {
+      const saveResult = await saveToDatabase();
+      if (saveResult === 'validation_failed') return;
+
+      const element = document.getElementById('certificate-preview');
+      element.classList.add('pdf-exporting');
+
+      const name = document.getElementById('fullName').value.trim() || 'Birth';
+      
+      const opt = {
+        margin:       0,
+        filename:     `${name.replace(/\s+/g, '_')}_BirthCertificate_Translation.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2.5, useCORS: true, logging: false },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      try {
+        showToast("Generating PDF download...");
+        await html2pdf().set(opt).from(element).save();
+        showToast("Downloaded PDF Document");
+      } catch (err) {
+        console.error("PDF generation failed:", err);
+        showToast("Failed to generate PDF.", "error");
+      } finally {
+        element.classList.remove('pdf-exporting');
+      }
+    }
+
+    // Print current document preview with auto-save
+    async function printDocument() {
+      const saveResult = await saveToDatabase();
+      if (saveResult === 'validation_failed') return;
+      
+      window.print();
+    }
+
+    // Clear all inputs and restore placeholders
+    function clearForm() {
+      const form = document.getElementById("birthForm");
+      if (form) {
+        form.reset();
+      }
+      document.getElementById("currentRecordId").value = "";
+      
+      // Reset preview fields to placeholders
+      const fields = ['fullName', 'dob', 'region', 'city', 'entryNumber', 'registryDate', 'fatherName', 'fatherNationality', 'motherName', 'motherNationality', 'regCity', 'issueDate', 'headName', 'idNumber'];
+      fields.forEach(id => {
+        updatePreviewField(id, "");
+        const errEl = document.getElementById(`${id}Error`);
+        if (errEl) {
+          errEl.style.display = 'none';
+        }
+      });
+      
+      showToast("Form cleared.");
+    }
+
+
+    // ==========================================================================
+    // 5. TEST & STARTUP INITIALIZATION
+    // ==========================================================================
+
+    // Auto-fills form values with sample Uzbek data to facilitate testing
+    function fillMockData() {
+      Object.keys(MOCK_DATA).forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+          input.value = MOCK_DATA[id];
+          
+          // Re-trigger live preview and validation states
+          updatePreviewField(id, MOCK_DATA[id]);
+          validateField(id, MOCK_DATA[id]);
+        }
+      });
+      document.getElementById("currentRecordId").value = ""; // Force insert as new record unless modified
+      showToast("Form loaded with realistic sample data.");
+    }
+
+    // Initialize database connection on start
+    // Setup Autocomplete suggestions from database history
+    function initAutocomplete() {
+      const fields = ['region', 'city', 'regCity', 'headName'];
+
+      fields.forEach(fieldId => {
+        const input = document.getElementById(fieldId);
+        if (!input) return;
+
+        // Create the suggestions container dynamically
+        let suggestionsContainer = document.getElementById(`suggestions-${fieldId}`);
+        if (!suggestionsContainer) {
+          suggestionsContainer = document.createElement('div');
+          suggestionsContainer.className = 'autocomplete-suggestions';
+          suggestionsContainer.id = `suggestions-${fieldId}`;
+          input.parentNode.appendChild(suggestionsContainer);
+        }
+
+        const showSuggestions = () => {
+          const typedVal = input.value.trim().toLowerCase();
+          
+          let defaultVals = [];
+          if (fieldId === 'region') {
+            defaultVals = ['Andijan', 'Bukhara', 'Fergana', 'Jizzakh', 'Khorezm', 'Namangan', 'Navoi', 'Samarkand', 'Sirdaryo', 'Surxondaryo', 'Tashkent', 'Karakalpakstan', 'Kashkadaryo'];
+          }
+          
+          // Get unique non-empty values from saved records for this field
+          const allVals = [
+            ...defaultVals,
+            ...savedRecords.map(r => r[fieldId] || '')
+          ]
+            .map(v => v.trim())
+            .filter(v => v !== '');
+          
+          // Get unique values
+          const uniqueVals = [...new Set(allVals)];
+          
+          // Filter matching suggestions
+          const matches = uniqueVals.filter(v => 
+            v.toLowerCase().includes(typedVal)
+          );
+
+          if (matches.length > 0) {
+            suggestionsContainer.innerHTML = '';
+            matches.forEach(match => {
+              const div = document.createElement('div');
+              div.className = 'autocomplete-suggestion';
+              div.textContent = match;
+              div.addEventListener('click', () => {
+                input.value = match;
+                // Dispatch input event to trigger validation & live preview updates
+                input.dispatchEvent(new Event('input', { bubbles: true }));
+                suggestionsContainer.style.display = 'none';
+              });
+              suggestionsContainer.appendChild(div);
+            });
+            suggestionsContainer.style.display = 'block';
+          } else {
+            suggestionsContainer.style.display = 'none';
+          }
+        };
+
+        // Attach events
+        input.addEventListener('focus', showSuggestions);
+        input.addEventListener('input', showSuggestions);
+      });
+
+      // Close suggestions when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.input-field-wrapper')) {
+          document.querySelectorAll('.autocomplete-suggestions').forEach(el => {
+            el.style.display = 'none';
+          });
+        }
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initializeDatabase();
+      initAutocomplete();
+    });
+  </script>
+</body>
+</html>
