@@ -128,6 +128,31 @@ const zoomSlider = document.getElementById('zoom-slider');
 const zoomVal = document.getElementById('zoom-val');
 const certificatePreview = document.getElementById('certificate-preview');
 
+// Auto-set initial zoom based on available preview width
+function applyAdaptiveZoom() {
+  const w = window.innerWidth;
+  let defaultZoom;
+  if (w <= 1100)      defaultZoom = 0.55;
+  else if (w <= 1280) defaultZoom = 0.65;
+  else if (w <= 1366) defaultZoom = 0.75;
+  else if (w <= 1440) defaultZoom = 0.85;
+  else                defaultZoom = 1.0;
+
+  zoomSlider.value = defaultZoom;
+  zoomVal.textContent = `${Math.round(defaultZoom * 100)}%`;
+  certificatePreview.style.transform = `scale(${defaultZoom})`;
+}
+
+applyAdaptiveZoom();
+
+// Update header height CSS var so dashboard fills the screen precisely
+function syncHeaderHeight() {
+  const h = document.querySelector('.app-header')?.offsetHeight || 57;
+  document.documentElement.style.setProperty('--header-h', `${h}px`);
+}
+syncHeaderHeight();
+window.addEventListener('resize', () => { syncHeaderHeight(); });
+
 zoomSlider.addEventListener('input', (e) => {
   const scale = e.target.value;
   zoomVal.textContent = `${Math.round(scale * 100)}%`;
