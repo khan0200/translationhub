@@ -2115,8 +2115,8 @@ function quickExportWord(id) {
           <div class="doc-title" style="font-size:14pt; font-weight:bold; text-transform:uppercase; margin-top:10px;">${record.subtitle || 'ACADEMIC PROGRESS NOTE'}</div>
         </div>
         ${record.studentName ? `
-        <div style="margin:20px 0; line-height:1.6; font-size:11.5pt;">
-          <strong>${record.studentName}</strong> studied at the <strong>${record.institution || ''}</strong> from <strong>${record.studyYears || ''}</strong>, successfully completing the full curriculum in all subjects. According to the grading system, her average score is <strong>${record.avgScore || ''}</strong>, which corresponds to <strong>${record.percentage || ''}</strong>.
+        <div style="margin:20px 0; line-height:1.6; font-size:11.5pt; text-indent: 0.5in;">
+          &nbsp;&nbsp;&nbsp;&nbsp;<strong>${record.studentName}</strong> studied at the <strong>${record.institution || ''}</strong> from <strong>${record.studyYears || ''}</strong>, successfully completing the full curriculum in all subjects. According to the grading system, her average score is <strong>${record.avgScore || ''}</strong>, which corresponds to <strong>${record.percentage || ''}</strong>.
         </div>` : ''}
         <div style="text-align:center; font-weight:bold; font-size:13pt; margin-top:16px; margin-bottom:8px;">Grading system</div>
         <div style="font-size:11pt; line-height:1.5; margin-bottom:12px; text-align:center;">${record.noteText || ''}</div>
