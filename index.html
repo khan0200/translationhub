@@ -50,7 +50,10 @@
             <i class="bi bi-heart me-1"></i>Marriage Certificate
           </button>
           <button class="switcher-btn" id="btn-mode-divorce" onclick="switchMode('divorce')">
-            <i class="bi bi-file-earmark-break me-1"></i>Divorce Certificate
+            <i class="bi bi-scissors me-1"></i>Divorce Certificate
+          </button>
+          <button class="switcher-btn" id="btn-mode-grading" onclick="switchMode('grading')">
+            <i class="bi bi-bar-chart-steps me-1"></i>Grading Scale
           </button>
         </div>
 
@@ -392,6 +395,89 @@
             </div>
 
           </div><!-- /divorce-fields-container -->
+
+          <!-- ============================================================
+               GRADING SCALE FIELDS
+               ============================================================ -->
+          <div id="grading-fields-container" style="display:none;">
+
+            <div class="form-group-title">Document Title &amp; Institution</div>
+            <div class="form-card">
+              <div class="input-field-wrapper">
+                <label class="form-label" for="gradingHeaderTitle">Ministry / Top Header Title:</label>
+                <input id="gradingHeaderTitle" type="text" class="form-control uppercase" value="MINISTRY OF PRESCHOOL AND SCHOOL EDUCATION OF THE REPUBLIC OF UZBEKISTAN" placeholder="MINISTRY OF PRESCHOOL AND SCHOOL EDUCATION OF THE REPUBLIC OF UZBEKISTAN">
+              </div>
+              <div class="input-field-wrapper">
+                <label class="form-label" for="gradingInstitution">Institution / Regulations Reference:</label>
+                <input id="gradingInstitution" type="text" class="form-control uppercase" placeholder="UNIVERSITY OF WORLD ECONOMY AND DIPLOMACY">
+              </div>
+              <div class="input-field-wrapper">
+                <label class="form-label" for="gradingSubtitle">Document Title / Subtitle:</label>
+                <input id="gradingSubtitle" type="text" class="form-control" value="ACADEMIC PROGRESS NOTE" placeholder="ACADEMIC PROGRESS NOTE">
+              </div>
+              <div class="input-field-wrapper">
+                <label class="form-label" for="gradingNoteText">Note Description Text:</label>
+                <textarea id="gradingNoteText" class="form-control" rows="3">Conversion of the total points for the discipline from 100-point scale to the equivalent of a 5-point scale is carried out in accordance with the scales given below.</textarea>
+              </div>
+            </div>
+
+            <div class="form-group-title">Student &amp; Academic Progress</div>
+            <div class="form-card">
+              <div class="input-field-wrapper">
+                <label class="form-label" for="gradingStudentName">Student Full Name:</label>
+                <input id="gradingStudentName" type="text" class="form-control uppercase" placeholder="Usmonova Khayriniso Foziljon Kizi">
+              </div>
+              <div class="input-field-wrapper">
+                <label class="form-label" for="gradingStudyYears">Period of Study:</label>
+                <input id="gradingStudyYears" type="text" class="form-control" placeholder="2021 to 2025">
+              </div>
+              <div class="row g-2">
+                <div class="col-6">
+                  <div class="input-field-wrapper">
+                    <label class="form-label" for="gradingAvgScore">Average Score:</label>
+                    <input id="gradingAvgScore" type="text" class="form-control" placeholder="3.98">
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="input-field-wrapper">
+                    <label class="form-label" for="gradingMaxScore">Out of (Max Score):</label>
+                    <input id="gradingMaxScore" type="text" class="form-control" placeholder="5">
+                  </div>
+                </div>
+              </div>
+              <div class="row g-2 mt-1">
+                <div class="col-6">
+                  <div class="input-field-wrapper">
+                    <label class="form-label" for="gradingPercentage">Percentage:</label>
+                    <input id="gradingPercentage" type="text" class="form-control" placeholder="80%">
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="input-field-wrapper">
+                    <label class="form-label" for="gradingMaxPercentage">Out of (Max %):</label>
+                    <input id="gradingMaxPercentage" type="text" class="form-control" placeholder="100%">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group-title">Officer &amp; Signature Details</div>
+            <div class="form-card">
+              <div class="input-field-wrapper">
+                <label class="form-label" for="gradingOfficerTitle">Officer Title:</label>
+                <input id="gradingOfficerTitle" type="text" class="form-control" value="DIRECTOR OF" placeholder="DIRECTOR OF">
+              </div>
+              <div class="input-field-wrapper">
+                <label class="form-label" for="gradingOfficerName">Officer Full Name:</label>
+                <input id="gradingOfficerName" type="text" class="form-control" placeholder="S.Kh.Madiev">
+              </div>
+              <div class="input-field-wrapper">
+                <label class="form-label" for="gradingIssueDate">Date of Issue (dd/mm/yyyy):</label>
+                <input id="gradingIssueDate" type="text" class="form-control" placeholder="15/06/2025">
+              </div>
+            </div>
+
+          </div><!-- /grading-fields-container -->
 
         </form>
       </div><!-- /content-form -->
@@ -797,6 +883,61 @@
               <div class="footer-spacer" style="width:20%;"></div>
             </div>
           </div><!-- /preview-divorce-sheet -->
+
+          <!-- GRADING SCALE PREVIEW -->
+          <div id="preview-grading-sheet" style="display:none; font-family: 'Times New Roman', Times, serif; color: #000;">
+
+            <div class="doc-title-container" style="text-align:center; margin-bottom:20px;">
+              <div class="doc-country" id="preview-g-headerTitle" style="font-size:11.5pt; font-weight:bold; letter-spacing:0.3px; text-transform:uppercase; margin-bottom:4px; font-family:'Times New Roman', Times, serif;">
+                MINISTRY OF PRESCHOOL AND SCHOOL EDUCATION OF THE REPUBLIC OF UZBEKISTAN
+              </div>
+              <div class="doc-country" id="preview-g-institution" style="font-size:11.5pt; font-weight:bold; letter-spacing:0.3px; text-transform:uppercase; margin-bottom:14px; font-family:'Times New Roman', Times, serif;">
+                UNIVERSITY OF WORLD ECONOMY AND DIPLOMACY
+              </div>
+              <div class="doc-title" id="preview-g-subtitle" style="font-size:14pt; font-weight:bold; text-transform:uppercase; letter-spacing:0.5px; font-family:'Times New Roman', Times, serif;">
+                ACADEMIC PROGRESS NOTE
+              </div>
+            </div>
+
+            <!-- Student Progress Section -->
+            <div id="preview-g-studentProgressBlock" style="margin:20px 0; line-height:1.6; font-size:11.5pt; font-family:'Times New Roman', Times, serif; text-align:justify;">
+              <span id="preview-g-studentName" style="font-weight:bold; text-transform:uppercase;">Usmonova Khayriniso Foziljon Kizi</span> studied at the
+              <span id="preview-g-instInText" style="font-weight:bold;">Uzbekistan State Institute of Arts and Culture</span> from
+              <span id="preview-g-studyYears" style="font-weight:bold;">2021 to 2025</span>, successfully completing the full curriculum in all subjects. According to the grading system, her average score is
+              <span id="preview-g-avgScore" style="font-weight:bold;">3.98</span> out of <span id="preview-g-maxScore" style="font-weight:bold;">5</span>, which corresponds to
+              <span id="preview-g-percentage" style="font-weight:bold;">80%</span> out of <span id="preview-g-maxPercentage" style="font-weight:bold;">100%</span>.
+            </div>
+
+            <!-- Grading System Section Header & Description -->
+            <div style="text-align:center; font-weight:bold; font-size:13pt; margin-top:16px; margin-bottom:8px; font-family:'Times New Roman', Times, serif;">Grading system</div>
+            <div id="preview-g-noteText" style="font-size:11pt; line-height:1.5; margin-bottom:12px; text-align:center; font-family:'Times New Roman', Times, serif;">
+              Conversion of the total points for the discipline from 100-point scale to the equivalent of a 5-point scale is carried out in accordance with the scales given below.
+            </div>
+
+            <!-- Dynamic Grading Table Container -->
+            <div id="preview-g-tableContainer" style="margin-top:10px; margin-bottom:20px; width:100%;">
+              <!-- Table rendered dynamically via JavaScript based on active preset or custom rows -->
+            </div>
+
+            <!-- Signature & Officer Section -->
+            <div class="signature-section" style="margin-top:35px; clear:both; width:100%;">
+              <div style="display:flex; justify-content:space-between; align-items:flex-end; width:100%;">
+                <div class="signature-officer" style="width:45%; font-weight:bold; font-size:10pt; text-align:left;" id="preview-g-officerTitle">
+                  DIRECTOR OF
+                </div>
+                <div class="signature-name" style="width:45%; text-align:right; font-weight:bold; border-bottom:1px solid #000; font-size:10pt;" id="preview-g-officerName">
+                  S.Kh.Madiev
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer / Date of Issue Section -->
+            <div class="footer-section" style="margin-top:25px; clear:both; width:100%;">
+              <div style="font-size:10pt; font-family:'Times New Roman', Times, serif; text-align:left;">
+                Date of issue: <span id="preview-g-issueDate" style="border-bottom:1px solid #000; padding:0 8px;">15/06/2025</span>
+              </div>
+            </div>
+          </div><!-- /preview-grading-sheet -->
 
         </div><!-- /certificate-preview -->
 

@@ -28,7 +28,7 @@ function switchTab(tab) {
   }
 }
 
-// Document Mode Switcher (Birth vs Marriage vs Divorce)
+// Document Mode Switcher (Birth vs Marriage vs Divorce vs Grading)
 function switchMode(mode) {
   if (currentMode === mode) return;
   currentMode = mode;
@@ -37,6 +37,7 @@ function switchMode(mode) {
   document.getElementById('btn-mode-birth').classList.toggle('active', mode === 'birth');
   document.getElementById('btn-mode-marriage').classList.toggle('active', mode === 'marriage');
   document.getElementById('btn-mode-divorce').classList.toggle('active', mode === 'divorce');
+  document.getElementById('btn-mode-grading')?.classList.toggle('active', mode === 'grading');
 
   // Update form description text
   const descText = document.getElementById('form-desc-text');
@@ -45,8 +46,10 @@ function switchMode(mode) {
       descText.textContent = 'Translate Uzbek birth certificates to English';
     } else if (mode === 'marriage') {
       descText.textContent = 'Translate Uzbek marriage certificates to English';
-    } else {
+    } else if (mode === 'divorce') {
       descText.textContent = 'Translate Uzbek divorce certificates to English';
+    } else {
+      descText.textContent = 'Translate & convert Uzbek academic grading scales to English';
     }
   }
 
@@ -54,11 +57,13 @@ function switchMode(mode) {
   document.getElementById('birth-fields-container').style.display = mode === 'birth' ? 'block' : 'none';
   document.getElementById('marriage-fields-container').style.display = mode === 'marriage' ? 'block' : 'none';
   document.getElementById('divorce-fields-container').style.display = mode === 'divorce' ? 'block' : 'none';
+  document.getElementById('grading-fields-container').style.display = mode === 'grading' ? 'block' : 'none';
 
   // Toggle preview sheets
   document.getElementById('preview-birth-sheet').style.display = mode === 'birth' ? 'block' : 'none';
   document.getElementById('preview-marriage-sheet').style.display = mode === 'marriage' ? 'block' : 'none';
   document.getElementById('preview-divorce-sheet').style.display = mode === 'divorce' ? 'block' : 'none';
+  document.getElementById('preview-grading-sheet').style.display = mode === 'grading' ? 'block' : 'none';
 
   // Reset active record ID
   document.getElementById('currentRecordId').value = "";
@@ -66,6 +71,11 @@ function switchMode(mode) {
   // Load database history lists and clear form
   loadHistoryFromTurso();
   clearForm();
+
+  // If in grading mode and table is empty, load default table
+  if (mode === 'grading') {
+    initGradingTable();
+  }
 }
 
 // Zoom Preview Sheet Controller
@@ -282,17 +292,125 @@ const divorceSyncMapping = {
   husbandNewSurname: { previewId: 'preview-d-husbandSurname', inputId: 'divorceHusbandSurname', format: val => val ? val.toUpperCase() : '' },
   wifeNewSurname: { previewId: 'preview-d-wifeSurname', inputId: 'divorceWifeSurname', format: val => val ? val.toUpperCase() : '' },
   regPlace: { previewId: 'preview-d-regPlace', inputId: 'divorceRegPlace', format: val => val || '' },
-  givenTo: { previewId: 'preview-d-givenTo', inputId: 'divorceGivenTo', format: val => val ? val.toUpperCase() : '' },
-  issueDate: { previewId: 'preview-d-issueDate', inputId: 'divorceIssueDate', format: val => formatDate(val) },
   headName: { previewId: 'preview-d-headName', inputId: 'divorceHeadName', format: val => val || '' },
   sealText: { previewId: 'preview-d-sealText', inputId: 'divorceSealText', format: val => val || '' },
   certNumber: { previewId: 'preview-d-certNumber', inputId: 'divorceCertNumber', format: val => val || '' }
 };
 
+// Input elements and corresponding preview element IDs (Grading Scale)
+const gradingSyncMapping = {
+  headerTitle: { previewId: 'preview-g-headerTitle', inputId: 'gradingHeaderTitle', format: val => val ? val.toUpperCase() : '' },
+  institution: { previewId: 'preview-g-institution', inputId: 'gradingInstitution', format: val => val ? val.toUpperCase() : '' },
+  subtitle: { previewId: 'preview-g-subtitle', inputId: 'gradingSubtitle', format: val => val || '' },
+  studentName: { previewId: 'preview-g-studentName', inputId: 'gradingStudentName', format: val => val ? val.toUpperCase() : '' },
+  studyYears: { previewId: 'preview-g-studyYears', inputId: 'gradingStudyYears', format: val => val || '' },
+  avgScore: { previewId: 'preview-g-avgScore', inputId: 'gradingAvgScore', format: val => val || '' },
+  maxScore: { previewId: 'preview-g-maxScore', inputId: 'gradingMaxScore', format: val => val || '' },
+  percentage: { previewId: 'preview-g-percentage', inputId: 'gradingPercentage', format: val => val || '' },
+  maxPercentage: { previewId: 'preview-g-maxPercentage', inputId: 'gradingMaxPercentage', format: val => val || '' },
+  noteText: { previewId: 'preview-g-noteText', inputId: 'gradingNoteText', format: val => val || '' },
+  officerTitle: { previewId: 'preview-g-officerTitle', inputId: 'gradingOfficerTitle', format: val => val || '' },
+  officerName: { previewId: 'preview-g-officerName', inputId: 'gradingOfficerName', format: val => val || '' },
+  issueDate: { previewId: 'preview-g-issueDate', inputId: 'gradingIssueDate', format: val => formatDate(val) }
+};
+
+function initGradingTable() {
+  const container = document.getElementById('preview-g-tableContainer');
+  if (container && (!container.innerHTML.trim() || !container.querySelector('table'))) {
+    container.innerHTML = `
+      <table class="grading-scale-table">
+        <thead>
+          <tr>
+            <th>Grade</th>
+            <th>The USA<br>%</th>
+            <th>Russia<br>%</th>
+            <th>South Korea<br>%</th>
+            <th colspan="2">Grade<br>(Uzbekistan)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td contenteditable="true">A+</td>
+            <td contenteditable="true">97-100</td>
+            <td rowspan="3" contenteditable="true" style="vertical-align:middle;">87 – 100</td>
+            <td contenteditable="true">95 – 100</td>
+            <td rowspan="3" contenteditable="true" style="vertical-align:middle; font-weight:bold;">5</td>
+            <td rowspan="3" contenteditable="true" style="vertical-align:middle; font-weight:bold;">Excellent</td>
+          </tr>
+          <tr>
+            <td contenteditable="true">A</td>
+            <td contenteditable="true">93-96</td>
+            <td rowspan="2" contenteditable="true" style="vertical-align:middle;">90 – 94</td>
+          </tr>
+          <tr>
+            <td contenteditable="true">A-</td>
+            <td contenteditable="true">90-92</td>
+          </tr>
+          <tr>
+            <td contenteditable="true">B+</td>
+            <td contenteditable="true">87-89</td>
+            <td rowspan="5" contenteditable="true" style="vertical-align:middle;">74 – 86</td>
+            <td contenteditable="true">85 – 89</td>
+            <td rowspan="6" contenteditable="true" style="vertical-align:middle; font-weight:bold;">4</td>
+            <td rowspan="6" contenteditable="true" style="vertical-align:middle; font-weight:bold;">Good</td>
+          </tr>
+          <tr>
+            <td contenteditable="true">B</td>
+            <td contenteditable="true">83-86</td>
+            <td rowspan="2" contenteditable="true" style="vertical-align:middle;">80 – 84</td>
+          </tr>
+          <tr>
+            <td contenteditable="true">B-</td>
+            <td contenteditable="true">80-82</td>
+          </tr>
+          <tr>
+            <td contenteditable="true">C+</td>
+            <td contenteditable="true">77-79</td>
+            <td rowspan="2" contenteditable="true" style="vertical-align:middle;">75 – 79</td>
+          </tr>
+          <tr>
+            <td contenteditable="true">C</td>
+            <td contenteditable="true">73-76</td>
+          </tr>
+          <tr>
+            <td contenteditable="true">C-</td>
+            <td contenteditable="true">70-72</td>
+            <td rowspan="4" contenteditable="true" style="vertical-align:middle;">60 – 73</td>
+            <td rowspan="2" contenteditable="true" style="vertical-align:middle;">70 – 74</td>
+          </tr>
+          <tr>
+            <td contenteditable="true">D+</td>
+            <td contenteditable="true">67-69</td>
+            <td rowspan="3" contenteditable="true" style="vertical-align:middle; font-weight:bold;">3</td>
+            <td rowspan="3" contenteditable="true" style="vertical-align:middle; font-weight:bold;">Satisfactory</td>
+          </tr>
+          <tr>
+            <td contenteditable="true">D</td>
+            <td contenteditable="true">63-66</td>
+            <td rowspan="2" contenteditable="true" style="vertical-align:middle;">60 – 64</td>
+          </tr>
+          <tr>
+            <td contenteditable="true">D-</td>
+            <td contenteditable="true">60-62</td>
+          </tr>
+          <tr>
+            <td contenteditable="true">F</td>
+            <td contenteditable="true">0-59</td>
+            <td contenteditable="true">0 – 59</td>
+            <td contenteditable="true">0 – 59</td>
+            <td contenteditable="true" style="font-weight:bold;">2</td>
+            <td contenteditable="true" style="font-weight:bold;">Unsatisfactory</td>
+          </tr>
+        </tbody>
+      </table>
+    `;
+  }
+}
+
 let isSyncingFromPaper = false;
 
 function initPaperEditing() {
-  const mappingGroups = [syncMapping, marriageSyncMapping, divorceSyncMapping];
+  const mappingGroups = [syncMapping, marriageSyncMapping, divorceSyncMapping, gradingSyncMapping];
   
   mappingGroups.forEach(mapping => {
     Object.keys(mapping).forEach(key => {
@@ -508,6 +626,48 @@ function initReactivity() {
     });
   });
 
+  // Grading Scale reactivity
+  Object.keys(gradingSyncMapping).forEach(key => {
+    const inputId = gradingSyncMapping[key].inputId;
+    const input = document.getElementById(inputId);
+    if (!input) return;
+
+    input.addEventListener('input', (e) => {
+      let value = e.target.value;
+
+      if (inputId === 'gradingIssueDate') {
+        if (!e.inputType || !e.inputType.startsWith('delete')) {
+          let digits = value.replace(/\D/g, '');
+          if (digits.length > 8) digits = digits.slice(0, 8);
+          
+          let formatted = '';
+          if (digits.length > 0) {
+            formatted += digits.slice(0, 2);
+            if (digits.length === 2 && value.length === 2) formatted += '/';
+          }
+          if (digits.length > 2) {
+            formatted += '/' + digits.slice(2, 4);
+            if (digits.length === 4 && value.length === 5) formatted += '/';
+          }
+          if (digits.length > 4) {
+            formatted += '/' + digits.slice(4, 8);
+          }
+          e.target.value = formatted;
+          value = formatted;
+        }
+      }
+
+      if (inputId === 'gradingHeaderTitle' || inputId === 'gradingInstitution' || inputId === 'gradingStudentName') {
+        const cursorPosition = e.target.selectionStart;
+        e.target.value = value.toUpperCase();
+        e.target.setSelectionRange(cursorPosition, cursorPosition);
+        value = e.target.value;
+      }
+
+      if (!isSyncingFromPaper) updatePreviewField(key, value);
+    });
+  });
+
   // Setup click-to-edit on the paper itself
   initPaperEditing();
 }
@@ -524,7 +684,8 @@ function updatePreviewFieldForced(mode, inputId, rawValue) {
   let config;
   if (mode === 'birth') config = syncMapping[inputId];
   else if (mode === 'marriage') config = marriageSyncMapping[inputId];
-  else config = divorceSyncMapping[inputId];
+  else if (mode === 'divorce') config = divorceSyncMapping[inputId];
+  else config = gradingSyncMapping[inputId];
 
   if (!config) return;
   const previewEl = document.getElementById(config.previewId);
@@ -552,11 +713,7 @@ function updatePreviewFieldForced(mode, inputId, rawValue) {
         case 'idNumber': placeholderText = "[ID NUMBER]"; break;
         default: placeholderText = "______";
       }
-      if (inputId === 'regCity') {
-        previewEl.innerHTML = `<span class="placeholder-text">[REGISTRATION PLACE]</span>`;
-      } else {
-        previewEl.innerHTML = `<span class="placeholder-text">${placeholderText}</span>`;
-      }
+      previewEl.innerHTML = `<span class="placeholder-text">${placeholderText}</span>`;
     } else if (mode === 'marriage') {
       switch (inputId) {
         case 'husbandName': placeholderText = "[HUSBAND CITIZEN NAME]"; break;
@@ -579,12 +736,8 @@ function updatePreviewFieldForced(mode, inputId, rawValue) {
         case 'certNumber': placeholderText = "[CERTIFICATE NO]"; break;
         default: placeholderText = "______";
       }
-      if (inputId === 'regPlace') {
-        previewEl.innerHTML = `<span class="placeholder-text">[REGISTRATION PLACE]</span>`;
-      } else {
-        previewEl.innerHTML = `<span class="placeholder-text">${placeholderText}</span>`;
-      }
-    } else {
+      previewEl.innerHTML = `<span class="placeholder-text">${placeholderText}</span>`;
+    } else if (mode === 'divorce') {
       // Divorce mode placeholders
       switch (inputId) {
         case 'husbandName': placeholderText = "[HUSBAND CITIZEN NAME]"; break;
@@ -601,20 +754,37 @@ function updatePreviewFieldForced(mode, inputId, rawValue) {
         case 'certNumber': placeholderText = "[CERTIFICATE NO]"; break;
         default: placeholderText = "______";
       }
-      if (inputId === 'sealText') {
-        previewEl.innerHTML = `<span class="placeholder-text">[OFFICIAL SEAL TEXT]</span>`;
-      } else {
-        previewEl.innerHTML = `<span class="placeholder-text">${placeholderText}</span>`;
+      previewEl.innerHTML = `<span class="placeholder-text">${placeholderText}</span>`;
+    } else {
+      // Grading Scale mode placeholders
+      switch (inputId) {
+        case 'headerTitle': placeholderText = "MINISTRY OF PRESCHOOL AND SCHOOL EDUCATION OF THE REPUBLIC OF UZBEKISTAN"; break;
+        case 'institution': placeholderText = "[INSTITUTION NAME]"; break;
+        case 'subtitle': placeholderText = "ACADEMIC PROGRESS NOTE"; break;
+        case 'studentName': placeholderText = "[STUDENT NAME]"; break;
+        case 'studyYears': placeholderText = "[STUDY YEARS]"; break;
+        case 'avgScore': placeholderText = "[AVERAGE SCORE]"; break;
+        case 'percentage': placeholderText = "[PERCENTAGE]"; break;
+        case 'noteText':
+          previewEl.textContent = "Conversion of the total points for the discipline from 100-point scale to the equivalent of a 5-point scale is carried out in accordance with the scales given below.";
+          return;
+        case 'officerTitle': placeholderText = "DIRECTOR OF"; break;
+        case 'officerName': placeholderText = "[OFFICER NAME]"; break;
+        case 'issueDate': placeholderText = "[DATE OF ISSUE]"; break;
+        case 'certNumber': placeholderText = "[REFERENCE NO]"; break;
+        case 'sealText': placeholderText = "[OFFICIAL SEAL TEXT]"; break;
+        default: placeholderText = "______";
       }
+      previewEl.innerHTML = `<span class="placeholder-text">${placeholderText}</span>`;
     }
   } else {
-    if (inputId === 'sealText') {
-      previewEl.textContent = formattedVal;
-    } else {
-      previewEl.textContent = formattedVal;
-    }
+    previewEl.textContent = formattedVal;
   }
 
+  if (mode === 'grading' && inputId === 'institution') {
+    const instInText = document.getElementById('preview-g-instInText');
+    if (instInText) instInText.textContent = formattedVal || '[INSTITUTION NAME]';
+  }
   // Special handling: Birth year in words
   if (mode === 'birth' && inputId === 'dob') {
     const wordsEl = document.getElementById('preview-dobWords');
@@ -646,15 +816,19 @@ function validateField(id, val) {
   } else if (currentMode === 'marriage') {
     activeRequired = marriageRequired;
     activeDates = marriageDates;
-  } else {
+  } else if (currentMode === 'divorce') {
     activeRequired = divorceRequired;
     activeDates = divorceDates;
+  } else {
+    activeRequired = [];
+    activeDates = ['issueDate'];
   }
 
   let mapping;
   if (currentMode === 'birth') mapping = syncMapping;
   else if (currentMode === 'marriage') mapping = marriageSyncMapping;
-  else mapping = divorceSyncMapping;
+  else if (currentMode === 'divorce') mapping = divorceSyncMapping;
+  else mapping = gradingSyncMapping;
 
   const inputId = (mapping[id] && mapping[id].inputId) ? mapping[id].inputId : id;
   const errEl = document.getElementById(`${inputId}Error`);
@@ -684,7 +858,12 @@ function validateField(id, val) {
 // Validate entire form before saving
 function validateForm() {
   let isFormValid = true;
-  const mapping = (currentMode === 'birth') ? syncMapping : (currentMode === 'marriage' ? marriageSyncMapping : divorceSyncMapping);
+  let mapping;
+  if (currentMode === 'birth') mapping = syncMapping;
+  else if (currentMode === 'marriage') mapping = marriageSyncMapping;
+  else if (currentMode === 'divorce') mapping = divorceSyncMapping;
+  else mapping = gradingSyncMapping;
+
   Object.keys(mapping).forEach(key => {
     const inputId = mapping[key].inputId || key;
     const input = document.getElementById(inputId);
@@ -862,9 +1041,31 @@ async function initializeDatabase() {
         createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
       );
     `;
+    const sqlGrading = `
+      CREATE TABLE IF NOT EXISTS grading_scales (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        headerTitle TEXT,
+        institution TEXT,
+        subtitle TEXT,
+        studentName TEXT,
+        studyYears TEXT,
+        avgScore TEXT,
+        percentage TEXT,
+        noteText TEXT,
+        officerTitle TEXT,
+        officerName TEXT,
+        issueDate TEXT,
+        certNumber TEXT,
+        sealText TEXT,
+        presetType TEXT,
+        tableHtml TEXT,
+        createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+      );
+    `;
     await runTursoQuery(sqlBirth);
     await runTursoQuery(sqlMarriage);
     await runTursoQuery(sqlDivorce);
+    await runTursoQuery(sqlGrading);
     setDbStatus('connected');
     console.log("Turso database schemas verified.");
     await loadHistoryFromTurso();
@@ -1065,7 +1266,7 @@ async function saveToDatabase() {
       showToast("Database offline. Exporting document without saving.", "warning");
       return 'db_error';
     }
-  } else {
+  } else if (currentMode === 'divorce') {
     // Divorce Mode Saving
     const formData = {
       husbandName: document.getElementById("divorceHusbandName").value.trim().toUpperCase(),
@@ -1145,6 +1346,93 @@ async function saveToDatabase() {
       showToast("Database offline. Exporting document without saving.", "warning");
       return 'db_error';
     }
+  } else if (currentMode === 'grading') {
+    const tableContainer = document.getElementById('preview-g-tableContainer');
+    const formData = {
+      headerTitle: document.getElementById("gradingHeaderTitle").value.trim().toUpperCase(),
+      institution: document.getElementById("gradingInstitution").value.trim().toUpperCase(),
+      subtitle: document.getElementById("gradingSubtitle").value.trim(),
+      studentName: document.getElementById("gradingStudentName").value.trim().toUpperCase(),
+      studyYears: document.getElementById("gradingStudyYears").value.trim(),
+      avgScore: document.getElementById("gradingAvgScore").value.trim(),
+      percentage: document.getElementById("gradingPercentage").value.trim(),
+      noteText: document.getElementById("gradingNoteText").value.trim(),
+      officerTitle: document.getElementById("gradingOfficerTitle").value.trim(),
+      officerName: document.getElementById("gradingOfficerName").value.trim(),
+      issueDate: document.getElementById("gradingIssueDate").value.trim(),
+      certNumber: document.getElementById("gradingCertNumber").value.trim(),
+      sealText: document.getElementById("gradingSealText").value.trim(),
+      presetType: currentGradingPreset,
+      tableHtml: tableContainer ? tableContainer.innerHTML : ""
+    };
+
+    if (!recordIdToSave) {
+      try {
+        let checkSql = "";
+        let checkParams = [];
+        if (formData.certNumber) {
+          checkSql = "SELECT id FROM grading_scales WHERE certNumber = ? LIMIT 1;";
+          checkParams = [formData.certNumber];
+        } else if (formData.studentName) {
+          checkSql = "SELECT id FROM grading_scales WHERE studentName = ? LIMIT 1;";
+          checkParams = [formData.studentName];
+        }
+        if (checkSql) {
+          const checkRes = await runTursoQuery(checkSql, checkParams);
+          if (checkRes.rows && checkRes.rows.length > 0) {
+            recordIdToSave = checkRes.rows[0].id;
+            document.getElementById("currentRecordId").value = recordIdToSave;
+          }
+        }
+      } catch (checkErr) {
+        console.error("Error checking for existing grading scale record:", checkErr);
+      }
+    }
+
+    try {
+      if (recordIdToSave) {
+        const sql = `
+          UPDATE grading_scales SET 
+            headerTitle = ?, institution = ?, subtitle = ?, studentName = ?,
+            studyYears = ?, avgScore = ?, percentage = ?, noteText = ?,
+            officerTitle = ?, officerName = ?, issueDate = ?, certNumber = ?,
+            sealText = ?, presetType = ?, tableHtml = ?
+          WHERE id = ?;
+        `;
+        await runTursoQuery(sql, [
+          formData.headerTitle, formData.institution, formData.subtitle, formData.studentName,
+          formData.studyYears, formData.avgScore, formData.percentage, formData.noteText,
+          formData.officerTitle, formData.officerName, formData.issueDate, formData.certNumber,
+          formData.sealText, formData.presetType, formData.tableHtml, parseInt(recordIdToSave, 10)
+        ]);
+        showToast(`Successfully updated grading scale record`);
+      } else {
+        const sql = `
+          INSERT INTO grading_scales (
+            headerTitle, institution, subtitle, studentName,
+            studyYears, avgScore, percentage, noteText,
+            officerTitle, officerName, issueDate, certNumber,
+            sealText, presetType, tableHtml
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+        `;
+        const result = await runTursoQuery(sql, [
+          formData.headerTitle, formData.institution, formData.subtitle, formData.studentName,
+          formData.studyYears, formData.avgScore, formData.percentage, formData.noteText,
+          formData.officerTitle, formData.officerName, formData.issueDate, formData.certNumber,
+          formData.sealText, formData.presetType, formData.tableHtml
+        ]);
+        if (result.lastInsertRowid) {
+          document.getElementById("currentRecordId").value = result.lastInsertRowid;
+        }
+        showToast(`Successfully saved grading scale record to database`);
+      }
+      loadHistoryFromTurso();
+      return 'success';
+    } catch (err) {
+      console.error("Failed to save grading scale record:", err);
+      showToast("Database offline. Exporting document without saving.", "warning");
+      return 'db_error';
+    }
   }
 }
 
@@ -1157,6 +1445,7 @@ async function loadHistoryFromTurso() {
     let table = 'birth_certificates';
     if (currentMode === 'marriage') table = 'marriage_certificates';
     if (currentMode === 'divorce') table = 'divorce_certificates';
+    if (currentMode === 'grading') table = 'grading_scales';
 
     const result = await runTursoQuery(`SELECT * FROM ${table} ORDER BY id DESC;`);
     savedRecords = result.rows;
@@ -1173,7 +1462,7 @@ function renderHistoryList(records) {
   if (!container) return;
   
   if (records.length === 0) {
-    container.innerHTML = '<div class="empty-history">No saved translation certificates found.</div>';
+    container.innerHTML = '<div class="empty-history">No saved translation records found.</div>';
     return;
   }
 
@@ -1200,12 +1489,18 @@ function renderHistoryList(records) {
         <span><strong>Record:</strong> ${rec.recordNumber || 'N/A'}</span>
         <span><strong>Cert:</strong> ${rec.certNumber || 'N/A'}</span>
       `;
-    } else {
+    } else if (currentMode === 'divorce') {
       titleText = `${rec.husbandName} & ${rec.wifeName}`;
       metaHTML = `
         <span><strong>Divorced:</strong> ${rec.recordDate}</span>
         <span><strong>Record:</strong> ${rec.recordNumber || 'N/A'}</span>
         <span><strong>Cert:</strong> ${rec.certNumber || 'N/A'}</span>
+      `;
+    } else {
+      titleText = rec.studentName || rec.institution || rec.subtitle || 'Grading Scale';
+      metaHTML = `
+        <span><strong>Ref:</strong> ${rec.certNumber || 'N/A'}</span>
+        <span><strong>Preset:</strong> ${rec.presetType === 'uwed' ? 'UWED Scale' : 'Progress Note'}</span>
       `;
     }
 
@@ -1248,13 +1543,20 @@ function filterHistory() {
       rec.recordNumber.toLowerCase().includes(query) ||
       rec.marriageDate.includes(query)
     );
-  } else {
+  } else if (currentMode === 'divorce') {
     filtered = savedRecords.filter(rec => 
       rec.husbandName.toLowerCase().includes(query) || 
       rec.wifeName.toLowerCase().includes(query) ||
       rec.certNumber.toLowerCase().includes(query) ||
       rec.recordNumber.toLowerCase().includes(query) ||
       rec.recordDate.includes(query)
+    );
+  } else {
+    filtered = savedRecords.filter(rec => 
+      (rec.studentName || '').toLowerCase().includes(query) || 
+      (rec.institution || '').toLowerCase().includes(query) ||
+      (rec.subtitle || '').toLowerCase().includes(query) ||
+      (rec.certNumber || '').toLowerCase().includes(query)
     );
   }
   renderHistoryList(filtered);
@@ -1270,7 +1572,20 @@ function loadRecordIntoForm(id) {
   let mapping;
   if (currentMode === 'birth') mapping = syncMapping;
   else if (currentMode === 'marriage') mapping = marriageSyncMapping;
-  else mapping = divorceSyncMapping;
+  else if (currentMode === 'divorce') mapping = divorceSyncMapping;
+  else mapping = gradingSyncMapping;
+
+  if (currentMode === 'grading') {
+    if (record.presetType) currentGradingPreset = record.presetType;
+    if (record.tableHtml) {
+      const container = document.getElementById('preview-g-tableContainer');
+      if (container) container.innerHTML = record.tableHtml;
+    }
+    const studentBlock = document.getElementById('preview-g-studentProgressBlock');
+    if (studentBlock) {
+      studentBlock.style.display = (record.presetType === 'progress_note' || record.studentName) ? 'block' : 'none';
+    }
+  }
 
   // Populate fields
   Object.keys(mapping).forEach(key => {
@@ -1281,12 +1596,12 @@ function loadRecordIntoForm(id) {
       
       // Re-trigger live formatting and preview syncing
       updatePreviewFieldForced(currentMode, key, input.value);
-      validateField(key, input.value);
+      if (typeof validateField === 'function') validateField(key, input.value);
     }
   });
   
   switchTab('form');
-  const displayName = `${record.husbandName || record.fullName} & ${record.wifeName || ''}`;
+  const displayName = record.studentName || record.fullName || `${record.husbandName || ''} & ${record.wifeName || ''}` || 'Record';
   showToast(`Loaded details for ${displayName}`);
 }
 
@@ -1294,7 +1609,7 @@ function loadRecordIntoForm(id) {
 function askDeleteRecord(id, name) {
   openConfirmModal(
     "Delete Record?",
-    `Are you sure you want to permanently delete the translation record of "${name}" from Turso database?`,
+    `Are you sure you want to permanently delete the record of "${name}" from Turso database?`,
     "Delete Permanent",
     () => deleteRecordFromDb(id, name)
   );
@@ -1306,6 +1621,7 @@ async function deleteRecordFromDb(id, name) {
     let table = 'birth_certificates';
     if (currentMode === 'marriage') table = 'marriage_certificates';
     if (currentMode === 'divorce') table = 'divorce_certificates';
+    if (currentMode === 'grading') table = 'grading_scales';
 
     await runTursoQuery(`DELETE FROM ${table} WHERE id = ?;`, [id]);
     showToast(`Deleted record for ${name}`);
@@ -1335,7 +1651,7 @@ function getWordDocumentHtml(element) {
   const clone = element.cloneNode(true);
   
   // Remove inactive sheets if they exist in this clone to prevent exporting all tabs
-  ['birth', 'marriage', 'divorce'].forEach(mode => {
+  ['birth', 'marriage', 'divorce', 'grading'].forEach(mode => {
     if (typeof currentMode !== 'undefined' && mode !== currentMode) {
       const sheet = clone.querySelector(`#preview-${mode}-sheet`);
       if (sheet) sheet.remove();
@@ -1379,8 +1695,8 @@ function getWordDocumentHtml(element) {
         }
         body { 
           font-family: 'Times New Roman', Times, serif; 
-          font-size: 12pt; 
-          line-height: 1.5; 
+          font-size: 11pt; 
+          line-height: 1.4; 
           color: #000000;
         }
         .translation-header {
@@ -1398,18 +1714,24 @@ function getWordDocumentHtml(element) {
           margin-bottom: 15px;
         }
         .doc-country {
-          font-size: 14pt;
+          font-size: 12pt;
           font-weight: bold;
           margin-bottom: 4px;
         }
         .doc-title {
-          font-size: 14pt;
+          font-size: 13pt;
           font-weight: bold;
         }
         table {
           width: 100%;
           border-collapse: collapse;
           margin-bottom: 10px;
+        }
+        .grading-scale-table th, .grading-scale-table td {
+          border: 1px solid #000;
+          padding: 4px 5px;
+          text-align: center;
+          font-size: 9pt;
         }
         td {
           padding: 3px 0;
@@ -1476,27 +1798,20 @@ function getWordDocumentHtml(element) {
           border-bottom: 1px solid #000000;
         }
         .footer-section {
-            margin-top: 20px;
-            clear: both;
-          }
-          .official-seal {
-            float: left;
-            width: 35%;
-            font-weight: bold;
-          }
-          .id-number-section {
-            float: left;
-            width: 30%;
-            text-align: center;
-            font-weight: bold;
-            font-size: 12pt;
-            border: 1px solid #111;
-            padding: 5px 10px;
-          }
-          .footer-spacer {
-            float: right;
-            width: 35%;
-          }
+          margin-top: 20px;
+          clear: both;
+        }
+        .official-seal {
+          float: left;
+          width: 45%;
+          font-size: 8pt;
+        }
+        .id-number-section {
+          float: right;
+          width: 35%;
+          text-align: center;
+          font-weight: bold;
+        }
       </style>
     </head>
     <body>
@@ -1527,11 +1842,14 @@ async function exportWord() {
     const wName = document.getElementById('wifeName').value.trim() || 'Wife';
     name = `${hName}_${wName}`;
     filename = `${name.replace(/\s+/g, '_')}_MarriageCertificate_Translation.doc`;
-  } else {
+  } else if (currentMode === 'divorce') {
     const hName = document.getElementById('divorceHusbandName').value.trim() || 'Husband';
     const wName = document.getElementById('divorceWifeName').value.trim() || 'Wife';
     name = `${hName}_${wName}`;
     filename = `${name.replace(/\s+/g, '_')}_DivorceCertificate_Translation.doc`;
+  } else {
+    name = document.getElementById('gradingStudentName').value.trim() || 'GradingScale';
+    filename = `${name.replace(/\s+/g, '_')}_GradingScale_Translation.doc`;
   }
   
   const a = document.createElement('a');
@@ -1563,43 +1881,43 @@ function quickExportWord(id) {
           <div class="doc-title">BIRTH CERTIFICATE</div>
         </div>
         <table class="certificate-table">
-          <tr><td class="label">Citizen:</td><td class="value font-bold uppercase">\${record.fullName}</td></tr>
-          <tr><td class="label">Born on:</td><td class="value">\${formatDate(record.dob)}</td></tr>
-          <tr><td class="label">(in words):</td><td class="value">\${getWrittenYear(record.dob)}</td></tr>
+          <tr><td class="label">Citizen:</td><td class="value font-bold uppercase">${record.fullName}</td></tr>
+          <tr><td class="label">Born on:</td><td class="value">${formatDate(record.dob)}</td></tr>
+          <tr><td class="label">(in words):</td><td class="value">${getWrittenYear(record.dob)}</td></tr>
           <tr>
             <td class="label">Birth Place:</td>
             <td class="value">
               <div class="sub-grid">
                 <div class="sub-grid-item"><strong>State:</strong> <span>Uzbekistan</span></div>
-                <div class="sub-grid-item"><strong>Region of:</strong> <span>\${record.region}</span></div>
-                <div class="sub-grid-item"><strong>City of, village:</strong> <span>\${record.city}</span></div>
+                <div class="sub-grid-item"><strong>Region of:</strong> <span>${record.region}</span></div>
+                <div class="sub-grid-item"><strong>City of, village:</strong> <span>${record.city}</span></div>
               </div>
             </td>
           </tr>
         </table>
         <div class="registry-sentence">
-          in certification of this, entry No <span>\${record.entryNumber || '_____'}</span> was made into the Birth Registry on <span>\${formatDate(record.registryDate) || '__________'}</span> year.
+          in certification of this, entry No <span>${record.entryNumber || '_____'}</span> was made into the Birth Registry on <span>${formatDate(record.registryDate) || '__________'}</span> year.
         </div>
         <div class="section-title">Parents:</div>
         <table class="parents-table">
-          <tr><td class="label">Father:</td><td class="value font-bold uppercase">\${record.fatherName}</td></tr>
-          <tr><td class="label">Nationality:</td><td class="value">\${record.fatherNationality}</td></tr>
-          <tr><td class="label">Mother:</td><td class="value font-bold uppercase">\${record.motherName}</td></tr>
-          <tr><td class="label">Nationality:</td><td class="value">\${record.motherNationality}</td></tr>
+          <tr><td class="label">Father:</td><td class="value font-bold uppercase">${record.fatherName}</td></tr>
+          <tr><td class="label">Nationality:</td><td class="value">${record.fatherNationality}</td></tr>
+          <tr><td class="label">Mother:</td><td class="value font-bold uppercase">${record.motherName}</td></tr>
+          <tr><td class="label">Nationality:</td><td class="value">${record.motherNationality}</td></tr>
         </table>
         <div class="section-title">REGISTRATION OFFICE & DETAILS</div>
         <table class="registry-office-table">
-          <tr><td class="label">Registration Place:</td><td class="value">Civil registry office of \${record.regCity} district</td></tr>
-          <tr><td class="label">Date of issue:</td><td class="value">\${formatDate(record.issueDate)}</td></tr>
+          <tr><td class="label">Registration Place:</td><td class="value">Civil registry office of ${record.regCity} district</td></tr>
+          <tr><td class="label">Date of issue:</td><td class="value">${formatDate(record.issueDate)}</td></tr>
         </table>
         <div class="signature-section">
           <div class="signature-officer">Head of the Civil Registry Office</div>
           <div class="signature-signed">(signed)</div>
-          <div class="signature-name">\${record.headName}</div>
+          <div class="signature-name">${record.headName}</div>
         </div>
         <div class="footer-section">
           <div class="official-seal"><strong>Official Seal</strong></div>
-          <div class="id-number-section">\${record.idNumber}</div>
+          <div class="id-number-section">${record.idNumber}</div>
           <div class="footer-spacer"></div>
         </div>
       </div>
@@ -1632,42 +1950,42 @@ function quickExportWord(id) {
           <div class="doc-title" style="text-align: center; font-size: 14pt; font-weight: bold; margin-top: 30px; margin-bottom: 20px;">MARRIAGE CERTIFICATE</div>
         </div>
         <table class="certificate-table" style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">
-          <tr><td class="label" style="width: 35%; font-weight: bold;">Citizen:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">\${record.husbandName}</td></tr>
-          <tr><td class="label" style="font-weight: bold;">was born:</td><td class="value" style="border-bottom: 1px solid #000;">\${formatDate(record.husbandDob)}</td></tr>
-          <tr><td class="label" style="font-weight: bold;">Birth Place:</td><td class="value" style="border-bottom: 1px solid #000;">\${record.husbandBirthPlace}</td></tr>
-          <tr><td class="label" style="font-weight: bold;">Citizenship:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">\${record.husbandCitizenship}</td></tr>
+          <tr><td class="label" style="width: 35%; font-weight: bold;">Citizen:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">${record.husbandName}</td></tr>
+          <tr><td class="label" style="font-weight: bold;">was born:</td><td class="value" style="border-bottom: 1px solid #000;">${formatDate(record.husbandDob)}</td></tr>
+          <tr><td class="label" style="font-weight: bold;">Birth Place:</td><td class="value" style="border-bottom: 1px solid #000;">${record.husbandBirthPlace}</td></tr>
+          <tr><td class="label" style="font-weight: bold;">Citizenship:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">${record.husbandCitizenship}</td></tr>
         </table>
         <table class="certificate-table" style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">
-          <tr><td class="label" style="width: 35%; font-weight: bold;">Citizen:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">\${record.wifeName}</td></tr>
-          <tr><td class="label" style="font-weight: bold;">was born:</td><td class="value" style="border-bottom: 1px solid #000;">\${formatDate(record.wifeDob)}</td></tr>
-          <tr><td class="label" style="font-weight: bold;">Birth Place:</td><td class="value" style="border-bottom: 1px solid #000;">\${record.wifeBirthPlace}</td></tr>
-          <tr><td class="label" style="font-weight: bold;">Citizenship:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">\${record.wifeCitizenship}</td></tr>
+          <tr><td class="label" style="width: 35%; font-weight: bold;">Citizen:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">${record.wifeName}</td></tr>
+          <tr><td class="label" style="font-weight: bold;">was born:</td><td class="value" style="border-bottom: 1px solid #000;">${formatDate(record.wifeDob)}</td></tr>
+          <tr><td class="label" style="font-weight: bold;">Birth Place:</td><td class="value" style="border-bottom: 1px solid #000;">${record.wifeBirthPlace}</td></tr>
+          <tr><td class="label" style="font-weight: bold;">Citizenship:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">${record.wifeCitizenship}</td></tr>
         </table>
         <div class="registry-sentence" style="margin: 24px 0; text-indent: 0.5in; text-align: left; font-size: 11pt; line-height: 1.6;">
-          were married on <span style="border-bottom: 1px solid #000;">\${formatDate(record.marriageDate)}</span> (<span style="border-bottom: 1px solid #000;">\${record.marriageDateWords}</span>)
+          were married on <span style="border-bottom: 1px solid #000;">${formatDate(record.marriageDate)}</span> (<span style="border-bottom: 1px solid #000;">${record.marriageDateWords}</span>)
         </div>
         <div class="registry-sentence" style="margin: 24px 0; text-align: left; font-size: 11pt; line-height: 1.6;">
-          Marriage record № <span style="border-bottom: 1px solid #000;">\${record.recordNumber}</span> was filed on <span style="border-bottom: 1px solid #000;">\${formatDate(record.recordDate)}</span>.
+          Marriage record № <span style="border-bottom: 1px solid #000;">${record.recordNumber}</span> was filed on <span style="border-bottom: 1px solid #000;">${formatDate(record.recordDate)}</span>.
         </div>
         <div class="registry-sentence" style="margin: 24px 0; font-weight: bold; text-align: left; font-size: 11pt; line-height: 1.6;">
           In the marriage the following surnames were given to:
         </div>
         <table class="parents-table" style="width: 100%; border-collapse: collapse; margin-top: 5px;">
-          <tr><td class="label" style="width: 35%; font-weight: bold;">Husband:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">\${record.husbandNewSurname}</td></tr>
-          <tr><td class="label" style="font-weight: bold;">Wife:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">\${record.wifeNewSurname}</td></tr>
+          <tr><td class="label" style="width: 35%; font-weight: bold;">Husband:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">${record.husbandNewSurname}</td></tr>
+          <tr><td class="label" style="font-weight: bold;">Wife:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">${record.wifeNewSurname}</td></tr>
         </table>
         <table class="registry-office-table" style="width: 100%; border-collapse: collapse; margin-top: 15px;">
-          <tr><td class="label" style="width: 35%; font-weight: bold;">Place of registration:</td><td class="value" style="border-bottom: 1px solid #000;">\${regFormatted}</td></tr>
-          <tr><td class="label" style="font-weight: bold;">Date of issue:</td><td class="value" style="border-bottom: 1px solid #000;">\${formatDate(record.issueDate)}</td></tr>
+          <tr><td class="label" style="width: 35%; font-weight: bold;">Place of registration:</td><td class="value" style="border-bottom: 1px solid #000;">${regFormatted}</td></tr>
+          <tr><td class="label" style="font-weight: bold;">Date of issue:</td><td class="value" style="border-bottom: 1px solid #000;">${formatDate(record.issueDate)}</td></tr>
         </table>
         <div class="signature-section" style="margin-top: 40px; clear: both;">
           <div class="signature-officer" style="float: left; width: 45%; font-weight: bold;">Chairman of the Civil Registry Office</div>
           <div class="signature-signed" style="float: left; width: 20%; text-align: center; font-style: italic;">(signed)</div>
-          <div class="signature-name" style="float: right; width: 35%; text-align: right; font-weight: bold; border-bottom: 1px solid #000000;">\${record.chairmanName}</div>
+          <div class="signature-name" style="float: right; width: 35%; text-align: right; font-weight: bold; border-bottom: 1px solid #000000;">${record.chairmanName}</div>
         </div>
         <div class="footer-section" style="margin-top: 30px; clear: both;">
           <div class="official-seal" style="float: left; width: 35%; font-weight: bold;">Official Seal:</div>
-          <div class="id-number-section" style="float: left; width: 30%; text-align: center; font-weight: bold; border: none;">\${record.certNumber}</div>
+          <div class="id-number-section" style="float: left; width: 30%; text-align: center; font-weight: bold; border: none;">${record.certNumber}</div>
           <div class="footer-spacer" style="float: right; width: 35%;"></div>
         </div>
       </div>
@@ -1703,7 +2021,7 @@ function quickExportWord(id) {
         <table class="certificate-table" style="width: 100%; border-collapse: collapse; margin-bottom: 5px;">
           <tr>
             <td class="label" style="width: 25%; font-weight: bold;">Citizen:</td>
-            <td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; text-align: center; border-bottom: 1px solid #000;">\${record.husbandName}</td>
+            <td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; text-align: center; border-bottom: 1px solid #000;">${record.husbandName}</td>
           </tr>
           <tr>
             <td></td>
@@ -1714,7 +2032,7 @@ function quickExportWord(id) {
         <table class="certificate-table" style="width: 100%; border-collapse: collapse; margin-top: 5px; margin-bottom: 5px;">
           <tr>
             <td class="label" style="width: 25%; font-weight: bold;">and citizen:</td>
-            <td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; text-align: center; border-bottom: 1px solid #000;">\${record.wifeName}</td>
+            <td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; text-align: center; border-bottom: 1px solid #000;">${record.wifeName}</td>
           </tr>
           <tr>
             <td></td>
@@ -1724,30 +2042,30 @@ function quickExportWord(id) {
 
         <div class="registry-sentence" style="margin: 15px 0; text-align: left;">are dissolved their marriage.</div>
         <div class="registry-sentence" style="margin: 15px 0; font-weight: bold; text-align: left;">
-          Record № <span style="border-bottom: 1px solid #000;">\${record.recordNumber}</span> was filed on <span style="border-bottom: 1px solid #000;">\${formatDate(record.recordDate)}</span>,
+          Record № <span style="border-bottom: 1px solid #000;">${record.recordNumber}</span> was filed on <span style="border-bottom: 1px solid #000;">${formatDate(record.recordDate)}</span>,
         </div>
         <div class="registry-sentence" style="margin: 20px 0; font-weight: bold; text-align: left;">Following surnames were given after the marriage dissolution:</div>
 
         <table class="parents-table" style="width: 100%; border-collapse: collapse; margin-top: 5px;">
-          <tr><td class="label" style="width: 25%; font-weight: bold;">Husband:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">\${record.husbandNewSurname}</td></tr>
-          <tr><td class="label" style="font-weight: bold;">Wife:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">\${record.wifeNewSurname}</td></tr>
+          <tr><td class="label" style="width: 25%; font-weight: bold;">Husband:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">${record.husbandNewSurname}</td></tr>
+          <tr><td class="label" style="font-weight: bold;">Wife:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">${record.wifeNewSurname}</td></tr>
         </table>
 
         <table class="registry-office-table" style="width: 100%; border-collapse: collapse; margin-top: 15px;">
-          <tr><td class="label" style="width: 35%; font-weight: bold;">Registration Place:</td><td class="value" style="font-style: italic; border-bottom: 1px solid #000;">\${record.regPlace}</td></tr>
-          <tr><td class="label" style="font-weight: bold;">The certificate is given to:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">\${record.givenTo}</td></tr>
-          <tr><td class="label" style="font-weight: bold;">Date of issue:</td><td class="value" style="font-style: italic; border-bottom: 1px solid #000;">\${formatDate(record.issueDate)}</td></tr>
+          <tr><td class="label" style="width: 35%; font-weight: bold;">Registration Place:</td><td class="value" style="font-style: italic; border-bottom: 1px solid #000;">${record.regPlace}</td></tr>
+          <tr><td class="label" style="font-weight: bold;">The certificate is given to:</td><td class="value font-bold uppercase" style="font-weight: bold; text-transform: uppercase; border-bottom: 1px solid #000;">${record.givenTo}</td></tr>
+          <tr><td class="label" style="font-weight: bold;">Date of issue:</td><td class="value" style="font-style: italic; border-bottom: 1px solid #000;">${formatDate(record.issueDate)}</td></tr>
         </table>
 
         <div class="signature-section" style="margin-top: 40px; clear: both;">
           <div class="signature-officer" style="float: left; width: 45%; font-weight: bold;">Head of the Civil Registry office</div>
           <div class="signature-signed" style="float: left; width: 20%; text-align: center; font-style: italic;">(signed)</div>
-          <div class="signature-name" style="float: right; width: 35%; text-align: right; font-weight: bold; border-bottom: 1px solid #000000;">\${record.headName}</div>
+          <div class="signature-name" style="float: right; width: 35%; text-align: right; font-weight: bold; border-bottom: 1px solid #000000;">${record.headName}</div>
         </div>
 
         <div class="footer-section" style="margin-top: 30px; clear: both;">
-          <div class="official-seal" style="float: left; width: 45%; font-size: 8pt; font-style: italic; font-weight: normal; white-space: pre-line;">\${record.sealText}</div>
-          <div class="id-number-section" style="float: left; width: 35%; text-align: center; font-weight: bold; border: none; font-size: 11pt;">\${record.certNumber}</div>
+          <div class="official-seal" style="float: left; width: 45%; font-size: 8pt; font-style: italic; font-weight: normal; white-space: pre-line;">${record.sealText}</div>
+          <div class="id-number-section" style="float: left; width: 35%; text-align: center; font-weight: bold; border: none; font-size: 11pt;">${record.certNumber}</div>
           <div class="footer-spacer" style="float: right; width: 20%;"></div>
         </div>
       </div>
@@ -1779,7 +2097,7 @@ async function exportPDF() {
 
   // Temporarily isolate the active sheet by removing inactive sheets from the DOM
   const hiddenElements = [];
-  ['birth', 'marriage', 'divorce'].forEach(mode => {
+  ['birth', 'marriage', 'divorce', 'grading'].forEach(mode => {
     if (mode !== currentMode) {
       const el = document.getElementById(`preview-${mode}-sheet`);
       if (el && el.parentNode) {
@@ -1799,11 +2117,14 @@ async function exportPDF() {
     const wName = document.getElementById('wifeName').value.trim() || 'Wife';
     name = `${hName}_${wName}`;
     filename = `${name.replace(/\s+/g, '_')}_MarriageCertificate_Translation.pdf`;
-  } else {
+  } else if (currentMode === 'divorce') {
     const hName = document.getElementById('divorceHusbandName').value.trim() || 'Husband';
     const wName = document.getElementById('divorceWifeName').value.trim() || 'Wife';
     name = `${hName}_${wName}`;
     filename = `${name.replace(/\s+/g, '_')}_DivorceCertificate_Translation.pdf`;
+  } else {
+    name = document.getElementById('gradingStudentName').value.trim() || 'GradingScale';
+    filename = `${name.replace(/\s+/g, '_')}_GradingScale_Translation.pdf`;
   }
   
   const opt = {
@@ -1879,6 +2200,19 @@ function clearForm() {
     const errEl = document.getElementById(`${inputId}Error`);
     if (errEl) errEl.style.display = 'none';
   });
+
+  // Reset preview fields to placeholders for grading mode
+  const gradingFields = ['headerTitle', 'institution', 'subtitle', 'studentName', 'studyYears', 'avgScore', 'maxScore', 'percentage', 'maxPercentage', 'noteText', 'officerTitle', 'officerName', 'issueDate'];
+  gradingFields.forEach(key => {
+    const mapping = gradingSyncMapping[key] || {};
+    const inputId = mapping.inputId || key;
+    const input = document.getElementById(inputId);
+    updatePreviewFieldForced('grading', key, input ? input.value : "");
+  });
+
+  if (currentMode === 'grading') {
+    initGradingTable();
+  }
   
   showToast("Form cleared.");
 }
@@ -1886,7 +2220,7 @@ function clearForm() {
 
 // Setup Autocomplete suggestions from database history
 function initAutocomplete() {
-  const fields = ['region', 'city', 'regCity', 'headName', 'husbandBirthPlace', 'wifeBirthPlace', 'regPlace', 'chairmanName', 'divorceRegPlace', 'divorceHeadName'];
+  const fields = ['region', 'city', 'regCity', 'headName', 'husbandBirthPlace', 'wifeBirthPlace', 'regPlace', 'chairmanName', 'divorceRegPlace', 'divorceHeadName', 'gradingHeaderTitle'];
 
   fields.forEach(fieldId => {
     const input = document.getElementById(fieldId);
@@ -1907,6 +2241,12 @@ function initAutocomplete() {
       let defaultVals = [];
       if (fieldId === 'region') {
         defaultVals = ['Andijan', 'Bukhara', 'Fergana', 'Jizzakh', 'Khorezm', 'Namangan', 'Navoi', 'Samarkand', 'Sirdaryo', 'Surxondaryo', 'Tashkent', 'Karakalpakstan', 'Kashkadaryo'];
+      } else if (fieldId === 'gradingHeaderTitle') {
+        defaultVals = [
+          'MINISTRY OF PRESCHOOL AND SCHOOL EDUCATION OF THE REPUBLIC OF UZBEKISTAN',
+          'MINISTRY OF CULTURE OF THE REPUBLIC OF UZBEKISTAN',
+          'MINISTRY OF HIGHER EDUCATION, SCIENCE AND INNOVATION OF THE REPUBLIC OF UZBEKISTAN'
+        ];
       }
       
       const allVals = [

@@ -772,7 +772,21 @@ textarea.form-control {
 }
 
 .signature-officer { font-weight: bold; width: 50%; }
-.signature-signed  { width: 20%; text-align: center; font-style: italic; }
+.grading-scale-table {
+  width: 100% !important;
+  border-collapse: collapse;
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+.grading-scale-table th, 
+.grading-scale-table td {
+  border: 1px solid #000;
+  padding: 5px 6px;
+  text-align: center;
+  font-size: 10pt;
+  font-family: 'Times New Roman', Times, serif;
+}
 .signature-name    { width: 30%; text-align: right; font-weight: bold; border-bottom: 1px dotted #888; }
 
 .footer-section {
@@ -1063,3 +1077,40 @@ textarea.form-control {
   border-top: 1px solid var(--panel-border) !important;
   opacity: 1 !important;
 }
+
+/* --------------------------------------------------------------------------
+   15. GRADING SCALE TABLE STYLES
+   -------------------------------------------------------------------------- */
+.grading-scale-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 10px 0 15px 0;
+  font-size: 8.5pt;
+  color: #000;
+  background: #fff;
+}
+
+.grading-scale-table th,
+.grading-scale-table td {
+  border: 1px solid #111;
+  padding: 5px 6px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.grading-scale-table th {
+  font-weight: bold;
+  background: #f8f9fa;
+  font-size: 8.5pt;
+  line-height: 1.2;
+}
+
+.grading-scale-table td[contenteditable="true"]:hover {
+  background: #f0f7ff;
+}
+
+.grading-scale-table td[contenteditable="true"]:focus {
+  background: #e6f0fa;
+  outline: 1px solid var(--accent);
+}
+
