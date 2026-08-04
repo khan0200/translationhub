@@ -836,6 +836,13 @@ textarea.form-control {
 
 .certificate-sheet.pdf-exporting .placeholder-text { visibility: hidden; }
 
+.certificate-sheet.pdf-exporting .grading-scale-table th,
+.certificate-sheet.pdf-exporting .grading-scale-table td {
+  border: 1px solid #000 !important;
+  font-size: 9.5pt !important;
+  color: #000 !important;
+}
+
 /* --------------------------------------------------------------------------
    10. BOOTSTRAP MODAL THEME OVERRIDE
    -------------------------------------------------------------------------- */
@@ -982,7 +989,12 @@ textarea.form-control {
   .certificate-sheet .signature-name { border-bottom-style: solid; border-bottom-color: #000; }
   .certificate-sheet .placeholder-text { display: none !important; }
 
-  @page { size: A4 portrait; margin: 20mm 15mm 15mm 20mm; }
+  .grading-scale-table { width: 100% !important; border-collapse: collapse !important; }
+  .grading-scale-table th,
+  .grading-scale-table td { border: 1px solid #000 !important; font-size: 9.5pt !important; padding: 4px 6px !important; }
+  .grading-scale-table th { background-color: #f2f2f2 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  @page { size: A4 portrait; margin: 15mm 15mm 15mm 15mm; }
 }
 
 /* --------------------------------------------------------------------------

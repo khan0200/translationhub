@@ -1349,20 +1349,20 @@ async function saveToDatabase() {
   } else if (currentMode === 'grading') {
     const tableContainer = document.getElementById('preview-g-tableContainer');
     const formData = {
-      headerTitle: document.getElementById("gradingHeaderTitle").value.trim().toUpperCase(),
-      institution: document.getElementById("gradingInstitution").value.trim().toUpperCase(),
-      subtitle: document.getElementById("gradingSubtitle").value.trim(),
-      studentName: document.getElementById("gradingStudentName").value.trim().toUpperCase(),
-      studyYears: document.getElementById("gradingStudyYears").value.trim(),
-      avgScore: document.getElementById("gradingAvgScore").value.trim(),
-      percentage: document.getElementById("gradingPercentage").value.trim(),
-      noteText: document.getElementById("gradingNoteText").value.trim(),
-      officerTitle: document.getElementById("gradingOfficerTitle").value.trim(),
-      officerName: document.getElementById("gradingOfficerName").value.trim(),
-      issueDate: document.getElementById("gradingIssueDate").value.trim(),
-      certNumber: document.getElementById("gradingCertNumber").value.trim(),
-      sealText: document.getElementById("gradingSealText").value.trim(),
-      presetType: currentGradingPreset,
+      headerTitle: (document.getElementById("gradingHeaderTitle")?.value || "").trim().toUpperCase(),
+      institution: (document.getElementById("gradingInstitution")?.value || "").trim().toUpperCase(),
+      subtitle: (document.getElementById("gradingSubtitle")?.value || "").trim(),
+      studentName: (document.getElementById("gradingStudentName")?.value || "").trim().toUpperCase(),
+      studyYears: (document.getElementById("gradingStudyYears")?.value || "").trim(),
+      avgScore: (document.getElementById("gradingAvgScore")?.value || "").trim(),
+      percentage: (document.getElementById("gradingPercentage")?.value || "").trim(),
+      noteText: (document.getElementById("gradingNoteText")?.value || "").trim(),
+      officerTitle: (document.getElementById("gradingOfficerTitle")?.value || "").trim(),
+      officerName: (document.getElementById("gradingOfficerName")?.value || "").trim(),
+      issueDate: (document.getElementById("gradingIssueDate")?.value || "").trim(),
+      certNumber: (document.getElementById("gradingCertNumber")?.value || "").trim(),
+      sealText: (document.getElementById("gradingSealText")?.value || "").trim(),
+      presetType: typeof currentGradingPreset !== 'undefined' ? currentGradingPreset : 'uwed',
       tableHtml: tableContainer ? tableContainer.innerHTML : ""
     };
 
@@ -1658,6 +1658,12 @@ function getWordDocumentHtml(element) {
     }
   });
 
+  // Ensure active mode sheet is explicitly displayed in Word HTML
+  if (typeof currentMode !== 'undefined') {
+    const activeSheet = clone.querySelector(`#preview-${currentMode}-sheet`);
+    if (activeSheet) activeSheet.style.display = 'block';
+  }
+
   // Remove any placeholders
   clone.querySelectorAll('.placeholder-text').forEach(el => {
     el.textContent = '_____________________';
@@ -1727,11 +1733,22 @@ function getWordDocumentHtml(element) {
           border-collapse: collapse;
           margin-bottom: 10px;
         }
+        .grading-scale-table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 10px;
+          margin-bottom: 15px;
+        }
         .grading-scale-table th, .grading-scale-table td {
-          border: 1px solid #000;
+          border: 1px solid #000000;
           padding: 4px 5px;
           text-align: center;
           font-size: 9pt;
+          font-family: 'Times New Roman', Times, serif;
+        }
+        .grading-scale-table th {
+          background-color: #f2f2f2;
+          font-weight: bold;
         }
         td {
           padding: 3px 0;
@@ -2004,7 +2021,7 @@ function quickExportWord(id) {
     URL.revokeObjectURL(url);
     tempDiv.remove();
     showToast(`Exported ${record.husbandName} & ${record.wifeName} to Word`);
-  } else {
+  } else if (currentMode === 'divorce') {
     // Divorce quick export
     const tempDiv = document.createElement('div');
     tempDiv.style.display = 'none';
@@ -2084,6 +2101,49 @@ function quickExportWord(id) {
     URL.revokeObjectURL(url);
     tempDiv.remove();
     showToast(`Exported ${record.husbandName} & ${record.wifeName} to Word`);
+  } else if (currentMode === 'grading') {
+    // Grading scale quick export
+    const tempDiv = document.createElement('div');
+    tempDiv.style.display = 'none';
+    document.body.appendChild(tempDiv);
+
+    tempDiv.innerHTML = `
+      <div id="temp-cert-preview">
+        <div class="doc-title-container" style="text-align:center; margin-bottom:20px;">
+          <div class="doc-country" style="font-size:11.5pt; font-weight:bold; text-transform:uppercase;">${record.headerTitle || 'MINISTRY OF PRESCHOOL AND SCHOOL EDUCATION OF THE REPUBLIC OF UZBEKISTAN'}</div>
+          <div class="doc-country" style="font-size:11.5pt; font-weight:bold; text-transform:uppercase; margin-top:4px;">${record.institution || ''}</div>
+          <div class="doc-title" style="font-size:14pt; font-weight:bold; text-transform:uppercase; margin-top:10px;">${record.subtitle || 'ACADEMIC PROGRESS NOTE'}</div>
+        </div>
+        ${record.studentName ? `
+        <div style="margin:20px 0; line-height:1.6; font-size:11.5pt;">
+          <strong>${record.studentName}</strong> studied at the <strong>${record.institution || ''}</strong> from <strong>${record.studyYears || ''}</strong>, successfully completing the full curriculum in all subjects. According to the grading system, her average score is <strong>${record.avgScore || ''}</strong>, which corresponds to <strong>${record.percentage || ''}</strong>.
+        </div>` : ''}
+        <div style="text-align:center; font-weight:bold; font-size:13pt; margin-top:16px; margin-bottom:8px;">Grading system</div>
+        <div style="font-size:11pt; line-height:1.5; margin-bottom:12px; text-align:center;">${record.noteText || ''}</div>
+        <div style="margin-top:10px; margin-bottom:20px; width:100%;">${record.tableHtml || ''}</div>
+        <div class="signature-section" style="margin-top:35px; clear:both; width:100%; overflow:hidden;">
+          <div class="signature-officer" style="float:left; width:45%; font-weight:bold;">${record.officerTitle || 'DIRECTOR OF'}</div>
+          <div class="signature-name" style="float:right; width:45%; text-align:right; font-weight:bold; border-bottom:1px solid #000;">${record.officerName || ''}</div>
+        </div>
+        <div class="footer-section" style="margin-top:25px; clear:both; width:100%;">
+          <div>Date of issue: <span style="border-bottom:1px solid #000; padding:0 8px;">${formatDate(record.issueDate)}</span></div>
+        </div>
+      </div>
+    `;
+
+    const htmlString = getWordDocumentHtml(tempDiv.querySelector('#temp-cert-preview'));
+    const blob = new Blob(['\ufeff' + htmlString], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    const name = record.studentName || record.institution || 'GradingScale';
+    a.download = `${name.replace(/\s+/g, '_')}_GradingScale_Translation.doc`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    tempDiv.remove();
+    showToast(`Exported ${name} to Word`);
   }
 }
 
@@ -2131,8 +2191,9 @@ async function exportPDF() {
     margin:       0,
     filename:     filename,
     image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2.5, useCORS: true, logging: false },
-    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    html2canvas:  { scale: 2.5, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
+    jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
   };
 
   try {
