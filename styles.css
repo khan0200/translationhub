@@ -408,21 +408,28 @@ textarea.form-control {
 
 /* Clear form top button */
 .btn-clear-form-top {
-  padding: 5px 11px;
-  font-size: 11px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  padding: 6px 12px;
+  font-size: 12px;
   font-family: 'Plus Jakarta Sans', sans-serif;
   font-weight: 600;
   background: rgba(239, 68, 68, 0.1);
   color: #ef4444;
   border: 1px solid rgba(239, 68, 68, 0.25);
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   transition: var(--transition);
+  flex-shrink: 0;
+  line-height: 1.2;
 }
 
 .btn-clear-form-top:hover {
-  background: rgba(239, 68, 68, 0.25);
-  border-color: #ef4444;
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.45);
+}
 }
 
 /* Sidebar action buttons */

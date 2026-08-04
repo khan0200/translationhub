@@ -2226,6 +2226,20 @@ function clearForm() {
   const form = document.getElementById("certificateForm");
   if (form) {
     form.reset();
+    // Explicitly wipe dynamic field input values so form is clean
+    form.querySelectorAll('input:not([type="hidden"]), textarea').forEach(input => {
+      if (input.id === 'gradingHeaderTitle') {
+        input.value = "MINISTRY OF PRESCHOOL AND SCHOOL EDUCATION OF THE REPUBLIC OF UZBEKISTAN";
+      } else if (input.id === 'gradingSubtitle') {
+        input.value = "ACADEMIC PROGRESS NOTE";
+      } else if (input.id === 'gradingNoteText') {
+        input.value = "Conversion of the total points for the discipline from 100-point scale to the equivalent of a 5-point scale is carried out in accordance with the scales given below.";
+      } else if (input.id === 'gradingOfficerTitle') {
+        input.value = "DIRECTOR OF";
+      } else {
+        input.value = "";
+      }
+    });
   }
   document.getElementById("currentRecordId").value = "";
   
