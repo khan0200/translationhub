@@ -2190,8 +2190,8 @@ async function exportPDF() {
   const opt = {
     margin:       0,
     filename:     filename,
-    image:        { type: 'jpeg', quality: 0.98 },
-    html2canvas:  { scale: 2.5, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
+    image:        { type: 'png', quality: 1 },
+    html2canvas:  { scale: 4, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
     jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
     pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
   };
